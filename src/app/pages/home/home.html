@@ -1,10 +1,99 @@
-<mat-toolbar color="primary">
-  <span>Accueil</span>
-</mat-toolbar>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="over" position="start">
+    <mat-nav-list>
+      <mat-list-item (click)="onNavigate('/profile')">
+        <div class="flex">
+          <mat-icon matListIcon>account_circle</mat-icon>
+          <span matLine>Profil</span>
+        </div>
+      </mat-list-item>
 
-<div style="margin:20px">
-  <button mat-raised-button color="accent">
-    <mat-icon>home</mat-icon>
-    Bienvenue sur la page Home
-  </button>
-</div>
+      <mat-list-item *ngIf="auth.loginData?.user?.isAdmin" (click)="onNavigate('/admin')">
+        <div class="flex">
+          <mat-icon matListIcon>admin_panel_settings</mat-icon>
+          <span matLine>Administration User</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item (click)="onNavigate('/settings')">
+        <div class="flex">
+          <mat-icon matListIcon>settings</mat-icon>
+          <span matLine>Paramètres</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item (click)="onLogout()">
+        <div class="flex" style="color: red;">
+          <mat-icon matListIcon>logout</mat-icon>
+          <span matLine>Déconnexion</span>
+        </div>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="toolbar">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <span class="toolbar-title">LMPE</span>
+    </mat-toolbar>
+
+    <div class="home-content">
+      <ng-container [ngSwitch]="activeTab">
+        <div *ngSwitchCase="'stats'">
+          <h1>Statistiques</h1>
+          <!-- Ici tu peux mettre ton tableau ou graphique -->
+        </div>
+
+        <div *ngSwitchCase="'messages'">
+          <h1>Messages</h1>
+          <!-- Liste de conversations privées et groupes -->
+        </div>
+
+        <div *ngSwitchCase="'agenda'">
+          <h1>Agenda</h1>
+          <!-- Calendrier / planning -->
+        </div>
+
+        <div *ngSwitchCase="'bulletin'">
+          <h1>Bulletin</h1>
+          <!-- Bulletins ou rapports -->
+        </div>
+
+        <div *ngSwitchDefault>
+          <h1>Bienvenue sur LMPE</h1>
+        </div>
+      </ng-container>
+    </div>
+
+
+    <mat-toolbar color="primary" class="bottom-bar">
+      <button mat-icon-button (click)="onSelectTab('stats')">
+        <div [ngClass]="{'accent': activeTab === 'stats'}">
+          <mat-icon>bar_chart</mat-icon>
+        </div>
+      </button>
+
+      <button mat-icon-button (click)="onSelectTab('messages')">
+        <div [ngClass]="{'accent': activeTab === 'messages'}">
+          <mat-icon>chat</mat-icon>
+        </div>
+      </button>
+
+      <button mat-icon-button (click)="onSelectTab('agenda')">
+        <div [ngClass]="{'accent': activeTab === 'agenda'}">
+          <mat-icon>event</mat-icon>
+        </div>
+      </button>
+
+      <button mat-icon-button (click)="onSelectTab('bulletin')">
+        <div [ngClass]="{'accent': activeTab === 'bulletin'}">
+          <mat-icon>assignment</mat-icon>
+        </div>
+      </button>
+    </mat-toolbar>
+
+
+  </mat-sidenav-content>
+</mat-sidenav-container>

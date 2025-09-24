@@ -1,0 +1,48 @@
+<div *ngIf="isOpen" formContainer>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <h2 mat-dialog-title>{{ user ? 'Modifier utilisateur' : 'Créer utilisateur' }}</h2>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email">
+      <mat-error *ngIf="form.get('email')?.hasError('required')">
+        Email requis
+      </mat-error>
+      <mat-error *ngIf="form.get('email')?.hasError('email')">
+        Email invalide
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Pseudo</mat-label>
+      <input matInput formControlName="pseudo">
+      <mat-error *ngIf="form.get('pseudo')?.hasError('required')">
+        Pseudo requis
+      </mat-error>
+    </mat-form-field>
+
+    <button *ngIf="!form.get('passwordHash')" mat-raised-button color="primary" type="button">
+      Générer un mot de passe
+    </button>
+
+    <!-- Si tu veux gérer un champ mot de passe dans le FormGroup -->
+    <mat-form-field appearance="fill" *ngIf="form.get('passwordHash')">
+      <mat-label>Mot de passe</mat-label>
+      <input matInput formControlName="passwordHash" type="password">
+      <mat-error *ngIf="form.get('passwordHash')?.hasError('required')">
+        Mot de passe requis
+      </mat-error>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="isAdmin">Admin</mat-checkbox>
+
+    <div class="form-actions" style="display:flex; gap:8px; justify-content:flex-end;">
+      <button mat-raised-button color="warn" type="button" (click)="onClose()">
+        Annuler
+      </button>
+      <button mat-raised-button color="primary" type="submit">
+        {{ user ? 'Modifier' : 'Créer' }}
+      </button>
+    </div>
+  </form>
+</div>

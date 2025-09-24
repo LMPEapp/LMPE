@@ -1,0 +1,61 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="toolbar">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <span class="toolbar-title">Administration User</span>
+    </mat-toolbar>
+
+    <div class="home-content">
+      <h1>admin</h1>
+
+      <div class="users-list">
+        <mat-card *ngFor="let user of users" class="user-card">
+          <div class="user-info">
+            <div class="user-details">
+              <mat-icon>account_circle</mat-icon>
+            </div>
+            <div class="user-details">
+              <p><strong>Email:</strong> {{ user.email }}</p>
+              <p><strong>Pseudo:</strong> {{ user.pseudo }}</p>
+              <p><strong>Admin:</strong> {{ user.isAdmin ? 'Oui' : 'Non' }}</p>
+            </div>
+            <div class="user-actions">
+              <!-- Bouton menu ... -->
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <div class="menu">
+                  <button mat-menu-item (click)="onEdit(user)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Modifier</span>
+                  </button>
+                  <button mat-menu-item (click)="onDelete(user)">
+                    <mat-icon>delete</mat-icon>
+                    <span>Supprimer</span>
+                  </button>
+                </div>
+
+              </mat-menu>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+
+
+
+    <!-- Floating Action Button -->
+    <button mat-fab color="primary" class="fab-button" (click)="onAdd()">
+      <mat-icon>add</mat-icon>
+    </button>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
+<app-profil-edition
+  (submitForm)="handleUserSubmit($event)">
+</app-profil-edition>

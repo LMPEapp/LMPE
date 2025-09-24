@@ -1,2 +1,27 @@
-<h2>Connexion</h2>
-<button mat-raised-button color="primary" (click)="login()">Se connecter</button>
+<div class="login-container">
+  <mat-card class="login-card mat-elevation-z8">
+    <h1 class="mat-h2 login-title">LMPE</h1>
+    <h2 class="mat-subheading-2 login-subtitle">Connexion</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" />
+        <mat-error>Email requis ou invalide</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" />
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error>Mot de passe requis</mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="full-width">Se connecter</button>
+    </form>
+
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  </mat-card>
+</div>

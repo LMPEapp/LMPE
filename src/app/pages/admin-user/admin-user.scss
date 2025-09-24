@@ -1,0 +1,79 @@
+//start commun
+.sidenav-container {
+  height: 100vh;
+  width: 100%;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-title {
+  margin-left: 1rem;
+}
+
+mat-sidenav-content{
+  display: flex;
+  flex-direction: column;
+}
+.home-content {
+  padding: 2rem;
+  flex: 1;
+}
+
+mat-list-item mat-icon {
+  margin-right: 1rem;
+}
+
+.flex{
+  display: flex;
+}
+.accent{
+  color: #ff4081;
+}
+
+//end commun
+
+.fab-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  background-color: white;
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* espace entre les cartes */
+}
+
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+}
+
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.user-details p {
+  margin: 0;
+  padding-right: 16px;
+  text-align: center;
+}
+
+.user-actions button {
+  margin-left: 8px;
+}
+/* Styles pour le menu ... */
+.menu {
+  background: white;       /* fond blanc */
+}
+

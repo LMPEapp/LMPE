@@ -1,0 +1,58 @@
+//start commun
+.sidenav-container {
+  height: 100vh;
+  width: 100%;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-title {
+  margin-left: 1rem;
+}
+
+mat-sidenav-content{
+  display: flex;
+  flex-direction: column;
+}
+.home-content {
+  padding: 2rem;
+  flex: 1;
+}
+
+mat-list-item mat-icon {
+  margin-right: 1rem;
+}
+
+.flex{
+  display: flex;
+}
+.accent{
+  color: #ff4081;
+}
+
+//end commun
+
+
+
+
+mat-sidenav{
+  background-color: white;
+  width: 250px;
+}
+
+.bottom-bar {
+  height: 60px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 10;
+}
+
+.bottom-bar button.mat-icon-button {
+  flex: 1;
+  max-width: 64px;
+}
+

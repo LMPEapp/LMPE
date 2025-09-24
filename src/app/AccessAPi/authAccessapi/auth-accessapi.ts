@@ -1,0 +1,30 @@
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { LoginRequest, LoginRequestOut } from '../../Models/auth.model';
+import { Observable, tap } from 'rxjs';
+import { AccessApiService } from '../access-api-service';
+import { HttpHeaders } from '@angular/common/http';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthAccessApiService {
+  private readonly controller = 'auth';
+
+  constructor(private api: AccessApiService) {}
+
+  login(data: LoginRequest): Observable<LoginRequestOut> {
+    return this.api.post<LoginRequestOut>(this.controller, 'login', data).pipe(
+      tap((res) => {
+        localStorage.setItem('token', JSON.stringify(res.user));
+        if (res.user) {
+          localStorage.setItem('user', JSON.stringify(res.user));
+        }
+      })
+    );
+  }
+  validate(): Observable<LoginRequestOut> {
+    const token = localStorage.getItem('token') || '';
+    return this.api.get<LoginRequestOut>(this.controller, 'validate', {}, token);
+  }
+}
