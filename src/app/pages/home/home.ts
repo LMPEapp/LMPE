@@ -12,6 +12,7 @@ import { ProfilEdition } from "../user/profil-edition/profil-edition";
 import { User, UserIn } from '../../Models/user.model';
 import { UserAccessapi } from '../../AccessAPi/userAccessapi/user-accessapi';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConversationComponent } from "../conversation-component/conversation-component";
 
 @Component({
   selector: 'app-home',
@@ -23,7 +24,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatIconModule,
     MatSidenavModule,
     MatListModule,
-    ProfilEdition
+    ProfilEdition,
+    ConversationComponent
 ],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']

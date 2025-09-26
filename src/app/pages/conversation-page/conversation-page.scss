@@ -1,0 +1,20 @@
+mat-toolbar{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-title {
+  margin-left: 1rem;
+}
+.user-actions button {
+  margin-left: 8px;
+}
+/* Styles pour le menu ... */
+.menu {
+  background: white;       /* fond blanc */
+}

@@ -1,0 +1,27 @@
+<div *ngIf="isOpen"  formContainer>
+  <div class="form">
+    <h2>Ajout d'utilisateurs dans la conversation</h2>
+
+    <p *ngIf="erreur">{{erreur}}</p>
+    <div class="users-list">
+      <div *ngFor="let u of users" class="user-row">
+        <mat-checkbox
+          [checked]="listSelected.includes(u.id)"
+          (change)="toggleUserSelection(u.id)">
+          {{ u.pseudo }} ({{ u.email }})
+        </mat-checkbox>
+      </div>
+    </div>
+
+
+    <div class="form-actions">
+      <button mat-raised-button color="warn" type="button" (click)="onClose()">
+        Annuler
+      </button>
+      <button mat-raised-button color="primary" type="button" (click)="onSubmit()">
+        Valider
+      </button>
+    </div>
+  </div>
+
+</div>

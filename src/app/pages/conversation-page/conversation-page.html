@@ -1,0 +1,32 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="toolbar">
+      <div class="toolbar">
+        <button mat-icon-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span class="toolbar-title">{{GroupeConversation?.name}}</span>
+      </div>
+      <div class="user-actions">
+        <!-- Bouton menu ... -->
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <div class="menu">
+            <button mat-menu-item (click)="onGestion()">
+              <mat-icon>group_add</mat-icon>
+              <span>Ajout User</span>
+            </button>
+          </div>
+        </mat-menu>
+      </div>
+    </mat-toolbar>
+
+    <div class="home-content">
+    </div>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<app-add-user-conversation></app-add-user-conversation>

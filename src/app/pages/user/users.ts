@@ -14,6 +14,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../service/Auth/auth';
 import { MatDialog } from '@angular/material/dialog';
 import { ValidationDialogComponent, ValidationDialogData } from '../../ExternComposent/validation-dialog/validation-dialog';
+import { GroupsAccessApi } from '../../AccessAPi/GroupsAccessApi/groups-access-api';
+import { GroupeConversationIn, UserGroupeIn } from '../../Models/GroupeConversation.model';
 
 @Component({
   selector: 'app-users',
@@ -42,7 +44,7 @@ export class UsersComponent {
   user: User | undefined;
 
   constructor(private router: Router, private userAccessapi:UserAccessapi,
-    private snackBar: MatSnackBar, public auth: AuthService) {
+    private snackBar: MatSnackBar, public auth: AuthService,private groupsAccessApi: GroupsAccessApi) {
       this.user = auth.loginData?.user;
     }
 
@@ -79,6 +81,35 @@ export class UsersComponent {
     );
   }
   onMessage(user: User) {
+    let groupeData: GroupeConversationIn = { name: this.user?.pseudo+ " " + user.pseudo };
+    this.groupsAccessApi.create(groupeData).subscribe({
+        next: (result) => {
+
+          const payload: UserGroupeIn = { userIds: [user.id] };
+          this.groupsAccessApi.addUsers(result.id, payload).subscribe({
+            next: (res) => {
+              this.router.navigate(['/conversation', result.id]);
+            },
+            error: (err) => {
+              this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+                duration: 5000,
+                panelClass: ['error-snackbar']
+              });
+            }
+          });
+
+          this.snackBar.open('Groupe créé avec succès ✅', 'Fermer', {
+            duration: 3000
+          });
+          this.init();
+        },
+        error: (err) => {
+          this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
   }
 
   onAlertClosed(result: boolean) {

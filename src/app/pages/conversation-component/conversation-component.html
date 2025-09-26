@@ -1,0 +1,44 @@
+<!-- conversation-component.html -->
+<div class="conversation-container">
+  <mat-card *ngFor="let groupe of groupeConversation" class="groupe-card" (click)="onSelectGroupe(groupe)" class="card-header">
+    <div class="header-left">
+      <mat-card-header>
+        <mat-card-title>{{ groupe.name }}</mat-card-title>
+        <mat-card-subtitle>Dernière activité : {{ groupe.lastActivity | myRelativeDate }}</mat-card-subtitle>
+      </mat-card-header>
+    </div>
+    <div class="header-right">
+        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <div class="menu">
+            <button mat-menu-item (click)="onEdit(groupe)">
+              <mat-icon>edit</mat-icon>
+              <span>Modifier</span>
+            </button>
+            <button mat-menu-item (click)="onleaveGroupe(groupe)">
+              <mat-icon>exit_to_app</mat-icon>
+              <span>Quiter la Conversation</span>
+            </button>
+            <button *ngIf="user?.isAdmin" mat-menu-item (click)="onDelete(groupe)">
+              <mat-icon>delete</mat-icon>
+              <span>Supprimer</span>
+            </button>
+          </div>
+        </mat-menu>
+      </div>
+  </mat-card>
+
+
+  <!-- Floating Action Button -->
+  <button mat-fab color="primary" class="fab-button" (click)="onAdd()">
+    <mat-icon>add</mat-icon>
+  </button>
+
+</div>
+<app-conversation-edition
+  (submitForm)="handleUserSubmit($event)">
+</app-conversation-edition>
+
+<app-validation-dialog (closed)="onAlertClosed($event)"></app-validation-dialog>
