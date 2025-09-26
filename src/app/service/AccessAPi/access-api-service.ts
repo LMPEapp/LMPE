@@ -1,19 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccessApiService {
-  public static apiBase = 'https://localhost:7089'; // à adapter
+  public apiBase; // à adapter
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.apiBase = environment.apiUrl;
+  }
 
   // méthode générique GET
   get<T>(controller: string, action: string, params: any = {}, token?: string): Observable<T> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<T>(`${AccessApiService.apiBase}/${controller}/${action}`, {
+    return this.http.get<T>(`${this.apiBase}/${controller}/${action}`, {
       params: new HttpParams({ fromObject: params }),
       headers
     });
@@ -21,8 +24,8 @@ export class AccessApiService {
 
   private buildUrl(controller: string, action?: string): string {
     return action && action.length > 0
-      ? `${AccessApiService.apiBase}/${controller}/${action}`
-      : `${AccessApiService.apiBase}/${controller}`;
+      ? `${this.apiBase}/${controller}/${action}`
+      : `${this.apiBase}/${controller}`;
   }
 
   // méthode générique POST

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
 import { MessageOut } from '../../../Models/Message.model';
-import { AccessApiService } from '../../AccessAPi/access-api-service';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,7 @@ export class MessageSignalRService {
 
   startConnection(token?: string): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${AccessApiService.apiBase}/messageHub`, {
+      .withUrl(`${environment.apiUrl}/messageHub`, {
         accessTokenFactory: () => token || ''
       })
       .withAutomaticReconnect()
