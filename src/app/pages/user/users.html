@@ -4,22 +4,22 @@
       <button mat-icon-button (click)="goBack()">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <span class="toolbar-title">Administration User</span>
+      <span class="toolbar-title">Users</span>
     </mat-toolbar>
 
     <div class="home-content">
       <h1>admin</h1>
 
       <div class="users-list">
-        <mat-card *ngFor="let user of users" class="user-card">
+        <mat-card *ngFor="let useritem of users" class="user-card">
           <div class="user-info">
             <div class="user-details">
               <mat-icon>account_circle</mat-icon>
             </div>
             <div class="user-details">
-              <p><strong>Email:</strong> {{ user.email }}</p>
-              <p><strong>Pseudo:</strong> {{ user.pseudo }}</p>
-              <p><strong>Admin:</strong> {{ user.isAdmin ? 'Oui' : 'Non' }}</p>
+              <p><strong>Email:</strong> {{ useritem.email }}</p>
+              <p><strong>Pseudo:</strong> {{ useritem.pseudo }}</p>
+              <p><strong>Admin:</strong> {{ useritem.isAdmin ? 'Oui' : 'Non' }}</p>
             </div>
             <div class="user-actions">
               <!-- Bouton menu ... -->
@@ -28,11 +28,15 @@
               </button>
               <mat-menu #menu="matMenu">
                 <div class="menu">
-                  <button mat-menu-item (click)="onEdit(user)">
+                  <button mat-menu-item (click)="onMessage(useritem)">
+                    <mat-icon>message</mat-icon>
+                    <span>Écrire un message</span>
+                  </button>
+                  <button *ngIf="user?.isAdmin" mat-menu-item (click)="onEdit(useritem)">
                     <mat-icon>edit</mat-icon>
                     <span>Modifier</span>
                   </button>
-                  <button mat-menu-item (click)="onDelete(user)">
+                  <button *ngIf="user?.isAdmin" mat-menu-item (click)="onDelete(useritem)">
                     <mat-icon>delete</mat-icon>
                     <span>Supprimer</span>
                   </button>
@@ -48,7 +52,7 @@
 
 
     <!-- Floating Action Button -->
-    <button mat-fab color="primary" class="fab-button" (click)="onAdd()">
+    <button *ngIf="user?.isAdmin" mat-fab color="primary" class="fab-button" (click)="onAdd()">
       <mat-icon>add</mat-icon>
     </button>
 
@@ -59,3 +63,4 @@
 <app-profil-edition
   (submitForm)="handleUserSubmit($event)">
 </app-profil-edition>
+<app-validation-dialog (closed)="onAlertClosed($event)"></app-validation-dialog>

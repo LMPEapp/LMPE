@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoginRequest, LoginRequestOut } from '../../Models/auth.model';
+import { ChangePasswordRequest, LoginRequest, LoginRequestOut } from '../../Models/auth.model';
 import { Observable, tap } from 'rxjs';
 import { AccessApiService } from '../access-api-service';
 import { HttpHeaders } from '@angular/common/http';
@@ -26,5 +26,9 @@ export class AuthAccessApiService {
   validate(): Observable<LoginRequestOut> {
     const token = localStorage.getItem('token') || '';
     return this.api.get<LoginRequestOut>(this.controller, 'validate', {}, token);
+  }
+  changePassword(data:ChangePasswordRequest): Observable<null> {
+    const token = localStorage.getItem('token') || '';
+    return this.api.post<null>(this.controller, 'change-password', data, token);
   }
 }

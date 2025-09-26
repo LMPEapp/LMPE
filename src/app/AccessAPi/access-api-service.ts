@@ -37,13 +37,8 @@ export class AccessApiService {
     return this.http.put<T>(this.buildUrl(controller, action), data, { headers });
   }
 
-  // méthode générique DELETE
-  delete<T>(controller: string, action: string = '', id?: number | string, token?: string): Observable<T> {
+  delete<T>(controller: string, action: string = '', token?: string): Observable<T> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    let url = this.buildUrl(controller, action);
-    if (id !== undefined) {
-      url += `/${id}`;
-    }
-    return this.http.delete<T>(url, { headers });
+    return this.http.delete<T>(this.buildUrl(controller, action), { headers });
   }
 }

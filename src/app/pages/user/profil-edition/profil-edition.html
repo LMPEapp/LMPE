@@ -21,11 +21,12 @@
       </mat-error>
     </mat-form-field>
 
-    <button *ngIf="!form.get('passwordHash')" mat-raised-button color="primary" type="button">
+    <!-- Générer mot de passe uniquement en mode édition -->
+    <button *ngIf="!form.get('passwordHash')" mat-raised-button color="primary" type="button" (click)="onPasswordChanged()">
       Générer un mot de passe
     </button>
 
-    <!-- Si tu veux gérer un champ mot de passe dans le FormGroup -->
+    <!-- Mot de passe -->
     <mat-form-field appearance="fill" *ngIf="form.get('passwordHash')">
       <mat-label>Mot de passe</mat-label>
       <input matInput formControlName="passwordHash" type="password">
@@ -34,9 +35,21 @@
       </mat-error>
     </mat-form-field>
 
+    <!-- Confirmation -->
+    <mat-form-field appearance="fill" *ngIf="form.get('confirmPassword')">
+      <mat-label>Confirmer le mot de passe</mat-label>
+      <input matInput type="password" formControlName="confirmPassword">
+      <mat-error *ngIf="form.get('confirmPassword')?.hasError('required')">
+        Confirmation requise
+      </mat-error>
+      <mat-error *ngIf="form.get('confirmPassword')?.hasError('passwordMismatch')">
+        Les mots de passe ne correspondent pas
+      </mat-error>
+    </mat-form-field>
+
     <mat-checkbox formControlName="isAdmin">Admin</mat-checkbox>
 
-    <div class="form-actions" style="display:flex; gap:8px; justify-content:flex-end;">
+    <div class="form-actions">
       <button mat-raised-button color="warn" type="button" (click)="onClose()">
         Annuler
       </button>
@@ -46,3 +59,5 @@
     </div>
   </form>
 </div>
+
+<app-change-password-dialog></app-change-password-dialog>

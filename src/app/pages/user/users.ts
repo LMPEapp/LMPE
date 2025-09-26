@@ -3,18 +3,20 @@ import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { User, UserIn } from '../../Models/user.model';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
-import { ProfilEdition } from '../../ExternComposent/profil-edition/profil-edition';
+import { ProfilEdition } from './profil-edition/profil-edition';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../service/Auth/auth';
+import { MatDialog } from '@angular/material/dialog';
+import { ValidationDialogComponent, ValidationDialogData } from '../../ExternComposent/validation-dialog/validation-dialog';
 
 @Component({
-  selector: 'app-admin-user',
+  selector: 'app-users',
   imports: [
     CommonModule,
     MatToolbarModule,
@@ -23,27 +25,33 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatCardModule,
     MatMenuModule,
     MatSidenavModule,
-    ProfilEdition
-  ],
-  templateUrl: './admin-user.html',
-  styleUrl: './admin-user.scss'
+    ProfilEdition,
+    ValidationDialogComponent
+],
+  templateUrl: './users.html',
+  styleUrl: './users.scss'
 })
-export class AdminUser {
+export class UsersComponent {
 
+  @ViewChild(ValidationDialogComponent) alert!: ValidationDialogComponent;
   @ViewChild(ProfilEdition) ProfilEdition!: ProfilEdition;
 
   public users:User[] = [];
-  userEdit:User | null= null;
+  userSelected:User | null= null;
+
+  user: User | undefined;
 
   constructor(private router: Router, private userAccessapi:UserAccessapi,
-    private snackBar: MatSnackBar) {}
+    private snackBar: MatSnackBar, public auth: AuthService) {
+      this.user = auth.loginData?.user;
+    }
 
   ngOnInit(){
     this.init();
   }
   init(){
     this.userAccessapi.get().subscribe((data)=>{
-      this.users=data;
+      this.users = data.filter(u => u.id !== this.user?.id);
     })
   }
 
@@ -52,24 +60,53 @@ export class AdminUser {
   }
 
   onAdd() {
-    this.userEdit=null;
+    this.userSelected=null;
     this.ProfilEdition.onOpen();
   }
   onEdit(user: User) {
-    this.userEdit=user;
+    this.userSelected=user;
     console.log("Edit user", user);
     this.ProfilEdition.onOpen(user);
     // ici tu peux router vers un formulaire ou ouvrir un dialog
   }
 
   onDelete(user: User) {
-    console.log("Delete user", user);
-    // ici appeler ton API pour supprimer
+    this.userSelected=user;
+    this.alert.open(
+      'Supprimer l’élément',
+      'Êtes-vous sûr de vouloir supprimer cet élément ?',
+      false
+    );
+  }
+  onMessage(user: User) {
   }
 
+  onAlertClosed(result: boolean) {
+    if (result === true) {
+      this.userAccessapi.delete(this.userSelected!.id).subscribe({
+        next: (res) => {
+          this.snackBar.open('Utilisateur supprimé avec succès ✅', 'Fermer', {
+            duration: 3000
+          });
+          this.init();
+
+        },
+        error: (err) => {
+          this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    } else {
+      console.log('Annulé ou fermé');
+    }
+  }
+
+
   handleUserSubmit(userData: UserIn) {
-    if(this.userEdit!=null){
-      this.userAccessapi.update(this.userEdit.id,userData).subscribe({
+    if(this.userSelected!=null){
+      this.userAccessapi.update(this.userSelected.id,userData).subscribe({
         next: (res) => {
           this.snackBar.open('Utilisateur Modifier avec succès ✅', 'Fermer', {
             duration: 3000

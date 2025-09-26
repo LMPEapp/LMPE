@@ -9,3 +9,8 @@ export interface LoginRequestOut {
   token: string;
   user?: User;
 }
+export interface ChangePasswordRequest{
+  UserId:number;
+  OldPassword:string;
+  NewPassword:string;
+}

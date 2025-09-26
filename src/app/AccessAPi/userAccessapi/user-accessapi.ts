@@ -17,14 +17,14 @@ export class UserAccessapi {
       return this.api.get<User[]>(this.controller, '', {}, token);
     }
 
-    delete(id:number): Observable<boolean> {
+    delete(id:number): Observable<null> {
       const token = localStorage.getItem('token') || '';
-      return this.api.delete<boolean>(this.controller, id.toString(), token);
+      return this.api.delete<null>(this.controller, id.toString(), token);
     }
 
-    update(id:number, user:UserIn): Observable<boolean> {
+    update(id:number, user:UserIn): Observable<null> {
       const token = localStorage.getItem('token') || '';
-      return this.api.put<boolean>(this.controller, id.toString(), user, token);
+      return this.api.put<null>(this.controller, id.toString(), user, token);
     }
 
     create(user:UserIn): Observable<User> {

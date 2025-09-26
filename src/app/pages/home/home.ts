@@ -8,6 +8,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/Auth/auth';
 import { MatListModule } from '@angular/material/list';
+import { ProfilEdition } from "../user/profil-edition/profil-edition";
+import { User, UserIn } from '../../Models/user.model';
+import { UserAccessapi } from '../../AccessAPi/userAccessapi/user-accessapi';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-home',
@@ -19,16 +23,23 @@ import { MatListModule } from '@angular/material/list';
     MatIconModule,
     MatSidenavModule,
     MatListModule,
-  ],
+    ProfilEdition
+],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']
 })
 export class HomeComponent {
   @ViewChild('sidenav') sidenav!: MatSidenav;
+  @ViewChild(ProfilEdition) ProfilEdition!: ProfilEdition;
 
   activeTab: 'stats' | 'messages' | 'agenda' | 'bulletin' = 'stats';
 
-  constructor(private router: Router, public auth: AuthService) {}
+  user: User | undefined;
+
+  constructor(private router: Router, public auth: AuthService,private userAccessapi:UserAccessapi,
+    private snackBar: MatSnackBar) {
+      this.user = auth.loginData?.user;
+    }
 
   // Navigation depuis le sidenav
   onNavigate(route: string) {
@@ -36,11 +47,34 @@ export class HomeComponent {
   }
 
   onSelectTab(tab: 'stats' | 'messages' | 'agenda' | 'bulletin') {
-  this.activeTab = tab;
-}
+    this.activeTab = tab;
+  }
 
   // Déconnexion
   onLogout() {
     this.auth.logout();
+  }
+
+  onProfil() {
+    this.sidenav.close();
+    this.ProfilEdition.onOpen(this.user);
+  }
+
+  handleUserSubmit(userData: UserIn) {
+    if(this.user!=null){
+      this.userAccessapi.update(this.user.id,userData).subscribe({
+        next: (res) => {
+          this.snackBar.open('Utilisateur Modifier avec succès ✅', 'Fermer', {
+            duration: 3000
+          });
+        },
+        error: (err) => {
+          this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    }
   }
 }
