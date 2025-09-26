@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { ChangePasswordRequest, LoginRequest, LoginRequestOut } from '../../Models/auth.model';
 import { Observable, tap } from 'rxjs';
 import { AccessApiService } from '../access-api-service';
 import { HttpHeaders } from '@angular/common/http';
+import { LoginRequest, LoginRequestOut, ChangePasswordRequest } from '../../../Models/auth.model';
 
 @Injectable({
   providedIn: 'root'

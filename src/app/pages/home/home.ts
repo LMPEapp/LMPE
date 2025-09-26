@@ -10,9 +10,9 @@ import { AuthService } from '../../service/Auth/auth';
 import { MatListModule } from '@angular/material/list';
 import { ProfilEdition } from "../user/profil-edition/profil-edition";
 import { User, UserIn } from '../../Models/user.model';
-import { UserAccessapi } from '../../AccessAPi/userAccessapi/user-accessapi';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConversationComponent } from "../conversation-component/conversation-component";
+import { UserAccessapi } from '../../service/AccessAPi/userAccessapi/user-accessapi';
 
 @Component({
   selector: 'app-home',

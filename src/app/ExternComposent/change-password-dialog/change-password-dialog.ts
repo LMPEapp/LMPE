@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { AuthAccessApiService } from '../../AccessAPi/authAccessapi/auth-accessapi';
+import { AuthAccessApiService } from '../../service/AccessAPi/authAccessapi/auth-accessapi';
 import { ChangePasswordRequest } from '../../Models/auth.model';
 import { User } from '../../Models/user.model';
 import { AuthService } from '../../service/Auth/auth';

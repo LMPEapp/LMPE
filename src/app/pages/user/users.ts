@@ -1,4 +1,3 @@
-import { UserAccessapi } from './../../AccessAPi/userAccessapi/user-accessapi';
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,8 +13,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../service/Auth/auth';
 import { MatDialog } from '@angular/material/dialog';
 import { ValidationDialogComponent, ValidationDialogData } from '../../ExternComposent/validation-dialog/validation-dialog';
-import { GroupsAccessApi } from '../../AccessAPi/GroupsAccessApi/groups-access-api';
 import { GroupeConversationIn, UserGroupeIn } from '../../Models/GroupeConversation.model';
+import { UserAccessapi } from '../../service/AccessAPi/userAccessapi/user-accessapi';
+import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-access-api';
 
 @Component({
   selector: 'app-users',

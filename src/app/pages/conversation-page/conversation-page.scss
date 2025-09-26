@@ -1,20 +1,60 @@
-mat-toolbar{
+.body {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
+  height: 100%;
 }
 .toolbar {
   display: flex;
   align-items: center;
 }
+.sidenav-container {
+  height: 100vh;
+}
 
-.toolbar-title {
-  margin-left: 1rem;
+mat-toolbar {
+  display: flex;
+  justify-content: space-between;
 }
-.user-actions button {
-  margin-left: 8px;
+
+.conversation-container {
+  flex: 1 1 auto;          /* prend tout l'espace restant */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;        /* cacher scroll du container principal */
+  padding: 0.5rem;
+  justify-content: flex-end; /* colle les messages en bas quand il y en a peu */
 }
-/* Styles pour le menu ... */
+
+.messages-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;          /* scroll activé quand il y en a beaucoup */
+}
+
+
+.input-zone {
+  display: flex;
+  align-items: flex-end;
+  padding: 0.5rem;
+  border-top: 1px solid #ddd;
+  background-color: #f1f3f5;  /* couleur claire pour mieux la distinguer */
+}
+
+.input-zone textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid #ccc;     /* petit contour pour le textarea */
+  border-radius: 4px;         /* coins arrondis */
+  outline: none;
+  font-size: 14px;
+  padding: 0.5rem;
+  background-color: white;    /* texte sur fond blanc */
+  color: black;
+  overflow-y: auto;  /* scroll apparaît après max-height */
+  max-height: 240px; /* 10 lignes environ */
+}
+
+
 .menu {
-  background: white;       /* fond blanc */
+  background: white;
 }

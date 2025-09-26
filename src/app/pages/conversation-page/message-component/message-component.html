@@ -1,0 +1,11 @@
+<div class="message-wrapper" [ngClass]="{ mine: isMine, other: !isMine }">
+  <div class="message-card">
+    <div class="message-header">
+      <span class="date">{{ message.createdAt | myLocalDate }}</span>
+      <span class="pseudo">{{ isMine ? 'Moi' : message.userPseudo }}</span>
+    </div>
+    <div class="message-content">
+      <span>{{ message.content }}</span>
+    </div>
+  </div>
+</div>

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthAccessApiService } from '../../AccessAPi/authAccessapi/auth-accessapi';
+import { AuthAccessApiService } from '../../service/AccessAPi/authAccessapi/auth-accessapi';
 
 // Angular Material
 import { MatCardModule } from '@angular/material/card';

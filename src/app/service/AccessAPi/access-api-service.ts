@@ -6,14 +6,14 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AccessApiService {
-  private apiBase = 'https://localhost:7089'; // à adapter
+  public static apiBase = 'https://localhost:7089'; // à adapter
 
   constructor(private http: HttpClient) {}
 
   // méthode générique GET
   get<T>(controller: string, action: string, params: any = {}, token?: string): Observable<T> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<T>(`${this.apiBase}/${controller}/${action}`, {
+    return this.http.get<T>(`${AccessApiService.apiBase}/${controller}/${action}`, {
       params: new HttpParams({ fromObject: params }),
       headers
     });
@@ -21,8 +21,8 @@ export class AccessApiService {
 
   private buildUrl(controller: string, action?: string): string {
     return action && action.length > 0
-      ? `${this.apiBase}/${controller}/${action}`
-      : `${this.apiBase}/${controller}`;
+      ? `${AccessApiService.apiBase}/${controller}/${action}`
+      : `${AccessApiService.apiBase}/${controller}`;
   }
 
   // méthode générique POST

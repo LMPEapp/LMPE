@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { User } from '../../../Models/user.model';
-import { UserAccessapi } from '../../../AccessAPi/userAccessapi/user-accessapi';
 import { AuthService } from '../../../service/Auth/auth';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { GroupeConversation, UserGroupeIn } from '../../../Models/GroupeConversation.model';
-import { GroupsAccessApi } from '../../../AccessAPi/GroupsAccessApi/groups-access-api';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { GroupsAccessApi } from '../../../service/AccessAPi/GroupsAccessApi/groups-access-api';
+import { UserAccessapi } from '../../../service/AccessAPi/userAccessapi/user-accessapi';
 
 @Component({
   selector: 'app-add-user-conversation',

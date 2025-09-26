@@ -3,7 +3,6 @@ import { Component, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCardHeader, MatCardModule, MatCardTitle } from "@angular/material/card";
 import { GroupeConversation, GroupeConversationIn } from '../../Models/GroupeConversation.model';
-import { GroupsAccessApi } from '../../AccessAPi/GroupsAccessApi/groups-access-api';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MyLocalDatePipe } from "../../Helper/myLocalDate/my-local-date-pipe";
 import { MyRelativeDatePipe } from '../../Helper/DatePipe/relative-date-pipe';
@@ -15,6 +14,7 @@ import { User } from '../../Models/user.model';
 import { MatMenuModule } from '@angular/material/menu';
 import { ValidationDialogComponent } from "../../ExternComposent/validation-dialog/validation-dialog";
 import { Router } from '@angular/router';
+import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-access-api';
 
 @Component({
   selector: 'app-conversation-component',

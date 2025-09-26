@@ -1,8 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { LoginRequestOut } from '../../Models/auth.model';
-import { AuthAccessApiService } from '../../AccessAPi/authAccessapi/auth-accessapi';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthAccessApiService } from '../AccessAPi/authAccessapi/auth-accessapi';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

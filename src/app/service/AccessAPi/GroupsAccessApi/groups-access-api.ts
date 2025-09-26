@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AccessApiService } from '../access-api-service';
-import { GroupeConversation, GroupeConversationIn, UserGroupeIn } from '../../Models/GroupeConversation.model';
-import { User } from '../../Models/user.model';
+import { GroupeConversation, GroupeConversationIn, UserGroupeIn } from '../../../Models/GroupeConversation.model';
+import { User } from '../../../Models/user.model';
 
 @Injectable({
   providedIn: 'root'

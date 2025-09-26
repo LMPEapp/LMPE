@@ -1,0 +1,62 @@
+.message-wrapper {
+  display: flex;
+  margin: 6px 0;
+
+  &.mine {
+    justify-content: flex-end;
+
+    .message-card {
+      background: #1976d2; // bleu
+      color: white;
+      border-radius: 12px 12px 0 12px;
+      align-items: flex-end;
+    }
+    .date{
+      order: 1;
+    }
+    .pseudo{
+      order: 2;
+    }
+  }
+
+  &.other {
+    justify-content: flex-start;
+
+    .message-card {
+      background: #f1f1f1; // gris clair
+      color: #333;
+      border-radius: 12px 12px 12px 0;
+      align-items: flex-start;
+    }
+    .date{
+      order: 2;
+    }
+    .pseudo{
+      order: 1;
+    }
+  }
+}
+
+.message-card {
+  max-width: 70%;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  margin-bottom: 4px;
+  opacity: 0.8;
+  width: 100%;
+  gap: 8px;
+}
+
+.message-content {
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
