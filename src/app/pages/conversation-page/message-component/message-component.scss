@@ -5,6 +5,9 @@
   &.mine {
     justify-content: flex-end;
 
+    .button-more > button{
+      color: white;
+    }
     .message-card {
       background: #1976d2; // bleu
       color: white;
@@ -17,11 +20,20 @@
     .pseudo{
       order: 2;
     }
+    .button-more{
+      order: 1;
+    }
+    .message-box{
+      order: 2;
+    }
   }
 
   &.other {
     justify-content: flex-start;
 
+    .button-more > button{
+      color: #333;
+    }
     .message-card {
       background: #f1f1f1; // gris clair
       color: #333;
@@ -34,6 +46,12 @@
     .pseudo{
       order: 1;
     }
+    .button-more{
+      order: 2;
+    }
+    .message-box{
+      order: 1;
+    }
   }
 }
 
@@ -41,8 +59,10 @@
   max-width: 70%;
   padding: 8px 12px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  gap: 8px;
+
 }
 
 .message-header {
@@ -59,4 +79,15 @@
   font-size: 0.95rem;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+@media (max-width: 600px) {
+  .button-more {
+    visibility: hidden;
+    width: 0px;
+  }
+}
+
+.menu {
+  background: white;       /* fond blanc */
 }

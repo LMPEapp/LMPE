@@ -27,7 +27,6 @@ import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-
     MyRelativeDatePipe,
     CommonModule, // nécessaire pour *ngFor et *ngIf
     MatCardModule, // nécessaire pour <mat-card>
-    MyLocalDatePipe,
     CommonModule,
     MatButtonModule,
     MatIconModule,

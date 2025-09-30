@@ -1,11 +1,40 @@
-<div class="message-wrapper" [ngClass]="{ mine: isMine, other: !isMine }">
+<div class="message-wrapper"
+     [ngClass]="{ mine: isMine, other: !isMine }"
+     (pointerdown)="startPress($event)"
+     (pointerup)="endPress()"
+     (pointercancel)="cancelPress()"
+     (touchmove)="cancelPress()"
+     (mouseleave)="cancelPress()"
+     (contextmenu)="$event.preventDefault()">
+
   <div class="message-card">
-    <div class="message-header">
-      <span class="date">{{ message.createdAt | myLocalDate }}</span>
-      <span class="pseudo">{{ isMine ? 'Moi' : message.userPseudo }}</span>
+    <div *ngIf="user?.isAdmin || isMine" class="button-more">
+      <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger" aria-label="Plus d'options">
+        <mat-icon>more_vert</mat-icon>
+      </button>
     </div>
-    <div class="message-content">
-      <span>{{ message.content }}</span>
+
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="onUpdate()">
+        <mat-icon>edit</mat-icon>
+        <span>Modifier</span>
+      </button>
+      <button mat-menu-item (click)="onDelete()">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
+      </button>
+    </mat-menu>
+
+    <div class="message-box">
+      <div class="message-header">
+        <span class="date">{{ message.createdAt | myLocalDate }}</span>
+        <span class="pseudo">{{ isMine ? 'Moi' : message.userPseudo }}</span>
+      </div>
+
+      <div class="message-content">
+        <span>{{ message.content }}</span>
+      </div>
     </div>
+
   </div>
 </div>
