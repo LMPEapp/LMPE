@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "LPME": {
+    "LMPE": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -73,10 +73,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "LPME:build:production"
+              "buildTarget": "LMPE:build:production"
             },
             "development": {
-              "buildTarget": "LPME:build:development"
+              "buildTarget": "LMPE:build:development"
             }
           },
           "defaultConfiguration": "development"
