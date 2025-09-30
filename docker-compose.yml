@@ -5,5 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: lmpe_web_${NAME_ENV}
     ports:
-      - "6666:80"
+      - "${DB_PORT}:80"

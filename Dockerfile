@@ -5,7 +5,6 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build:prod  # génère dist/LMPE/browser
-RUN ls -R /app/dist
 
 # Étape 2 : Serveur Nginx
 FROM nginx:alpine
