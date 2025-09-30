@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build LPME",
-    "build:prod": "ng build LPME --configuration production"
+    "build": "ng build LMPE",
+    "build:prod": "ng build LMPE --configuration production"
   },
   "prettier": {
     "printWidth": 100,
