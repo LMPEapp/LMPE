@@ -1,5 +1,5 @@
-<div *ngIf="isOpen"  formContainer>
-  <div class="form">
+<div *ngIf="isOpen"  class="overlay">
+  <mat-card class="dialog">
     <h2>Ajout d'utilisateurs dans la conversation</h2>
 
     <p *ngIf="erreur">{{erreur}}</p>
@@ -22,6 +22,6 @@
         Valider
       </button>
     </div>
-  </div>
+  </mat-card>
 
 </div>

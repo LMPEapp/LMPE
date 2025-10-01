@@ -9,6 +9,7 @@ import { GroupeConversation, UserGroupeIn } from '../../../Models/GroupeConversa
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GroupsAccessApi } from '../../../service/AccessAPi/GroupsAccessApi/groups-access-api';
 import { UserAccessapi } from '../../../service/AccessAPi/userAccessapi/user-accessapi';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-add-user-conversation',
@@ -18,6 +19,7 @@ import { UserAccessapi } from '../../../service/AccessAPi/userAccessapi/user-acc
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
+    MatCardModule
   ],
   templateUrl: './add-user-conversation.html',
   styleUrls: ['./add-user-conversation.scss']
