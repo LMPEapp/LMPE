@@ -26,14 +26,14 @@ export class MessageAccessApi {
   }
 
   // PUT /message/{messageId}
-  update(messageId: number, input: MessageIn): Observable<null> {
+  update(groupId: number, messageId: number, input: MessageIn): Observable<null> {
     const token = localStorage.getItem('token') || '';
-    return this.api.put<null>(`${this.controller}/${messageId}`, '', input, token);
+    return this.api.put<null>(`${this.controller}/groupe/${groupId}/${messageId}`, '', input, token);
   }
 
   // DELETE /message/{messageId}
-  delete(messageId: number): Observable<null> {
+  delete(groupId: number, messageId: number): Observable<null> {
     const token = localStorage.getItem('token') || '';
-    return this.api.delete<null>(`${this.controller}/${messageId}`, '', token);
+    return this.api.delete<null>(`${this.controller}/groupe/${groupId}/${messageId}`, '', token);
   }
 }

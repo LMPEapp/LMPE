@@ -15,14 +15,16 @@
     </div>
 
     <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="onUpdate()">
-        <mat-icon>edit</mat-icon>
-        <span>Modifier</span>
-      </button>
-      <button mat-menu-item (click)="onDelete()">
-        <mat-icon>delete</mat-icon>
-        <span>Supprimer</span>
-      </button>
+      <div class="menu">
+        <button mat-menu-item (click)="onUpdate()">
+          <mat-icon>edit</mat-icon>
+          <span>Modifier</span>
+        </button>
+        <button mat-menu-item (click)="onDelete()">
+          <mat-icon>delete</mat-icon>
+          <span>Supprimer</span>
+        </button>
+      </div>
     </mat-menu>
 
     <div class="message-box">

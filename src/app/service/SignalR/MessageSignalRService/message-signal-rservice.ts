@@ -3,6 +3,7 @@ import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
 import { MessageOut } from '../../../Models/Message.model';
 import { environment } from '../../../../environments/environment';
+import { User } from '../../../Models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,10 @@ export class MessageSignalRService {
   private hubConnection!: signalR.HubConnection;
 
   // Observable pour le dernier message reçu et le dernier user qui tape
-  public message$ = new BehaviorSubject<MessageOut | null>(null);
-  public typingUser$ = new BehaviorSubject<number | null>(null);
+  public addmessage$ = new BehaviorSubject<MessageOut | null>(null);
+  public deletemessage$ = new BehaviorSubject<number | null>(null);
+  public updatemessage$ = new BehaviorSubject<MessageOut | null>(null);
+  public typingUser$ = new BehaviorSubject<User | null>(null);
 
   constructor() { }
 
@@ -35,12 +38,17 @@ export class MessageSignalRService {
 
   private registerEvents() {
     this.hubConnection.on('ReceiveMessage', (message: MessageOut) => {
-      this.message$.next(message); // on ne garde que le dernier message
+      this.addmessage$.next(message); // on ne garde que le dernier message
+    });
+    this.hubConnection.on('UpdateMessage', (message: MessageOut) => {
+      this.updatemessage$.next(message); // on ne garde que le dernier message
+    });
+    this.hubConnection.on('DeleteMessage', (message: number) => {
+      this.deletemessage$.next(message); // on ne garde que le dernier message
     });
 
-    this.hubConnection.on('UserTyping', (userId: number) => {
-      this.typingUser$.next(userId);
-      // Supprimer l'utilisateur après 2 secondes
+    this.hubConnection.on('UserTyping', (user: User) => {
+      this.typingUser$.next(user);
     });
   }
 
@@ -51,13 +59,15 @@ export class MessageSignalRService {
 
   leaveGroup(groupId: number) {
     this.typingUser$.next(null);
-    this.message$.next(null);
+    this.addmessage$.next(null);
+    this.deletemessage$.next(null);
+    this.updatemessage$.next(null);
     this.hubConnection.invoke('LeaveGroup', groupId)
       .catch(err => console.error(err));
   }
 
-  typing(groupId: number, userId: number) {
-    this.hubConnection.invoke('Typing', groupId, userId)
+  typing(groupId: number, user: User) {
+    this.hubConnection.invoke('Typing', groupId, user)
       .catch(err => console.error(err));
   }
 

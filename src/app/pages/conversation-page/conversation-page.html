@@ -26,21 +26,42 @@
 
       <!-- Zone principale -->
       <div class="conversation-container">
-        <div class="messages-wrapper">
-          <div *ngFor="let msg of messages">
-            <app-message [message]="msg" [currentUserId]="user?.id"></app-message>
+        <div class="messages-wrapper" #messagesWrapper (scroll)="onScroll()">
+          <div *ngFor="let msg of messages" [id]="'msg-' + msg.id">
+            <app-message [message]="msg" [currentUserId]="user?.id" (update)="onUpdateMessage($event)" (delete)="onDeleteMessage($event)"></app-message>
           </div>
         </div>
       </div>
 
 
+      <!-- 👇 Zone "utilisateurs en train d'écrire" -->
+      <div class="typing-users" *ngIf="typingUsers.length > 0">
+        <ng-container *ngIf="typingUsers.length === 1">
+          <span><strong>{{ typingUsers[0].pseudo }}</strong> est en train d'écrire...</span>
+        </ng-container>
+
+        <ng-container *ngIf="typingUsers.length === 2">
+          <span>
+            <strong>{{ typingUsers[0].pseudo }}</strong> et <strong>{{ typingUsers[1].pseudo }}</strong> sont en train d'écrire...
+          </span>
+        </ng-container>
+
+        <ng-container *ngIf="typingUsers.length > 2">
+          <span>
+            <strong>{{ typingUsers[0].pseudo }}</strong>, <strong>{{ typingUsers[1].pseudo }}</strong>
+            et {{ typingUsers.length - 2 }} autre{{ typingUsers.length - 2 > 1 ? 's' : '' }}
+            sont en train d'écrire...
+          </span>
+        </ng-container>
+      </div>
 
       <!-- Zone de saisie -->
       <div class="input-zone">
         <textarea
           [(ngModel)]="newMessage"
           placeholder="Écrire un message..."
-          (input)="adjustTextarea($event)"
+          (input)="onTyping()"
+          (keydown)="onKeyDown($event)"
           #textArea>
         </textarea>
         <button mat-icon-button color="primary" (click)="sendMessage()">
