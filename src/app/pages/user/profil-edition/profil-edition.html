@@ -1,63 +1,65 @@
-<div *ngIf="isOpen" formContainer>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <h2 mat-dialog-title>{{ user ? 'Modifier utilisateur' : 'Créer utilisateur' }}</h2>
+<div *ngIf="isOpen" class="overlay">
+  <mat-card class="dialog">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h2 mat-dialog-title>{{ user ? 'Modifier utilisateur' : 'Créer utilisateur' }}</h2>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Email</mat-label>
-      <input matInput formControlName="email" type="email">
-      <mat-error *ngIf="form.get('email')?.hasError('required')">
-        Email requis
-      </mat-error>
-      <mat-error *ngIf="form.get('email')?.hasError('email')">
-        Email invalide
-      </mat-error>
-    </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email">
+        <mat-error *ngIf="form.get('email')?.hasError('required')">
+          Email requis
+        </mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('email')">
+          Email invalide
+        </mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Pseudo</mat-label>
-      <input matInput formControlName="pseudo">
-      <mat-error *ngIf="form.get('pseudo')?.hasError('required')">
-        Pseudo requis
-      </mat-error>
-    </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Pseudo</mat-label>
+        <input matInput formControlName="pseudo">
+        <mat-error *ngIf="form.get('pseudo')?.hasError('required')">
+          Pseudo requis
+        </mat-error>
+      </mat-form-field>
 
-    <!-- Générer mot de passe uniquement en mode édition -->
-    <button *ngIf="!form.get('passwordHash')" mat-raised-button color="primary" type="button" (click)="onPasswordChanged()">
-      Générer un mot de passe
-    </button>
-
-    <!-- Mot de passe -->
-    <mat-form-field appearance="fill" *ngIf="form.get('passwordHash')">
-      <mat-label>Mot de passe</mat-label>
-      <input matInput formControlName="passwordHash" type="password">
-      <mat-error *ngIf="form.get('passwordHash')?.hasError('required')">
-        Mot de passe requis
-      </mat-error>
-    </mat-form-field>
-
-    <!-- Confirmation -->
-    <mat-form-field appearance="fill" *ngIf="form.get('confirmPassword')">
-      <mat-label>Confirmer le mot de passe</mat-label>
-      <input matInput type="password" formControlName="confirmPassword">
-      <mat-error *ngIf="form.get('confirmPassword')?.hasError('required')">
-        Confirmation requise
-      </mat-error>
-      <mat-error *ngIf="form.get('confirmPassword')?.hasError('passwordMismatch')">
-        Les mots de passe ne correspondent pas
-      </mat-error>
-    </mat-form-field>
-
-    <mat-checkbox formControlName="isAdmin">Admin</mat-checkbox>
-
-    <div class="form-actions">
-      <button mat-raised-button color="warn" type="button" (click)="onClose()">
-        Annuler
+      <!-- Générer mot de passe uniquement en mode édition -->
+      <button *ngIf="!form.get('passwordHash')" mat-raised-button color="primary" type="button" (click)="onPasswordChanged()">
+        Générer un mot de passe
       </button>
-      <button mat-raised-button color="primary" type="submit">
-        {{ user ? 'Modifier' : 'Créer' }}
-      </button>
-    </div>
-  </form>
+
+      <!-- Mot de passe -->
+      <mat-form-field appearance="fill" *ngIf="form.get('passwordHash')">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput formControlName="passwordHash" type="password">
+        <mat-error *ngIf="form.get('passwordHash')?.hasError('required')">
+          Mot de passe requis
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Confirmation -->
+      <mat-form-field appearance="fill" *ngIf="form.get('confirmPassword')">
+        <mat-label>Confirmer le mot de passe</mat-label>
+        <input matInput type="password" formControlName="confirmPassword">
+        <mat-error *ngIf="form.get('confirmPassword')?.hasError('required')">
+          Confirmation requise
+        </mat-error>
+        <mat-error *ngIf="form.get('confirmPassword')?.hasError('passwordMismatch')">
+          Les mots de passe ne correspondent pas
+        </mat-error>
+      </mat-form-field>
+
+      <mat-checkbox formControlName="isAdmin">Admin</mat-checkbox>
+
+      <div class="form-actions">
+        <button mat-raised-button color="warn" type="button" (click)="onClose()">
+          Annuler
+        </button>
+        <button mat-raised-button color="primary" type="submit">
+          {{ user ? 'Modifier' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
 </div>
 
 <app-change-password-dialog></app-change-password-dialog>

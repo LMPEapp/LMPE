@@ -8,6 +8,7 @@ import { AuthAccessApiService } from '../../service/AccessAPi/authAccessapi/auth
 import { ChangePasswordRequest } from '../../Models/auth.model';
 import { User } from '../../Models/user.model';
 import { AuthService } from '../../service/Auth/auth';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-change-password-dialog',
@@ -20,6 +21,7 @@ import { AuthService } from '../../service/Auth/auth';
     MatInputModule,
     MatButtonModule,
     ReactiveFormsModule,
+    MatCardModule
   ]
 })
 export class ChangePasswordDialogComponent {

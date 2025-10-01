@@ -1,5 +1,5 @@
-<div *ngIf="isOpen" formContainer>
-  <div class="dialog">
+<div *ngIf="isOpen" class="overlay">
+  <mat-card class="dialog">
     <h2>{{ title }}</h2>
     <p>{{ message }}</p>
 
@@ -9,5 +9,5 @@
         {{ singleButton ? 'OK' : 'Valider' }}
       </button>
     </div>
-  </div>
+  </mat-card>
 </div>

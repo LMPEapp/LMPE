@@ -7,6 +7,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import { ChangePasswordDialogComponent } from '../../../ExternComposent/change-password-dialog/change-password-dialog';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-profil-edition',
@@ -17,7 +18,8 @@ import { ChangePasswordDialogComponent } from '../../../ExternComposent/change-p
     MatInputModule,
     MatButtonModule,
     ReactiveFormsModule,
-    ChangePasswordDialogComponent
+    ChangePasswordDialogComponent,
+    MatCardModule
   ],
   templateUrl: './profil-edition.html',
   styleUrl: './profil-edition.scss'

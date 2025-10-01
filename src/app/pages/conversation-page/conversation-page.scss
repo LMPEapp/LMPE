@@ -37,7 +37,6 @@ mat-toolbar {
   align-items: flex-end;
   padding: 0.5rem;
   border-top: 1px solid #ddd;
-  background-color: #f1f3f5;  /* couleur claire pour mieux la distinguer */
 }
 
 .input-zone textarea {
@@ -48,12 +47,9 @@ mat-toolbar {
   outline: none;
   font-size: 14px;
   padding: 0.5rem;
-  background-color: white;    /* texte sur fond blanc */
-  color: black;
   overflow-y: auto;  /* scroll apparaît après max-height */
 }
 
 
 .menu {
-  background: white;
 }
