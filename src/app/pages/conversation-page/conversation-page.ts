@@ -53,7 +53,6 @@ export class ConversationPage {
   messageEdit:MessageOut|null= null;
 
   isBottom:boolean = true;
-  isBottomTimeWithScroll:boolean = false;
 
   typingUsers: User[] = [];
   private typingTimers = new Map<number, any>();
@@ -287,10 +286,13 @@ export class ConversationPage {
     if (element.scrollTop === 0) {
       this.addMessage();
     }
-    if(!this.isBottomTimeWithScroll){
+    // Détection quand on est en bas
+    const scrollBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
+    if (scrollBottom <= 0) {
+      this.isBottom=true;
+    } else {
       this.isBottom=false;
-    }
-        
+    }        
   }
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -339,10 +341,5 @@ export class ConversationPage {
   }
   gotBottom(smooth: boolean = false) {
     this.scrollToMessage(this.messages[this.messages.length-1].id,smooth);
-    this.isBottom=true;
-    this.isBottomTimeWithScroll=true;
-    setTimeout(() => {
-      this.isBottomTimeWithScroll=false;
-    }, 3000);
   }
 }
