@@ -5,7 +5,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../service/Auth/auth';
 import { MatListModule } from '@angular/material/list';
 import { ProfilEdition } from "../user/profil-edition/profil-edition";
@@ -39,10 +39,23 @@ export class HomeComponent {
   user: User | undefined;
 
   constructor(private router: Router, public auth: AuthService,private userAccessapi:UserAccessapi,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar,private route: ActivatedRoute) {
       this.user = auth.loginData?.user;
     }
 
+  ngOnInit() {
+    const savedTab = sessionStorage.getItem('activeTab') as 'stats' | 'messages' | 'agenda' | 'bulletin' | null;
+    if (savedTab) {
+      this.activeTab = savedTab; 
+    }
+
+    // Si fragment, priorité au fragment
+    this.route.fragment.subscribe(fragment => {
+      if (fragment) {
+        this.onSelectTab(fragment as 'stats' | 'messages' | 'agenda' | 'bulletin');
+      }
+    });
+  }
   // Navigation depuis le sidenav
   onNavigate(route: string) {
     this.router.navigate([route]);
@@ -50,6 +63,9 @@ export class HomeComponent {
 
   onSelectTab(tab: 'stats' | 'messages' | 'agenda' | 'bulletin') {
     this.activeTab = tab;
+
+    // Sauvegarder l'onglet actif pour la prochaine visite
+    sessionStorage.setItem('activeTab', tab);
   }
 
   // Déconnexion
