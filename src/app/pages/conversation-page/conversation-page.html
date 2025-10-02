@@ -74,6 +74,10 @@
           <mat-icon>send</mat-icon>
         </button>
       </div>
+      <!-- Floating Action Button -->
+    <button *ngIf="!isBottom" mat-fab color="primary" class="fab-button" (click)="onBottom()">
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </button>
   </mat-sidenav-content>
 
 </mat-sidenav-container>

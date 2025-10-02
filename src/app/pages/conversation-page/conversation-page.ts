@@ -52,6 +52,9 @@ export class ConversationPage {
 
   messageEdit:MessageOut|null= null;
 
+  isBottom:boolean = true;
+  isBottomTimeWithScroll:boolean = false;
+
   typingUsers: User[] = [];
   private typingTimers = new Map<number, any>();
 
@@ -70,7 +73,7 @@ export class ConversationPage {
     this.MessageAccessApi.getByGroup(conversationId).subscribe((data)=>{
       this.messages=data;
       setTimeout(()=>{
-        this.scrollToMessage(this.messages[this.messages.length-1].id);
+         this.gotBottom();
       })
 
     })
@@ -88,6 +91,11 @@ export class ConversationPage {
           if (index === -1) {
             // si aucun id supérieur, on push à la fin
             this.messages.push(msg);
+            if(this.isBottom){
+              setTimeout(()=>{
+                this.gotBottom(true);
+              })
+            }
           } else {
             // insérer à la position correcte
             this.messages.splice(index, 0, msg);
@@ -229,7 +237,7 @@ export class ConversationPage {
         this.newMessage = '';
         this.adjustTextarea();
         setTimeout(()=>{
-          this.scrollToMessage(this.messages[this.messages.length-1].id,true);
+          this.gotBottom(true);
         })
       });
     }
@@ -279,6 +287,10 @@ export class ConversationPage {
     if (element.scrollTop === 0) {
       this.addMessage();
     }
+    if(!this.isBottomTimeWithScroll){
+      this.isBottom=false;
+    }
+        
   }
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -321,5 +333,16 @@ export class ConversationPage {
       }
 
     }
+  }
+  onBottom() {
+    this.gotBottom(true);
+  }
+  gotBottom(smooth: boolean = false) {
+    this.scrollToMessage(this.messages[this.messages.length-1].id,smooth);
+    this.isBottom=true;
+    this.isBottomTimeWithScroll=true;
+    setTimeout(() => {
+      this.isBottomTimeWithScroll=false;
+    }, 3000);
   }
 }

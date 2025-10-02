@@ -52,5 +52,9 @@ mat-toolbar {
 }
 
 
-.menu {
+.fab-button {
+  position: fixed;
+  bottom: 90px;
+  right: 24px;
+  z-index: 1000;
 }
