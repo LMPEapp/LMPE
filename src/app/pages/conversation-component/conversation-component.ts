@@ -170,6 +170,5 @@ export class ConversationComponent {
       }
 
     }
-    throw new Error('Method not implemented.');
   }
 }

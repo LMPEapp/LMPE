@@ -6,6 +6,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { GroupeConversation, GroupeConversationIn } from '../../../Models/GroupeConversation.model';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-conversation-edition',
@@ -15,7 +16,8 @@ import { GroupeConversation, GroupeConversationIn } from '../../../Models/Groupe
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatCardModule
   ],
   templateUrl: './conversation-edition.html',
   styleUrl: './conversation-edition.scss'

@@ -6,7 +6,8 @@
     <div class="users-list">
       <div *ngFor="let u of users" class="user-row">
         <mat-checkbox
-          [checked]="listSelected.includes(u.id)"
+          [checked]="isUserInGroup(u.id) || listSelected.includes(u.id)"
+          [disabled]="isUserInGroup(u.id)"
           (change)="toggleUserSelection(u.id)">
           {{ u.pseudo }} ({{ u.email }})
         </mat-checkbox>

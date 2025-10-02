@@ -17,6 +17,8 @@ import { MessageComponent } from "./message-component/message-component";
 import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-access-api';
 import { MessageAccessApi } from '../../service/AccessAPi/MessageAccessApi/message-access-api';
 import { MessageSignalRService } from '../../service/SignalR/MessageSignalRService/message-signal-rservice';
+import { ValidationDialogComponent } from "../../ExternComposent/validation-dialog/validation-dialog";
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-conversation-page',
@@ -30,7 +32,8 @@ import { MessageSignalRService } from '../../service/SignalR/MessageSignalRServi
     MatSidenavModule,
     AddUserConversation,
     FormsModule,
-    MessageComponent
+    MessageComponent,
+    ValidationDialogComponent
 ],
   templateUrl: './conversation-page.html',
   styleUrl: './conversation-page.scss'
@@ -39,8 +42,10 @@ export class ConversationPage {
 
   @ViewChild(AddUserConversation) AddUserConversation!: AddUserConversation;
   @ViewChild('messagesWrapper') messagesWrapper!: ElementRef;
+  @ViewChild(ValidationDialogComponent) alert!: ValidationDialogComponent;
 
   GroupeConversation?:GroupeConversation;
+  MessageSelectd?:number;
   user: User | undefined;
 
   messages:MessageOut[]= [];
@@ -52,7 +57,7 @@ export class ConversationPage {
 
   constructor(private router: Router,private route: ActivatedRoute,
     public auth: AuthService,private groupsAccessApi: GroupsAccessApi,
-    private MessageAccessApi:MessageAccessApi,private messageHub: MessageSignalRService) {
+    private MessageAccessApi:MessageAccessApi,private messageHub: MessageSignalRService, private snackBar: MatSnackBar) {
     this.user = auth.loginData?.user;
   }
 
@@ -237,13 +242,16 @@ export class ConversationPage {
 
       if (!this.GroupeConversation) return;
       this.MessageAccessApi.update(this.GroupeConversation.id,this.messageEdit.id, input).subscribe((msg) => {
-        this.messageEdit=null;
-        this.newMessage = '';
-        this.adjustTextarea();
+        this.onCoseEdit();
        });
     }
 
 
+  }
+  onCoseEdit(){
+    this.messageEdit=null;
+    this.newMessage = '';
+    this.adjustTextarea();
   }
   onTyping() {
     if(this.GroupeConversation && this.user){
@@ -253,8 +261,13 @@ export class ConversationPage {
   }
 
   onDeleteMessage(event: MessageOut) {
-    if (!this.GroupeConversation) return;
-    this.MessageAccessApi.delete(this.GroupeConversation.id,event.id).subscribe((msg) => { });
+    this.MessageSelectd=event.id;
+    this.deleteorleave = "delete";
+    this.alert.open(
+      'Supprimer le Message',
+      'Êtes-vous sûr de vouloir Supprimer le Message ?',
+      false
+    );
   }
   onUpdateMessage(event: MessageOut) {
     this.messageEdit = event;
@@ -271,6 +284,42 @@ export class ConversationPage {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault(); // ⛔ Empêche le saut de ligne normal
       this.sendMessage();     // ✅ Envoie le message
+    }
+  }
+  deleteorleave?:"delete"|"leave";
+
+  onleaveGroupe() {
+    this.deleteorleave = "leave";
+    this.alert.open(
+      'Quitter la Conversation',
+      'Êtes-vous sûr de vouloir Quitter cet Conversation ?',
+      false
+    );
+  }
+  onAlertClosed(event: boolean) {
+    if(event && this.GroupeConversation && this.user){
+      if(this.deleteorleave=="leave"){
+        this.groupsAccessApi.removeUser(this.GroupeConversation.id,this.user?.id).subscribe({
+          next: (res) => {
+            this.snackBar.open('Groupe quitté avec succès ✅', 'Fermer', {
+              duration: 3000
+            });
+            this.goBack();
+          },
+          error: (err) => {
+            this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }else{
+        if (!this.GroupeConversation || !this.MessageSelectd) return;
+        this.MessageAccessApi.delete(this.GroupeConversation.id,this.MessageSelectd).subscribe((msg) => {
+          this.MessageSelectd=undefined;
+         });
+      }
+
     }
   }
 }

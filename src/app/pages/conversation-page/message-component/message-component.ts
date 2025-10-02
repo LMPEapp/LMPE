@@ -47,7 +47,7 @@ export class MessageComponent implements OnDestroy {
 
   // Start long-press detection
   startPress(event: Event) {
-    if (!this.isMine) return;
+    if (!this.isMine && !this.user?.isAdmin) return;
     // évite certains comportements natifs (sélection, etc.)
     try { (event as Event).preventDefault(); } catch { /* ignore */ }
 

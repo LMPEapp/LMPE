@@ -16,7 +16,7 @@
 
     <mat-menu #menu="matMenu">
       <div class="menu">
-        <button mat-menu-item (click)="onUpdate()">
+        <button *ngIf="isMine" mat-menu-item (click)="onUpdate()">
           <mat-icon>edit</mat-icon>
           <span>Modifier</span>
         </button>

@@ -1,22 +1,24 @@
-<div *ngIf="isOpen" formContainer>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <h2 mat-dialog-title>{{ groupe ? 'Modifier Conversation' : 'Créer Conversation' }}</h2>
+<div *ngIf="isOpen" class="overlay">
+  <mat-card class="dialog">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h2 mat-dialog-title>{{ groupe ? 'Modifier Conversation' : 'Créer Conversation' }}</h2>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Nom Conversation</mat-label>
-      <input matInput formControlName="Name">
-      <mat-error *ngIf="form.get('Name')?.hasError('required')">
-        Nom Conversation requis
-      </mat-error>
-    </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Nom Conversation</mat-label>
+        <input matInput formControlName="Name">
+        <mat-error *ngIf="form.get('Name')?.hasError('required')">
+          Nom Conversation requis
+        </mat-error>
+      </mat-form-field>
 
-    <div class="form-actions">
-      <button mat-raised-button color="warn" type="button" (click)="onClose()">
-        Annuler
-      </button>
-      <button mat-raised-button color="primary" type="submit">
-        {{ groupe ? 'Modifier' : 'Créer' }}
-      </button>
-    </div>
-  </form>
+      <div class="form-actions">
+        <button mat-raised-button color="warn" type="button" (click)="onClose()">
+          Annuler
+        </button>
+        <button mat-raised-button color="primary" type="submit">
+          {{ groupe ? 'Modifier' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
 </div>

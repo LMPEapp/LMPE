@@ -1,4 +1,4 @@
-.body {
+mat-sidenav-content {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -6,6 +6,7 @@
 .toolbar {
   display: flex;
   align-items: center;
+  height: 56px;
 }
 .sidenav-container {
   height: 100vh;
@@ -17,7 +18,7 @@ mat-toolbar {
 }
 
 .conversation-container {
-  flex: 1 1 auto;          /* prend tout l'espace restant */
+  flex: 1;          /* prend tout l'espace restant */
   display: flex;
   flex-direction: column;
   overflow: hidden;        /* cacher scroll du container principal */

@@ -1,6 +1,5 @@
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav-content>
-    <div class="body">
       <!-- Toolbar -->
       <mat-toolbar color="primary" class="toolbar">
         <div class="toolbar">
@@ -18,6 +17,10 @@
               <button mat-menu-item (click)="onGestion()">
                 <mat-icon>group_add</mat-icon>
                 <span>Ajout User</span>
+              </button>
+              <button mat-menu-item (click)="onleaveGroupe()">
+                <mat-icon>exit_to_app</mat-icon>
+                <span>Quiter la Conversation</span>
               </button>
             </div>
           </mat-menu>
@@ -64,13 +67,16 @@
           (keydown)="onKeyDown($event)"
           #textArea>
         </textarea>
+        <button *ngIf="this.messageEdit!=null" mat-icon-button color="primary" (click)="onCoseEdit()">
+          <mat-icon>close</mat-icon>
+        </button>
         <button mat-icon-button color="primary" (click)="sendMessage()">
           <mat-icon>send</mat-icon>
         </button>
       </div>
-    </div>
   </mat-sidenav-content>
 
 </mat-sidenav-container>
 
 <app-add-user-conversation></app-add-user-conversation>
+<app-validation-dialog (closed)="onAlertClosed($event)"></app-validation-dialog>

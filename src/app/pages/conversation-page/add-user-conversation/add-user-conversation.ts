@@ -26,6 +26,7 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class AddUserConversation {
   public users: User[] = [];
+  public usersInGroupe: User[] = [];
   public listSelected: number[] = [];
   groupe?: GroupeConversation;
 
@@ -52,6 +53,15 @@ export class AddUserConversation {
       // On exclut l'utilisateur courant
       this.users = data.filter(u => u.id !== this.user?.id);
     });
+    if(this.groupe){
+      this.groupsAccessApi.getUsers(this.groupe?.id).subscribe((data) => {
+        this.usersInGroupe = data;
+      });
+    }
+    
+  }
+  isUserInGroup(userId: number): boolean {
+    return this.usersInGroupe.some(u => u.id === userId);
   }
 
   onOpen(groupe?: GroupeConversation) {
