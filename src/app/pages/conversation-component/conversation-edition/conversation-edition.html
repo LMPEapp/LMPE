@@ -9,6 +9,9 @@
         <mat-error *ngIf="form.get('Name')?.hasError('required')">
           Nom Conversation requis
         </mat-error>
+        <mat-error *ngIf="form.get('Name')?.hasError('maxlength')">
+          trop grand
+        </mat-error>
       </mat-form-field>
 
       <div class="form-actions">

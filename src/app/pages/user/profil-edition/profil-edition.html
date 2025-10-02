@@ -12,6 +12,9 @@
         <mat-error *ngIf="form.get('email')?.hasError('email')">
           Email invalide
         </mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('maxlength')">
+          trop grand
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
@@ -19,6 +22,9 @@
         <input matInput formControlName="pseudo">
         <mat-error *ngIf="form.get('pseudo')?.hasError('required')">
           Pseudo requis
+        </mat-error>
+        <mat-error *ngIf="form.get('pseudo')?.hasError('maxlength')">
+          trop grand
         </mat-error>
       </mat-form-field>
 
@@ -34,6 +40,9 @@
         <mat-error *ngIf="form.get('passwordHash')?.hasError('required')">
           Mot de passe requis
         </mat-error>
+        <mat-error *ngIf="form.get('passwordHash')?.hasError('maxlength')">
+          trop grand
+        </mat-error>
       </mat-form-field>
 
       <!-- Confirmation -->
@@ -45,6 +54,9 @@
         </mat-error>
         <mat-error *ngIf="form.get('confirmPassword')?.hasError('passwordMismatch')">
           Les mots de passe ne correspondent pas
+        </mat-error>
+        <mat-error *ngIf="form.get('confirmPassword')?.hasError('maxlength')">
+          trop grand
         </mat-error>
       </mat-form-field>
 

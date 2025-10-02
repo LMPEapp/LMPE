@@ -49,15 +49,15 @@ export class ChangePasswordDialogComponent {
     if (this.user?.isAdmin) {
       // Admin → pas besoin d'ancien mot de passe
       this.form = this.fb.group({
-        newPassword: ['', Validators.required],
-        confirmPassword: ['', Validators.required]
+        newPassword: ['', Validators.required, Validators.maxLength(100)],
+        confirmPassword: ['', Validators.required, Validators.maxLength(100)]
       }, { validators: this.passwordMatchValidator });
     } else {
       // Pas admin → oldPassword obligatoire
       this.form = this.fb.group({
-        oldPassword: ['', Validators.required],
-        newPassword: ['', Validators.required],
-        confirmPassword: ['', Validators.required]
+        oldPassword: ['', Validators.required, Validators.maxLength(100)],
+        newPassword: ['', Validators.required, Validators.maxLength(100)],
+        confirmPassword: ['', Validators.required, Validators.maxLength(100)]
       }, { validators: this.passwordMatchValidator });
     }
   }

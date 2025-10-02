@@ -35,9 +35,9 @@ export class ProfilEdition {
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      pseudo: ['', Validators.required],
-      urlImage: [''],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
+      pseudo: ['', [Validators.required, Validators.maxLength(50)]],
+      urlImage: ['', Validators.maxLength(255)],
       isAdmin: [false]
     });
   }
@@ -56,20 +56,20 @@ export class ProfilEdition {
     if (this.user) {
       // Mode édition (sans mots de passe obligatoires)
       this.form = this.fb.group({
-        email: [this.user.email, [Validators.required, Validators.email]],
-        pseudo: [this.user.pseudo, Validators.required],
-        urlImage: [''],
+        email: [this.user.email, [Validators.required, Validators.email, Validators.maxLength(255)]],
+        pseudo: [this.user.pseudo, [Validators.required, Validators.maxLength(50)]],
+        urlImage: ['', Validators.maxLength(255)],
         isAdmin: [this.user.isAdmin]
       });
     } else {
       // Mode création (avec mot de passe + confirm)
       this.form = this.fb.group({
-        email: ['', [Validators.required, Validators.email]],
-        pseudo: ['', Validators.required],
+        email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
+        pseudo: ['', [Validators.required, Validators.maxLength(50)]],
+        urlImage: ['', Validators.maxLength(255)],
+        isAdmin: [false],
         passwordHash: ['', Validators.required],
-        confirmPassword: ['', Validators.required],
-        urlImage: [''],
-        isAdmin: [false]
+        confirmPassword: ['', Validators.required]
       }, { validators: this.passwordMatchValidator });
     }
   }

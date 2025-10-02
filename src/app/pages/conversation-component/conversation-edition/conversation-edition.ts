@@ -31,7 +31,7 @@ export class ConversationEdition {
   form: FormGroup;
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      Name: ['', [Validators.required]]
+      Name: ['', [Validators.required, Validators.maxLength(100)]]
     });
   }
 
@@ -57,12 +57,12 @@ export class ConversationEdition {
     if (this.groupe) {
       // Mode édition (sans mots de passe obligatoires)
       this.form = this.fb.group({
-        Name: [this.groupe.name, [Validators.required]]
+        Name: [this.groupe.name, [Validators.required, Validators.maxLength(100)]]
       });
     } else {
       // Mode création (avec mot de passe + confirm)
       this.form = this.fb.group({
-        Name: ['', [Validators.required]]
+        Name: ['', [Validators.required, Validators.maxLength(100)]]
       });
     }
 
