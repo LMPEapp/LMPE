@@ -4,7 +4,9 @@
   right: 24px;
   z-index: 1000;
 }
-
+.agenda-container{
+  padding: 10px;
+}
 //week-selector
 .week-selector-card {
   margin-bottom: 16px;
@@ -100,11 +102,7 @@
   gap: 5px;
 }
 
-@media screen and (min-width: 1000px) {
-  .day-header {
-    flex-direction: row; // mode large: jour et numéro sur la même ligne
-  }
-}
+
 
 .day-name {}
 .day-number {}
@@ -159,4 +157,15 @@
   color: var(--mat-sys-on-primary-container);
   border-radius: 8px;
   font-weight: 600;
+}
+@media screen and (max-width: 1000px) {
+  .event {
+    margin: 0;
+    border-radius: 16px;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .day-header {
+    flex-direction: row; // mode large: jour et numéro sur la même ligne
+  }
 }
