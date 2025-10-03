@@ -13,8 +13,9 @@
 }
 
 .dialog {
-  min-width: 50%;
-  max-width: 95%;
+  position: relative;
+  width: 90%;
+  height: 90%;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -40,4 +41,13 @@ form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 100%;
 }
+.row {
+  display: flex;
+  gap: 16px; /* espace entre date et time */
+}
+.flex{
+  flex: 1;
+}
+

@@ -29,7 +29,7 @@
 
     <div class="message-box">
       <div class="message-header">
-        <span class="date">{{ message.createdAt | myLocalDate }}</span>
+        <span class="date">{{ message.createdAt | myRelativeDate }}</span>
         <span class="pseudo">{{ isMine ? 'Moi' : message.userPseudo }}</span>
       </div>
 

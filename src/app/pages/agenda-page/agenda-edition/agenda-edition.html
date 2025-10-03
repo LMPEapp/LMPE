@@ -1,0 +1,91 @@
+<div *ngIf="isOpen" class="overlay">
+  <mat-card class="dialog">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <!-- Titre -->
+      <div class="row">
+        <mat-form-field appearance="fill" class="flex">
+          <mat-label>Titre</mat-label>
+          <input matInput formControlName="title">
+          <mat-error *ngIf="form.get('title')?.hasError('required')">
+            Titre requis
+          </mat-error>
+          <mat-error *ngIf="form.get('title')?.hasError('maxlength')">
+            Maximum 255 caractères
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Public -->
+        <mat-checkbox formControlName="isPublic" >Public</mat-checkbox>
+      </div>
+
+      <!-- Date début + Heure début -->
+      <div class="row">
+        <mat-form-field appearance="fill" class="flex">
+          <mat-label>Date de début</mat-label>
+          <input matInput [matDatepicker]="startDatePicker" formControlName="startDate">
+          <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #startDatePicker></mat-datepicker>
+          <mat-error *ngIf="form.get('startDate')?.hasError('required')">
+            startDate requis
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="flex">
+          <mat-label>Heure de début</mat-label>
+          <input matInput type="time" formControlName="startTime" (blur)="roundTime('startTime')">
+          <mat-error *ngIf="form.get('startTime')?.hasError('required')">
+            startTime requis
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Date fin + Heure fin -->
+      <div class="row">
+        <mat-form-field appearance="fill" class="flex">
+          <mat-label>Date de fin</mat-label>
+          <input matInput [matDatepicker]="endDatePicker" formControlName="endDate">
+          <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #endDatePicker></mat-datepicker>
+          <mat-error *ngIf="form.get('endDate')?.hasError('required')">
+            endDate requis
+          </mat-error>
+          <mat-error *ngIf="form.hasError('endBeforeStart')">
+            La date de fin ne peut pas être avant la date de début
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="flex">
+          <mat-label>Heure de fin</mat-label>
+          <input matInput type="time" formControlName="endTime">
+          <mat-error *ngIf="form.get('endTime')?.hasError('required')">
+            endTime requis
+          </mat-error>
+          <mat-error *ngIf="form.hasError('endBeforeStart')">
+            La date de fin ne peut pas être avant la date de début
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Description -->
+      <div class="flex" #zoneTextDescription>
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" #textareaDescription></textarea>
+        </mat-form-field>
+      </div>
+
+
+      <!-- Boutons -->
+      <div class="form-actions">
+        <button mat-raised-button color="warn" type="button" (click)="onClose()">
+          Annuler
+        </button>
+        <button mat-raised-button color="primary" type="submit">
+          {{ agenda ? 'Modifier' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+
+  </mat-card>
+</div>

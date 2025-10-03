@@ -13,6 +13,7 @@ import { User, UserIn } from '../../Models/user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConversationComponent } from "../conversation-component/conversation-component";
 import { UserAccessapi } from '../../service/AccessAPi/userAccessapi/user-accessapi';
+import { AgendaPage } from "../agenda-page/agenda-page";
 
 @Component({
   selector: 'app-home',
@@ -25,7 +26,8 @@ import { UserAccessapi } from '../../service/AccessAPi/userAccessapi/user-access
     MatSidenavModule,
     MatListModule,
     ProfilEdition,
-    ConversationComponent
+    ConversationComponent,
+    AgendaPage
 ],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']
@@ -46,7 +48,7 @@ export class HomeComponent {
   ngOnInit() {
     const savedTab = sessionStorage.getItem('activeTab') as 'stats' | 'messages' | 'agenda' | 'bulletin' | null;
     if (savedTab) {
-      this.activeTab = savedTab; 
+      this.activeTab = savedTab;
     }
 
     // Si fragment, priorité au fragment

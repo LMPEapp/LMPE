@@ -40,8 +40,14 @@ export class AccessApiService {
     return this.http.put<T>(this.buildUrl(controller, action), data, { headers });
   }
 
-  delete<T>(controller: string, action: string = '', token?: string): Observable<T> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.delete<T>(this.buildUrl(controller, action), { headers });
+  delete<T>(controller: string, action: string = '', token?: string, options?: any): Observable<T> {
+    let headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.request<T>('DELETE', this.buildUrl(controller, action), {
+      headers,
+      body: options?.body
+    });
   }
+
+
 }

@@ -1,19 +1,19 @@
 import { Component, Input, Output, EventEmitter, ViewChild, OnDestroy } from '@angular/core';
 import { MessageOut } from '../../../Models/Message.model';
-import { MyLocalDatePipe } from "../../../Helper/myLocalDate/my-local-date-pipe";
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { User } from '../../../Models/user.model';
 import { AuthService } from '../../../service/Auth/auth';
+import { MyRelativeDatePipe } from '../../../Helper/DatePipe/relative-date-pipe';
 
 @Component({
   selector: 'app-message',
   templateUrl: './message-component.html',
   styleUrls: ['./message-component.scss'],
   standalone: true,
-  imports: [MyLocalDatePipe, CommonModule, MatMenuModule, MatButtonModule, MatIconModule]
+  imports: [MyRelativeDatePipe, CommonModule, MatMenuModule, MatButtonModule, MatIconModule]
 })
 export class MessageComponent implements OnDestroy {
   @Input() message!: MessageOut;

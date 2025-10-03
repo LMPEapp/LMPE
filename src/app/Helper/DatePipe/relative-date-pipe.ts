@@ -9,20 +9,23 @@ export class MyRelativeDatePipe implements PipeTransform {
   transform(value: string | Date): string {
     if (!value) return '';
 
-    const date = toLocalDate(value); // conversion UTC → locale
+    const date = toLocalDate(value);
     const now = new Date();
 
     const diffMs = now.getTime() - date.getTime();
     const diffMinutes = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMinutes / 60);
     const diffDays = Math.floor(diffHours / 24);
+    const hoursLeft = diffHours % 24;
 
     if (diffMinutes < 1) return 'à l’instant';
     if (diffMinutes < 60) return `il y a ${diffMinutes} min`;
     if (diffHours < 24) return `il y a ${diffHours} h`;
-    if (diffDays < 7) return `il y a ${diffDays} j`;
+    if (diffDays < 7) {
+        return `il y a ${diffDays} j${hoursLeft > 0 ? ' ' + hoursLeft + ' h' : ''}`;
+    }
 
-    // Sinon affichage complet en local
     return date.toLocaleDateString();
   }
+
 }
