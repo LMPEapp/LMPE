@@ -17,4 +17,6 @@ services:
       - "${PROXY_PORT}:80"
     volumes:
       - ./ConfigProxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
     restart: always
