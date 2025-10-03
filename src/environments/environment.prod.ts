@@ -1,4 +1,4 @@
 export const environment = {
-  apiUrl: 'http://LMPE.ovh:8080/api',
+  apiUrl: 'http://LMPE.ovh/api',
   production: true
 };
