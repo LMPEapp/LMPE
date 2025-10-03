@@ -41,6 +41,8 @@ export class AgendaPage implements OnInit {
 
   currentMonday!: Date;
   currentSunday!: Date;
+  weekDays: Date[] = [];
+  hours: string[] = [];
 
   constructor(private agendaAccessApi: AgendaAccessApi, private snackBar: MatSnackBar) {
     const today = new Date();
@@ -49,6 +51,39 @@ export class AgendaPage implements OnInit {
 
   ngOnInit(): void {
     this.loadAgendas();
+    this.generateWeekDays();
+    this.generateHours();
+  }
+
+  generateWeekDays() {
+    this.weekDays = [];
+    const monday = new Date(this.currentMonday);
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(d.getDate() + i);
+      this.weekDays.push(d);
+    }
+  }
+
+  isEventInSlot(event: AgendaOut, day: Date, hourIndex: number): boolean {
+    const eventStart = new Date(event.startDate);
+    const eventEnd = new Date(event.endDate);
+
+    const slotHour = Math.floor(hourIndex / 2); // 0, 1, 2...
+    const slotMinute = hourIndex % 2 === 0 ? 0 : 30;
+
+    const slotStart = new Date(day.getFullYear(), day.getMonth(), day.getDate(), slotHour, slotMinute, 0, 0);
+    const slotEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate(), slotHour, slotMinute + 30, 0, 0);
+
+    return eventStart < slotEnd && eventEnd > slotStart;
+  }
+
+  generateHours() {
+    this.hours = Array.from({ length: 48 }, (_, i) => {
+      const h = Math.floor(i / 2);
+      const m = i % 2 === 0 ? '00' : '30';
+      return `${h.toString().padStart(2, '0')}:${m}`;
+    });
   }
 
   /** Définit le lundi et dimanche d'une semaine donnée */
@@ -82,15 +117,33 @@ export class AgendaPage implements OnInit {
     });
   }
 
+  getDayNameShort(day: Date): string {
+    return day.toLocaleDateString('fr-FR', { weekday: 'short' }); // lun, mar, ...
+  }
+
+  getDayNameFull(day: Date): string {
+    return day.toLocaleDateString('fr-FR', { weekday: 'long' }); // lundi, mardi, ...
+  }
+
+  formatDayHeader(day: Date): string {
+    const dayName = window.innerWidth < 1000 ? this.getDayNameShort(day) : this.getDayNameFull(day);
+    return `${dayName}`;
+  }
+
   /** Semaine précédente */
   prevWeek(): void {
-    this.setWeek(new Date(this.currentMonday.getTime() - 7 * 24 * 60 * 60 * 1000));
+    const prev = new Date(this.currentMonday);
+    prev.setDate(prev.getDate() - 7);
+    this.setWeek(prev);
+    this.generateWeekDays();
     this.loadAgendas();
   }
 
-  /** Semaine suivante */
   nextWeek(): void {
-    this.setWeek(new Date(this.currentMonday.getTime() + 7 * 24 * 60 * 60 * 1000));
+    const next = new Date(this.currentMonday);
+    next.setDate(next.getDate() + 7);
+    this.setWeek(next);
+    this.generateWeekDays();
     this.loadAgendas();
   }
 

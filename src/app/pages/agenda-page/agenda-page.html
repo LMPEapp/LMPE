@@ -1,6 +1,7 @@
 <div class="agenda-container">
   <h2>📅 Mes Agendas</h2>
 
+  <!-- Sélecteur de semaine -->
   <div class="week-selector">
     <button (click)="prevWeek()">&lt;</button>
     <span>
@@ -9,21 +10,46 @@
     <button (click)="nextWeek()">&gt;</button>
   </div>
 
-  <div *ngIf="isLoading">Chargement...</div>
-  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+  <!-- Grille agenda -->
+  <div class="agenda-grid">
+  <!-- Header vide pour coin supérieur gauche -->
+  <div class="grid-header"></div>
 
-  <ul *ngIf="!isLoading && agendas.length > 0">
-    <li *ngFor="let agenda of agendas">
-      <strong>{{ agenda.title }}</strong><br>
-      {{ agenda.startDate | myLocalDate }} → {{ agenda.endDate | myLocalDate }}<br>
-      <small>Créé par {{ agenda.creatorPseudo || 'Inconnu' }}</small>
-    </li>
-  </ul>
-
-  <div *ngIf="!isLoading && agendas.length === 0">
-    Aucun agenda trouvé pour cette semaine.
+  <!-- Headers des jours -->
+  <div class="day-header" *ngFor="let day of weekDays">
+    <span class="day-name">
+      {{ formatDayHeader(day) }}
+    </span>
+    <span class="day-number">
+      {{ day.getDate() }}
+    </span>
   </div>
 
+  <!-- Labels des heures -->
+  <div class="time-label" *ngFor="let hour of hours">
+    {{ hour }}
+  </div>
+
+  <!-- Slots horaires -->
+  <ng-container *ngFor="let day of weekDays; let dayIndex = index">
+    <ng-container *ngFor="let hour of hours; let hourIndex = index">
+      <div
+        class="time-slot"
+        [style.grid-column]="dayIndex + 2"
+        [style.grid-row]="hourIndex + 2"
+      >
+        <ng-container *ngFor="let event of agendas">
+          <div class="event" *ngIf="isEventInSlot(event, day, hourIndex)">
+            {{ event.title }}
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>
+
+
+  <!-- Bouton ajouter -->
   <button mat-fab color="primary" class="fab-button" (click)="onAdd()">
     <mat-icon>add</mat-icon>
   </button>
