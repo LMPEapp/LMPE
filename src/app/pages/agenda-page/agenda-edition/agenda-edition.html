@@ -50,14 +50,11 @@
           <mat-error *ngIf="form.get('endDate')?.hasError('required')">
             endDate requis
           </mat-error>
-          <mat-error *ngIf="form.hasError('endBeforeStart')">
-            La date de fin ne peut pas être avant la date de début
-          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="flex">
           <mat-label>Heure de fin</mat-label>
-          <input matInput type="time" formControlName="endTime">
+          <input matInput type="time" formControlName="endTime" (blur)="roundTime('endTime')">
           <mat-error *ngIf="form.get('endTime')?.hasError('required')">
             endTime requis
           </mat-error>
@@ -66,6 +63,10 @@
           </mat-error>
         </mat-form-field>
       </div>
+
+      <mat-error *ngIf="form.hasError('endBeforeStart')">
+        La date/heure de fin doit être après la date/heure de début
+      </mat-error>
 
       <!-- Description -->
       <div class="flex" #zoneTextDescription>
@@ -78,14 +79,23 @@
 
       <!-- Boutons -->
       <div class="form-actions">
-        <button mat-raised-button color="warn" type="button" (click)="onClose()">
-          Annuler
-        </button>
-        <button mat-raised-button color="primary" type="submit">
-          {{ agenda ? 'Modifier' : 'Créer' }}
-        </button>
+        <div>
+          <button mat-raised-button *ngIf="agenda!=null && isMineOrAdmin()" color="warn" type="button" (click)="onDelete()">
+            Supprimer
+          </button>
+        </div>
+
+        <div>
+          <button mat-raised-button color="warn" type="button" (click)="onClose()">
+            Annuler
+          </button>
+          <button mat-raised-button *ngIf="agenda==null || isMineOrAdmin()" color="primary" type="submit">
+            {{ agenda ? 'Modifier' : 'Créer' }}
+          </button>
+        </div>
       </div>
     </form>
 
   </mat-card>
 </div>
+<app-validation-dialog (closed)="onAlertClosed($event)"></app-validation-dialog>

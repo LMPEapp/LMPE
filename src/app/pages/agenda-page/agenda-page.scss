@@ -5,12 +5,77 @@
   z-index: 1000;
 }
 
-//calendier
+//week-selector
+.week-selector-card {
+  margin-bottom: 16px;
+  padding: 8px 16px;
+}
+
+.week-selector {
+  display: flex;
+  flex-wrap: wrap; /* permet au contenu de passer à la ligne si trop étroit */
+  align-items: center;
+  gap: 8px;
+  justify-content: center; /* centrer le contenu sur mobile */
+
+  .week-range {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--mat-sys-on-surface);
+    white-space: nowrap; /* empêcher le texte de se casser */
+
+    mat-icon{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .week-arrow {
+      margin: 0 4px;
+      font-size: 1.2rem;
+      vertical-align: middle;
+      color: var(--mat-sys-primary);
+    }
+  }
+
+  button {
+    min-width: 36px;
+    flex-shrink: 0; /* éviter que les boutons rétrécissent */
+  }
+}
+
+/* Optionnel : sur petit écran, réduire la taille du texte et des icônes */
+@media (max-width: 480px) {
+  .week-selector {
+    gap: 4px;
+
+    .week-range {
+      font-size: 0.9rem;
+
+      .week-arrow {
+        font-size: 1rem;
+        margin: 0 2px;
+      }
+    }
+
+    button {
+      min-width: 32px;
+    }
+  }
+}
+
+
+.today-button {
+  margin-left: auto;
+}
+
+// Calendrier
 .agenda-grid {
   margin-top: 10px;
   display: grid;
   grid-template-columns: 60px repeat(7, 1fr);
-  grid-template-rows: auto  repeat(48, 30px); /* 48 demi-heures */
+  grid-template-rows: auto repeat(48, 30px); // 48 demi-heures
   gap: 1px;
 }
 
@@ -19,52 +84,79 @@
   grid-row: 1 / 2;
 }
 
-.day-header {
-  text-align: center;
-  line-height: 1.2em;
-  font-weight: bold;
-  word-break: break-word;
+.day-box {
   display: flex;
-  flex-direction: column; /* force le passage du numéro en dessous */
-  align-items: center;
   justify-content: center;
+  align-items: center;
+}
+.day-header {
+  padding: 5px;
+  line-height: 1.2em;
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  height: max-content;
+  align-items: center;
   gap: 5px;
 }
+
 @media screen and (min-width: 1000px) {
   .day-header {
-    flex-direction: row; /* ligne unique */
+    flex-direction: row; // mode large: jour et numéro sur la même ligne
   }
 }
 
-
-.day-name { }
-.day-number { }
+.day-name {}
+.day-number {}
 
 .time-label {
   grid-column: 1 / 2;
   text-align: right;
   padding-right: 5px;
-  line-height: 30px; /* demi-heure */
+  display: flex;
+  align-items: center;  /* centre verticalement sur les 2 lignes */
+  justify-content: flex-end;
+  height: 100%;
 }
 
+
 .time-slot {
-  border: 1px solid #ddd;
   position: relative;
+  border-radius: 16px;
+  margin: 1px;
+  background-color: var(--mat-sys-surface-container-low);
+  box-sizing: border-box;
 }
 
 .event {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  background: #2196F3;
-  color: white;
-  font-size: 0.8rem;
-  padding: 2px;
-  box-sizing: border-box;
+  padding: 4px;
+  margin: 6px;
+  border-radius: 12px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  z-index: 2;
+  position: relative;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+  text-wrap: auto;
+  cursor: pointer;
+  &.mine {
+    background-color: rgba(33, 150, 243, 0.7); // bleu avec 70% d'opacité
+    color: white;
+  }
+
+  &.other {
+    background-color: rgba(76, 175, 80, 0.7); // vert avec 70% d'opacité
+    color: white;
+  }
+
+
 }
 
+.todayDate{
+  background-color: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  border-radius: 8px;
+  font-weight: 600;
+}

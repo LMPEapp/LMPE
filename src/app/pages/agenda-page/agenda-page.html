@@ -1,53 +1,77 @@
 <div class="agenda-container">
-  <h2>📅 Mes Agendas</h2>
-
   <!-- Sélecteur de semaine -->
-  <div class="week-selector">
-    <button (click)="prevWeek()">&lt;</button>
-    <span>
-      {{ currentMonday | myLocalDate }} → {{ currentSunday | myLocalDate }}
-    </span>
-    <button (click)="nextWeek()">&gt;</button>
-  </div>
+  <mat-card class="week-selector-card">
+    <div class="week-selector">
+      <button mat-icon-button color="primary" (click)="prevWeek()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <span class="week-range">
+        {{ currentMonday | myLocalDate }}
+        <mat-icon class="week-arrow" aria-hidden="true">arrow_forward</mat-icon>
+        {{ currentSunday | myLocalDate }}
+      </span>
+
+
+      <button mat-icon-button color="primary" (click)="nextWeek()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <button mat-stroked-button
+            [color]="isCurrentWeek() ? 'accent' : 'primary'"
+            [disabled]="isCurrentWeek()"
+            (click)="setToday()">
+      Aujourd'hui
+    </button>
+    </div>
+  </mat-card>
 
   <!-- Grille agenda -->
   <div class="agenda-grid">
-  <!-- Header vide pour coin supérieur gauche -->
-  <div class="grid-header"></div>
+    <!-- Header vide pour coin supérieur gauche -->
+    <div class="grid-header"></div>
 
-  <!-- Headers des jours -->
-  <div class="day-header" *ngFor="let day of weekDays">
-    <span class="day-name">
-      {{ formatDayHeader(day) }}
-    </span>
-    <span class="day-number">
-      {{ day.getDate() }}
-    </span>
-  </div>
-
-  <!-- Labels des heures -->
-  <div class="time-label" *ngFor="let hour of hours">
-    {{ hour }}
-  </div>
-
-  <!-- Slots horaires -->
-  <ng-container *ngFor="let day of weekDays; let dayIndex = index">
-    <ng-container *ngFor="let hour of hours; let hourIndex = index">
-      <div
-        class="time-slot"
-        [style.grid-column]="dayIndex + 2"
-        [style.grid-row]="hourIndex + 2"
-      >
-        <ng-container *ngFor="let event of agendas">
-          <div class="event" *ngIf="isEventInSlot(event, day, hourIndex)">
-            {{ event.title }}
-          </div>
-        </ng-container>
+    <!-- Headers des jours -->
+    <div class="day-box" *ngFor="let day of weekDays">
+      <div class="day-header" [ngClass]="{ todayDate: isToday(day),notodayDate: !isToday(day) }">
+        <span class="day-name">{{ getDayNameShort(day) }}</span>
+        <span class="day-number">{{ day.getDate() }}</span>
       </div>
-    </ng-container>
-  </ng-container>
-</div>
+    </div>
 
+    <!-- Labels des heures -->
+    <div class="time-label" *ngFor="let hour of getFullHours(); let i = index"
+        [style.grid-row]="(i * 2 + 1) + ' / span 2'">
+      {{ hour }}
+    </div>
+
+
+    <!-- Slots horaires -->
+    <ng-container *ngFor="let day of weekDays; let dayIndex = index">
+      <ng-container *ngFor="let hourIndex of getHourIndexes()">
+        <div
+          class="time-slot"
+          [style.grid-column]="dayIndex + 2"
+          [style.grid-row]="hourIndex + 2 + ' / span 2'"
+        ></div>
+      </ng-container>
+    </ng-container>
+
+
+    <!-- Événements -->
+    <ng-container *ngFor="let event of agendas">
+      <ng-container *ngFor="let day of weekDays">
+        <div *ngIf="isEventOnDay(event, day)"
+            class="event"
+            [ngClass]="{ mine: isMine(event), other: !isMine(event) }"
+            [ngStyle]="getEventStyleByDay(event, day)"
+            (click)="onEditEvenement(event)">
+          {{ event.title }}
+        </div>
+      </ng-container>
+    </ng-container>
+
+  </div>
 
   <!-- Bouton ajouter -->
   <button mat-fab color="primary" class="fab-button" (click)="onAdd()">
@@ -55,4 +79,4 @@
   </button>
 </div>
 
-<app-agenda-edition (submitForm)="handleUserSubmit($event)"></app-agenda-edition>
+<app-agenda-edition (submitForm)="handleUserSubmit($event)" (delete)="onDeleteElement($event)"></app-agenda-edition>

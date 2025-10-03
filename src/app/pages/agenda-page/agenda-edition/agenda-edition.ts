@@ -10,6 +10,10 @@ import { AgendaIn, AgendaOut } from '../../../Models/Agenda.model';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { TextFieldModule } from '@angular/cdk/text-field';
+import { toLocalDate } from '../../../Helper/date-utils';
+import { ValidationDialogComponent } from "../../../ExternComposent/validation-dialog/validation-dialog";
+import { User } from '../../../Models/user.model';
+import { AuthService } from '../../../service/Auth/auth';
 
 @Component({
   selector: 'app-agenda-edition',
@@ -23,23 +27,28 @@ import { TextFieldModule } from '@angular/cdk/text-field';
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    TextFieldModule
-  ],
+    TextFieldModule,
+    ValidationDialogComponent
+],
   templateUrl: './agenda-edition.html',
   styleUrl: './agenda-edition.scss'
 })
 export class AgendaEdition {
 
+  @ViewChild(ValidationDialogComponent) alert!: ValidationDialogComponent;
   @ViewChild('zoneTextDescription') zoneTextDescription!: ElementRef<HTMLDivElement>;
   @ViewChild('textareaDescription') textareaDescription!: ElementRef<HTMLTextAreaElement>;
 
   public isOpen = false;
   agenda?: AgendaOut;
+  user: User | undefined;
+
   @Output() submitForm = new EventEmitter<AgendaIn>();
+  @Output() delete = new EventEmitter<number>();
 
   form: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, public auth: AuthService) {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(255)]],
       description: ['', []],
@@ -49,11 +58,21 @@ export class AgendaEdition {
       endTime: [null, Validators.required],
       isPublic: [false, [Validators.required]]
     },{ validators: this.endDateAfterStartValidator });
+    this.user = auth.loginData?.user;
+  }
+
+  isMineOrAdmin(): boolean {
+    return this.agenda?.createdBy === this.user?.id || this.user?.isAdmin == true;
   }
 
   onOpen(ag?: AgendaOut) {
     this.isOpen = true;
     this.agenda = ag;
+    if(this.agenda){
+      this.agenda.endDate=toLocalDate(this.agenda.endDate);
+      this.agenda.startDate=toLocalDate(this.agenda.startDate)
+    }
+
     this.init();
     setTimeout(()=>{
       // Récupère la hauteur de la zone div
@@ -69,31 +88,40 @@ export class AgendaEdition {
     this.isOpen = false;
   }
 
+  onDelete() {
+    this.alert.open(
+      'Supprimer l’élément',
+      'Êtes-vous sûr de vouloir supprimer cet élément ?',
+      false
+    );
+  }
+
   init() {
     if (this.agenda) {
-      // Mode édition (sans mots de passe obligatoires)
-      this.form = this.fb.group({
-        title: [this.agenda.title, [Validators.required, Validators.maxLength(255)]],
-        description: [this.agenda.description, []],
-        startDate: [this.agenda.startDate, Validators.required],
-        startTime: [this.agenda.startDate ? this.formatTime(this.agenda.startDate) : null, Validators.required],
-        endDate: [this.agenda.endDate, Validators.required],
-        endTime: [this.agenda.endDate ? this.formatTime(this.agenda.endDate) : null, Validators.required],
-        isPublic: [this.agenda.isPublic, [Validators.required]]
-      },{ validators: this.endDateAfterStartValidator });
+      // Mode édition : on met juste à jour les valeurs
+      this.form.patchValue({
+        title: this.agenda.title,
+        description: this.agenda.description,
+        startDate: new Date(this.agenda.startDate),
+        startTime: this.agenda.startDate ? this.formatTime(new Date(this.agenda.startDate)) : null,
+        endDate: new Date(this.agenda.endDate),
+        endTime: this.agenda.endDate ? this.formatTime(new Date(this.agenda.endDate)) : null,
+        isPublic: this.agenda.isPublic
+      });
     } else {
-      // Mode création (avec mot de passe + confirm)
-      this.form = this.fb.group({
-        title: ['', [Validators.required, Validators.maxLength(255)]],
-        description: ['', []],
-        startDate: [null, Validators.required],
-        startTime: [null, Validators.required],
-        endDate: [null, Validators.required],
-        endTime: [null, Validators.required],
-        isPublic: [false, [Validators.required]]
-      },{ validators: this.endDateAfterStartValidator });
+      // Mode création : reset
+      this.form.reset({
+        title: '',
+        description: '',
+        startDate: null,
+        startTime: null,
+        endDate: null,
+        endTime: null,
+        isPublic: false
+      });
     }
   }
+
 
   formatTime(date: Date): string {
     const hours = date.getHours().toString().padStart(2, '0');
@@ -117,12 +145,14 @@ export class AgendaEdition {
     const end = new Date(endDate);
     end.setHours(endH, endM, 0, 0);
 
-    if(end <= start){
-      control.get('endTime')?.setErrors({ endBeforeStart: true });
+    if (end <= start) {
+      // On met l'erreur sur le form group
       return { endBeforeStart: true };
+    } else {
+      return null;
     }
-    return null;
   }
+
 
   roundTime(controlName: string) {
     const control = this.form.get(controlName);
@@ -136,9 +166,15 @@ export class AgendaEdition {
     let roundedMinutes: number;
     let newHour = h;
 
-    if (m < 15) roundedMinutes = 0;
-    else if (m < 45) roundedMinutes = 30;
-    else {
+    // Cas spécial pour dépasser 23:45
+    if (h === 23 && m >= 45) {
+      roundedMinutes = 59;
+      newHour = 23;
+    } else if (m < 15) {
+      roundedMinutes = 0;
+    } else if (m < 45) {
+      roundedMinutes = 30;
+    } else {
       roundedMinutes = 0;
       newHour = (h + 1) % 24;
     }
@@ -149,6 +185,7 @@ export class AgendaEdition {
       control.setValue(newVal);
     }
   }
+
 
 
   onSubmit() {
@@ -178,5 +215,13 @@ export class AgendaEdition {
     this.onClose();
   }
 
+  onAlertClosed(result: boolean) {
+    if (result === true) {
+      this.delete.emit(this.agenda?.id);
+      this.onClose();
+    } else {
+      console.log('Annulé ou fermé');
+    }
+  }
 
 }

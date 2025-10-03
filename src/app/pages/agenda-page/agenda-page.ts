@@ -1,34 +1,31 @@
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AgendaIn, AgendaOut } from './../../Models/Agenda.model';
 import { AgendaEdition } from './agenda-edition/agenda-edition';
-import { Component, OnInit, ViewChild } from '@angular/core';
 import { AgendaAccessApi } from '../../service/AccessAPi/AgendaAccessapi/agenda-accessapi';
-import { MyLocalDatePipe } from "../../Helper/myLocalDate/my-local-date-pipe";
-import { CommonModule } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardHeader, MatCardTitle, MatCardModule } from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
-import { ValidationDialogComponent } from '../../ExternComposent/validation-dialog/validation-dialog';
-import { MyRelativeDatePipe } from '../../Helper/DatePipe/relative-date-pipe';
-import { ConversationEdition } from '../conversation-component/conversation-edition/conversation-edition';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MyLocalDatePipe } from '../../Helper/myLocalDate/my-local-date-pipe';
+import { CommonModule } from '@angular/common';
+import { User } from '../../Models/user.model';
+import { AuthService } from '../../service/Auth/auth';
+import { toLocalDate } from '../../Helper/date-utils';
 
 @Component({
   selector: 'app-agenda-page',
   templateUrl: './agenda-page.html',
   styleUrls: ['./agenda-page.scss'],
   imports: [
-    MatCardModule,
-    CommonModule, // nécessaire pour *ngFor et *ngIf
-    MatCardModule, // nécessaire pour <mat-card>
+    MatIcon,
     CommonModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
     MatMenuModule,
     MyLocalDatePipe,
-    AgendaEdition
-]
+    AgendaEdition],
 })
 export class AgendaPage implements OnInit {
 
@@ -37,24 +34,45 @@ export class AgendaPage implements OnInit {
   agendas: AgendaOut[] = [];
   isLoading = false;
   errorMessage = '';
-  agendaSelected:AgendaOut | null= null;
+  agendaSelected: AgendaOut | null = null;
 
   currentMonday!: Date;
   currentSunday!: Date;
   weekDays: Date[] = [];
   hours: string[] = [];
 
-  constructor(private agendaAccessApi: AgendaAccessApi, private snackBar: MatSnackBar) {
-    const today = new Date();
-    this.setWeek(today);
+  user: User | undefined;
+
+  constructor(private agendaAccessApi: AgendaAccessApi, private snackBar: MatSnackBar, public auth: AuthService) {
+    this.user = auth.loginData?.user;
   }
 
   ngOnInit(): void {
-    this.loadAgendas();
-    this.generateWeekDays();
-    this.generateHours();
+    this.setToday();
   }
 
+  isMine(agenda: AgendaOut): boolean {
+    return agenda.createdBy === this.user?.id;
+  }
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return date.getFullYear() == today.getFullYear() && date.getMonth() == today.getMonth() && date.getDate() == today.getDate();
+  }
+  // Vérifie si la semaine affichée est la semaine actuelle
+  isCurrentWeek(): boolean {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // lundi
+    startOfWeek.setHours(0,0,0,0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23,59,59,999);
+
+    return this.currentMonday >= startOfWeek && this.currentSunday <= endOfWeek;
+  }
+
+  /** Génère les jours de la semaine */
   generateWeekDays() {
     this.weekDays = [];
     const monday = new Date(this.currentMonday);
@@ -65,19 +83,7 @@ export class AgendaPage implements OnInit {
     }
   }
 
-  isEventInSlot(event: AgendaOut, day: Date, hourIndex: number): boolean {
-    const eventStart = new Date(event.startDate);
-    const eventEnd = new Date(event.endDate);
-
-    const slotHour = Math.floor(hourIndex / 2); // 0, 1, 2...
-    const slotMinute = hourIndex % 2 === 0 ? 0 : 30;
-
-    const slotStart = new Date(day.getFullYear(), day.getMonth(), day.getDate(), slotHour, slotMinute, 0, 0);
-    const slotEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate(), slotHour, slotMinute + 30, 0, 0);
-
-    return eventStart < slotEnd && eventEnd > slotStart;
-  }
-
+  /** Génère les demi-heures */
   generateHours() {
     this.hours = Array.from({ length: 48 }, (_, i) => {
       const h = Math.floor(i / 2);
@@ -86,10 +92,17 @@ export class AgendaPage implements OnInit {
     });
   }
 
-  /** Définit le lundi et dimanche d'une semaine donnée */
+  setToday(){
+    const today = new Date();
+    this.setWeek(today);
+    this.generateWeekDays();
+    this.generateHours();
+    this.loadAgendas();
+  }
+  /** Définit le lundi et dimanche */
   private setWeek(reference: Date): void {
-    const day = reference.getDay(); // 0 = dimanche, 1 = lundi ...
-    const diffToMonday = day === 0 ? -6 : 1 - day; // si dimanche, -6
+    const day = reference.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
     this.currentMonday = new Date(reference);
     this.currentMonday.setHours(0, 0, 0, 0);
     this.currentMonday.setDate(this.currentMonday.getDate() + diffToMonday);
@@ -99,91 +112,113 @@ export class AgendaPage implements OnInit {
     this.currentSunday.setHours(23, 59, 59, 999);
   }
 
-  /** Charge les agendas de la semaine en cours */
+  /** Charge les agendas */
   loadAgendas(): void {
     this.isLoading = true;
     this.errorMessage = '';
-
     this.agendaAccessApi.getAll(this.currentMonday, this.currentSunday).subscribe({
-      next: (data) => {
-        this.agendas = data;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Erreur lors du chargement des agendas :', err);
-        this.errorMessage = 'Impossible de charger les agendas.';
-        this.isLoading = false;
-      }
+      next: data => { this.agendas = data; this.isLoading = false; },
+      error: err => { this.errorMessage = 'Impossible de charger les agendas.'; this.isLoading = false; }
     });
   }
 
+  /** Vérifie si l'événement touche ce jour */
+  isEventOnDay(event: AgendaOut, day: Date): boolean {
+    const start = toLocalDate(event.startDate);
+    const end = toLocalDate(event.endDate);
+
+    const dayStart = new Date(day);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(day);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    return start <= dayEnd && end >= dayStart;
+  }
+
+  /** Calcule style pour un événement sur un jour précis */
+  getEventStyleByDay(event: AgendaOut, day: Date): { [key: string]: string } {
+    const start = toLocalDate(event.startDate);
+    const end = toLocalDate(event.endDate);
+
+    const dayStart = new Date(day);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(day);
+    dayEnd.setHours(23, 50, 0, 0);
+
+    // startRow = max(événement start, début du jour)
+    const rowStartDate = start > dayStart ? start : dayStart;
+    const rowEndDate = end < dayEnd ? end : dayEnd;
+
+    const startRow = rowStartDate.getHours() * 2 + (rowStartDate.getMinutes() >= 30 ? 2 : 1) + 1;
+    let endRow = rowEndDate.getHours() * 2 + (rowEndDate.getMinutes() >= 30 ? 2 : 1) + 1;
+
+    if (rowEndDate >= dayEnd) {
+      endRow = 50;
+    }
+
+    const dayIndex = day.getDay() === 0 ? 7 : day.getDay();
+
+    return {
+      'grid-column': `${dayIndex + 1}`,
+      'grid-row': `${startRow} / ${endRow}`,
+    };
+  }
+
+
+  // Dans AgendaPage
+  getFullHours(): string[] {
+    return this.hours.filter((_, i) => i % 2 === 0);
+  }
+  // renvoie les index de lignes pour chaque heure (0,2,4,... pour les 48 demi-heures)
+  getHourIndexes(): number[] {
+    const indexes: number[] = [];
+    for (let i = 0; i < 48; i += 2) {
+      indexes.push(i);
+    }
+    return indexes;
+  }
+
+
+
   getDayNameShort(day: Date): string {
-    return day.toLocaleDateString('fr-FR', { weekday: 'short' }); // lun, mar, ...
+    return day.toLocaleDateString('fr-FR', { weekday: 'short' });
   }
 
-  getDayNameFull(day: Date): string {
-    return day.toLocaleDateString('fr-FR', { weekday: 'long' }); // lundi, mardi, ...
-  }
-
-  formatDayHeader(day: Date): string {
-    const dayName = window.innerWidth < 1000 ? this.getDayNameShort(day) : this.getDayNameFull(day);
-    return `${dayName}`;
-  }
-
-  /** Semaine précédente */
-  prevWeek(): void {
-    const prev = new Date(this.currentMonday);
-    prev.setDate(prev.getDate() - 7);
-    this.setWeek(prev);
-    this.generateWeekDays();
-    this.loadAgendas();
-  }
-
-  nextWeek(): void {
-    const next = new Date(this.currentMonday);
-    next.setDate(next.getDate() + 7);
-    this.setWeek(next);
+  /** Navigation semaine */
+  prevWeek(): void { this.changeWeek(-7); }
+  nextWeek(): void { this.changeWeek(7); }
+  private changeWeek(offset: number) {
+    const newDate = new Date(this.currentMonday);
+    newDate.setDate(newDate.getDate() + offset);
+    this.setWeek(newDate);
     this.generateWeekDays();
     this.loadAgendas();
   }
 
   onAdd() {
-    this.agendaSelected=null;
+    this.agendaSelected = null;
     this.AgendaEdition.onOpen();
   }
-    handleUserSubmit(agendaData: AgendaIn) {
-      if(this.agendaSelected!=null){
-        this.agendaAccessApi.update(this.agendaSelected.id,agendaData).subscribe({
-          next: (res) => {
-            this.snackBar.open('Evenement Modifier avec succès ✅', 'Fermer', {
-              duration: 3000
-            });
-            this.loadAgendas();
-          },
-          error: (err) => {
-            this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
-      }else{
-        this.agendaAccessApi.create(agendaData).subscribe({
-          next: (res) => {
-            this.snackBar.open('Evenement créé avec succès ✅', 'Fermer', {
-              duration: 3000
-            });
-            this.loadAgendas();
-          },
-          error: (err) => {
-            this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
-      }
+  onEditEvenement(event: AgendaOut) {
+    this.agendaSelected = event;
+    this.AgendaEdition.onOpen(event);
+  }
 
-      console.log(agendaData)
+  onDeleteElement(agendaId: number){
+    this.agendaAccessApi.delete(agendaId).subscribe({
+        next: () => { this.snackBar.open('Événement Suprimé ✅', 'Fermer', { duration: 3000 }); this.loadAgendas(); }
+      });
+  }
+
+  handleUserSubmit(agendaData: AgendaIn) {
+    if (this.agendaSelected) {
+      this.agendaAccessApi.update(this.agendaSelected.id, agendaData).subscribe({
+        next: () => { this.snackBar.open('Événement modifié ✅', 'Fermer', { duration: 3000 }); this.loadAgendas(); }
+      });
+    } else {
+      this.agendaAccessApi.create(agendaData).subscribe({
+        next: () => { this.snackBar.open('Événement créé ✅', 'Fermer', { duration: 3000 }); this.loadAgendas(); }
+      });
     }
+  }
 }
