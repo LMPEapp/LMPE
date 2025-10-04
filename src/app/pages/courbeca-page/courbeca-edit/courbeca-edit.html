@@ -1,0 +1,33 @@
+<div *ngIf="isOpen" class="overlay">
+  <mat-card class="dialog">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h2>CourbeCA</h2>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Date de début</mat-label>
+        <input matInput [matDatepicker]="DatePicker" formControlName="datePoint">
+        <mat-datepicker-toggle matSuffix [for]="DatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #DatePicker></mat-datepicker>
+        <mat-error *ngIf="form.get('datePoint')?.hasError('required')">
+          datePoint requis
+        </mat-error>
+      </mat-form-field>
+
+
+      <mat-form-field appearance="fill">
+        <mat-label>Amount</mat-label>
+        <input matInput formControlName="amount" type="number" step="0.01">
+        <mat-error *ngIf="form.get('amount')?.hasError('required')">
+          Montant requis
+        </mat-error>
+      </mat-form-field>
+
+      <div class="flex"></div>
+
+      <div class="form-actions">
+        <button mat-raised-button color="warn" type="button" (click)="onClose()">Annuler</button>
+        <button mat-raised-button color="primary" type="submit">Valider</button>
+      </div>
+    </form>
+  </mat-card>
+</div>

@@ -37,3 +37,16 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+ngx-charts text {
+  fill: red !important;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+ngx-charts .x-axis text {
+  fill: blue !important;
+}
+
+ngx-charts .y-axis text {
+  fill: green !important;
+}

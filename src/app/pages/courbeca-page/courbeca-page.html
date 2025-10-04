@@ -1,1 +1,40 @@
-<p>courbeca-page works!</p>
+<div class="courbeca-container" *ngIf="!isLoading; else loading">
+  <mat-card class="total-card" appearance="outlined">
+    <h2>Total CA (30 derniers jours)</h2>
+    <h1 class="total-amount">{{ totalAmountLast30Days | number:'1.0-0' }} €</h1>
+  </mat-card>
+
+  <mat-card class="graph-card" appearance="outlined">
+    <h2>Évolution du CA quotidien</h2>
+    <div class="chart-wrapper">
+      <ngx-charts-line-chart
+        [results]="graphData"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="false"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [autoScale]="true"
+        [timeline]="false"
+        [scheme]="colorScheme">
+      </ngx-charts-line-chart>
+    </div>
+  </mat-card>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <button mat-fab color="primary" class="fab-button" (click)="onAdd()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+    <p>Chargement des données...</p>
+  </div>
+</ng-template>
+
+<app-courbeca-edit (submitForm)="handleUserSubmit($event)"></app-courbeca-edit>
