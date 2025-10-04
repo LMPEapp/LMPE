@@ -1,0 +1,51 @@
+.agenda-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: auto repeat(7, 1fr);
+  grid-template-rows: auto repeat(48, 30px);
+  gap: 1px;
+
+  .grid-header { grid-column: 1 / 2; grid-row: 1 / 2; }
+
+  .day-box { display: flex; justify-content: center; align-items: center; }
+  .day-header {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    &.todayDate { background-color: var(--mat-sys-primary-container); border-radius: 8px; font-weight: 600; }
+  }
+
+  .time-label {
+    grid-column: 1 / 2;
+    text-align: right;
+    padding-right: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+  }
+
+  .time-slot {
+    position: relative;
+    border-radius: 16px;
+    margin: 1px;
+    background-color: var(--mat-sys-surface-container-low);
+    box-sizing: border-box;
+  }
+
+  .event {
+    padding: 4px;
+    margin: 6px;
+    border-radius: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position: relative;
+    font-size: 0.85rem;
+    cursor: pointer;
+    &.mine { background-color: rgba(33, 150, 243, 0.7); color: white; }
+    &.other { background-color: rgba(76, 175, 80, 0.7); color: white; }
+  }
+}

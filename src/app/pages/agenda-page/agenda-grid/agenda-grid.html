@@ -1,0 +1,40 @@
+<div class="agenda-grid">
+  <div class="grid-header"></div>
+
+  <div class="day-box" *ngFor="let day of weekDays">
+    <div class="day-header" [ngClass]="{ todayDate: isToday(day) }">
+      <span class="day-name">{{ day | date:'EEE' }}</span>
+      <span class="day-number">{{ day.getDate() }}</span>
+    </div>
+  </div>
+
+  <ng-container *ngFor="let hour of hours; let i = index">
+    <ng-container *ngIf="i != 0">
+      <div class="time-label" *ngIf="i % 2 === 0" [style.grid-row]="i + 1 + ' / span 2'">
+        {{ hour }}
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngFor="let day of weekDays; let dayIndex = index">
+    <ng-container *ngFor="let hourIndex of hourIndexes">
+      <div
+        class="time-slot"
+        [style.grid-column]="dayIndex + 2"
+        [style.grid-row]="hourIndex + 2 + ' / span 2'"
+      ></div>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngFor="let event of agendas">
+    <ng-container *ngFor="let day of weekDays">
+      <div *ngIf="isEventOnDay(event, day)"
+           class="event"
+           [ngClass]="{ mine: isMine(event), other: !isMine(event) }"
+           [ngStyle]="getEventStyleByDay(event, day)"
+           (click)="editEvent.emit(event)">
+        {{ event.title }}
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

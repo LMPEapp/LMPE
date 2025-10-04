@@ -1,0 +1,24 @@
+<mat-card class="week-selector-card">
+  <div class="week-selector">
+    <button mat-icon-button color="primary" (click)="prevWeek.emit()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <span class="week-range">
+      {{ currentMonday | myLocalDate }}
+      <mat-icon class="week-arrow">arrow_forward</mat-icon>
+      {{ currentSunday | myLocalDate }}
+    </span>
+
+    <button mat-icon-button color="primary" (click)="nextWeek.emit()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+
+    <button mat-stroked-button
+            [color]="isCurrentWeek ? 'accent' : 'primary'"
+            [disabled]="isCurrentWeek"
+            (click)="setToday.emit()">
+      Aujourd'hui
+    </button>
+  </div>
+</mat-card>

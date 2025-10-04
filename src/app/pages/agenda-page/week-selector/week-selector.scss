@@ -1,0 +1,46 @@
+.week-selector-card {
+  margin-bottom: 16px;
+  padding: 8px 16px;
+}
+
+.week-selector {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+
+  .week-range {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 1rem;
+    white-space: nowrap;
+
+    mat-icon.week-arrow {
+      margin: 0 4px;
+      font-size: 1.2rem;
+    }
+  }
+
+  button {
+    min-width: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .week-selector {
+    gap: 4px;
+
+    .week-range {
+      font-size: 0.9rem;
+
+      mat-icon.week-arrow {
+        font-size: 1rem;
+        margin: 0 2px;
+      }
+    }
+
+    button { min-width: 32px; }
+  }
+}
