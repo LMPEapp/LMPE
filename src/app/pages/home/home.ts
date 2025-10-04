@@ -14,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConversationComponent } from "../conversation-component/conversation-component";
 import { UserAccessapi } from '../../service/AccessAPi/userAccessapi/user-accessapi';
 import { AgendaPage } from "../agenda-page/agenda-page";
+import { CourbecaPage } from "../courbeca-page/courbeca-page";
 
 @Component({
   selector: 'app-home',
@@ -27,7 +28,8 @@ import { AgendaPage } from "../agenda-page/agenda-page";
     MatListModule,
     ProfilEdition,
     ConversationComponent,
-    AgendaPage
+    AgendaPage,
+    CourbecaPage
 ],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']

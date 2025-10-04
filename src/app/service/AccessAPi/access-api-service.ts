@@ -16,7 +16,7 @@ export class AccessApiService {
   // méthode générique GET
   get<T>(controller: string, action: string, params: any = {}, token?: string): Observable<T> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<T>(`${this.apiBase}/${controller}/${action}`, {
+    return this.http.get<T>(`${this.buildUrl(controller, action)}`, {
       params: new HttpParams({ fromObject: params }),
       headers
     });

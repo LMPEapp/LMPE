@@ -42,8 +42,7 @@
     <div class="home-content">
       <ng-container [ngSwitch]="activeTab">
         <div *ngSwitchCase="'stats'">
-          <h1>Statistiques</h1>
-          <!-- Ici tu peux mettre ton tableau ou graphique -->
+          <app-courbeca-page></app-courbeca-page>
         </div>
 
         <div *ngSwitchCase="'messages'">
