@@ -19,6 +19,7 @@
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
 
   h2 {
     margin-top: 0;
@@ -33,6 +34,7 @@
   .form-actions {
     display: flex;
     justify-content: space-between;
+    padding: 10px;
     div{
       display: flex;
       gap: 8px;
@@ -78,4 +80,7 @@ form {
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+textarea[matInput] {
+  resize: none;
 }

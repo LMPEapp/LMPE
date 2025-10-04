@@ -11,7 +11,13 @@
       <h1>admin</h1>
 
       <div class="users-list">
-        <mat-card *ngFor="let useritem of users" class="user-card">
+        <mat-card *ngFor="let useritem of users" class="user-card"
+          (pointerdown)="startPress($event, menuTrigger)"
+          (pointerup)="endPress()"
+          (pointercancel)="cancelPress()"
+          (touchmove)="cancelPress()"
+          (mouseleave)="cancelPress()"
+          (contextmenu)="$event.preventDefault()">
           <div class="user-info">
             <div class="user-details">
               <mat-icon>account_circle</mat-icon>
@@ -23,7 +29,7 @@
             </div>
             <div class="user-actions">
               <!-- Bouton menu ... -->
-              <button mat-icon-button [matMenuTriggerFor]="menu">
+              <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menu="matMenu">

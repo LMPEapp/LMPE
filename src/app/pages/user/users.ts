@@ -7,7 +7,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { User, UserIn } from '../../Models/user.model';
 import { MatCardModule } from '@angular/material/card';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { ProfilEdition } from './profil-edition/profil-edition';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../service/Auth/auth';
@@ -37,11 +37,14 @@ export class UsersComponent {
 
   @ViewChild(ValidationDialogComponent) alert!: ValidationDialogComponent;
   @ViewChild(ProfilEdition) ProfilEdition!: ProfilEdition;
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
   public users:User[] = [];
   userSelected:User | null= null;
 
   user: User | undefined;
+  private pressTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly pressDelay = 500;
 
   constructor(private router: Router, private userAccessapi:UserAccessapi,
     private snackBar: MatSnackBar, public auth: AuthService,private groupsAccessApi: GroupsAccessApi) {
@@ -171,4 +174,22 @@ export class UsersComponent {
     console.log(userData)
   }
 
+  startPress(event: Event, menuTrigger: MatMenuTrigger) {
+    event.preventDefault();
+    this.cancelPress();
+    this.pressTimer = setTimeout(() => {
+      menuTrigger.openMenu();
+    }, this.pressDelay);
+  }
+
+  endPress() {
+    this.cancelPress();
+  }
+
+  cancelPress() {
+    if (this.pressTimer) {
+      clearTimeout(this.pressTimer);
+      this.pressTimer = null;
+    }
+  }
 }

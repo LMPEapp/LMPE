@@ -36,8 +36,6 @@ import { AuthService } from '../../../service/Auth/auth';
 export class AgendaEdition {
 
   @ViewChild(ValidationDialogComponent) alert!: ValidationDialogComponent;
-  @ViewChild('zoneTextDescription') zoneTextDescription!: ElementRef<HTMLDivElement>;
-  @ViewChild('textareaDescription') textareaDescription!: ElementRef<HTMLTextAreaElement>;
 
   public isOpen = false;
   agenda?: AgendaOut;
@@ -74,14 +72,6 @@ export class AgendaEdition {
     }
 
     this.init();
-    setTimeout(()=>{
-      // Récupère la hauteur de la zone div
-      let hauteur = this.zoneTextDescription.nativeElement.clientHeight;
-
-      hauteur -= 60;
-      // Applique la hauteur au textarea
-      this.textareaDescription.nativeElement.style.height = `${hauteur}px`;
-    })
   }
 
   onClose() {

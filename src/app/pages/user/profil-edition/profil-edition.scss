@@ -13,11 +13,12 @@
 }
 
 .dialog {
-  min-width: 50%;
-  max-width: 95%;
+  width: 90%;
+  height: 90%;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
 
   h2 {
     margin-top: 0;
@@ -35,9 +36,13 @@
     gap: 8px;
   }
 }
+.flex{
+  flex: 1;
+}
 
 form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 100%;
 }
