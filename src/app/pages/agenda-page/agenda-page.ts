@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { User } from '../../Models/user.model';
 import { AuthService } from '../../service/Auth/auth';
 import { toLocalDate } from '../../Helper/date-utils';
+import { AgendaSignalRService } from '../../service/SignalR/AgendaSignalRService/agenda-signal-rservice';
 
 @Component({
   selector: 'app-agenda-page',
@@ -43,12 +44,51 @@ export class AgendaPage implements OnInit {
 
   user: User | undefined;
 
-  constructor(private agendaAccessApi: AgendaAccessApi, private snackBar: MatSnackBar, public auth: AuthService) {
+  constructor(private agendaAccessApi: AgendaAccessApi, private snackBar: MatSnackBar, public auth: AuthService,private agendaHub: AgendaSignalRService) {
     this.user = auth.loginData?.user;
   }
 
   ngOnInit(): void {
     this.setToday();
+
+    this.agendaHub.startConnection(localStorage.getItem('token') || '')
+    .then(() => {
+      this.agendaHub.joinAgendasGlobal();
+    });
+
+    this.agendaHub.agendaCreated$.subscribe(agd => {
+      if(agd){
+        if (!this.agendas.find(a => a.id === agd.id)) {
+          // trouver l'index où l'insérer pour garder l'ordre croissant par id
+          this.agendas.push(agd);
+          console.log("Add Agenda:", agd);
+        }
+      }
+    });
+
+    this.agendaHub.agendaUpdated$.subscribe(agd => {
+      if(agd){
+        const index = this.agendas.findIndex(a => a.id === agd.id);
+        if (index != -1) {
+          this.agendas[index] = agd;
+          console.log("Update Agenda:", agd);
+        }
+      }
+
+    });
+
+    this.agendaHub.agendaDeleted$.subscribe(id => {
+      if(id){
+        const index = this.agendas.findIndex(a => a.id === id);
+        if (index != -1) {
+          this.agendas.splice(index, 1);
+          console.log("Delete Agenda:", id);
+        }
+      }
+    });
+  }
+  ngOnDestroy() {
+    this.agendaHub.leaveAgendasGlobal();
   }
 
   isMine(agenda: AgendaOut): boolean {
@@ -206,18 +246,18 @@ export class AgendaPage implements OnInit {
 
   onDeleteElement(agendaId: number){
     this.agendaAccessApi.delete(agendaId).subscribe({
-        next: () => { this.snackBar.open('Événement Suprimé ✅', 'Fermer', { duration: 3000 }); this.loadAgendas(); }
+        next: () => { this.snackBar.open('Événement Suprimé ✅', 'Fermer', { duration: 3000 }); }
       });
   }
 
   handleUserSubmit(agendaData: AgendaIn) {
     if (this.agendaSelected) {
       this.agendaAccessApi.update(this.agendaSelected.id, agendaData).subscribe({
-        next: () => { this.snackBar.open('Événement modifié ✅', 'Fermer', { duration: 3000 }); this.loadAgendas(); }
+        next: () => { this.snackBar.open('Événement modifié ✅', 'Fermer', { duration: 3000 }); }
       });
     } else {
       this.agendaAccessApi.create(agendaData).subscribe({
-        next: () => { this.snackBar.open('Événement créé ✅', 'Fermer', { duration: 3000 }); this.loadAgendas(); }
+        next: () => { this.snackBar.open('Événement créé ✅', 'Fermer', { duration: 3000 }); }
       });
     }
   }

@@ -15,8 +15,13 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- Public -->
-        <mat-checkbox formControlName="isPublic" >Public</mat-checkbox>
+        <div class="creator-section" *ngIf="agenda != null">
+          <div class="creator-info">
+            <span class="creator-pseudo">{{ agenda?.creatorPseudo || 'Inconnu' }}</span>
+          </div>
+
+          <mat-checkbox formControlName="isPublic">Public</mat-checkbox>
+        </div>
       </div>
 
       <!-- Date début + Heure début -->

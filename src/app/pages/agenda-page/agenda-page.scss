@@ -76,7 +76,7 @@
 .agenda-grid {
   margin-top: 10px;
   display: grid;
-  grid-template-columns: 60px repeat(7, 1fr);
+  grid-template-columns: auto repeat(7, 1fr);
   grid-template-rows: auto repeat(48, 30px); // 48 demi-heures
   gap: 1px;
 }
@@ -162,6 +162,17 @@
   .event {
     margin: 0;
     border-radius: 16px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .event {
+    border-radius: 8px;
+  }
+  .time-slot {
+    border-radius: 8px;
+  }
+  .agenda-grid {
+    grid-template-rows: auto repeat(48, 15px); // 48 demi-heures
   }
 }
 @media screen and (min-width: 1000px) {

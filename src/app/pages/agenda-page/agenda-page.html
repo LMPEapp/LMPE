@@ -40,10 +40,15 @@
     </div>
 
     <!-- Labels des heures -->
-    <div class="time-label" *ngFor="let hour of getFullHours(); let i = index"
+    <ng-container *ngFor="let hour of getFullHours(); let i = index">
+      <div
+        class="time-label"
+        *ngIf="hour !== '00:00'"
         [style.grid-row]="(i * 2 + 1) + ' / span 2'">
-      {{ hour }}
-    </div>
+        {{ hour }}
+      </div>
+    </ng-container>
+
 
 
     <!-- Slots horaires -->
