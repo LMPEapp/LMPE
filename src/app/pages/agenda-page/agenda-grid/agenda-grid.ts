@@ -22,7 +22,19 @@ export class AgendaGridComponent {
 
   @Output() editEvent = new EventEmitter<AgendaOut>();
 
-  hourIndexes = Array.from({ length: 48 }, (_, i) => i);
+  hourIndexes;
+
+  constructor(){
+    const indexes: number[] = [];
+    for (let i = 0; i < 48; i += 2) {
+      indexes.push(i);
+    }
+    this.hourIndexes = indexes;
+  }
+
+  ngOnInit(): void {
+
+  }
 
   isMine(event: AgendaOut): boolean {
     return event.createdBy === this.user?.id;
