@@ -10,12 +10,21 @@ import { AgendaSignalRService } from '../../service/SignalR/AgendaSignalRService
 import { WeekSelectorComponent } from "./week-selector/week-selector";
 import { AgendaGridComponent } from "./agenda-grid/agenda-grid";
 import { MatIconModule } from "@angular/material/icon";
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-agenda-page',
   templateUrl: './agenda-page.html',
   styleUrls: ['./agenda-page.scss'],
-  imports: [WeekSelectorComponent, AgendaGridComponent, MatIconModule, AgendaEdition],
+  imports: [
+    WeekSelectorComponent,
+    AgendaGridComponent,
+    MatIconModule,
+    AgendaEdition,
+    CommonModule,
+    MatButtonModule,
+  ],
 })
 export class AgendaPage implements OnInit, OnDestroy {
 
