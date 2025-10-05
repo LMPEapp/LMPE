@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { DateOnly } from '../../../Helper/DateOnly';
 
 @Component({
   selector: 'app-courbeca-edit',
@@ -51,9 +52,6 @@ export class CourbecaEdit {
   onOpen(cc?: CourbeCA) {
     this.isOpen = true;
     this.courbeCA = cc;
-    if(this.courbeCA){
-      this.courbeCA.datePoint=toLocalDate(this.courbeCA.datePoint);
-    }
 
     this.init();
   }
@@ -70,10 +68,11 @@ export class CourbecaEdit {
         datePoint: this.courbeCA.datePoint,
       });
     } else {
+      let dateToday = new Date();
       // Mode création : reset
       this.form.reset({
         amount: "",
-        datePoint: null,
+        datePoint: dateToday,
       });
     }
   }
@@ -88,7 +87,8 @@ export class CourbecaEdit {
       let courbeCA: CourbeCAIn = {
         userId: this.user.id,
         amount,
-        datePoint
+        datePoint: datePoint,
+        datePointDateOnly: DateOnly.fromDate(datePoint)
       };
 
       this.submitForm.emit(courbeCA);

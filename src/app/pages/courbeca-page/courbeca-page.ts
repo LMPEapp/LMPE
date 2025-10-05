@@ -7,11 +7,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
-import { CourbeCA, CourbeCAIn } from '../../Models/Courbeca.model';
+import { CourbeCA, CourbeCAGroupByDatePoint, CourbeCAIn } from '../../Models/Courbeca.model';
 import { CourbeCAAccessApi } from '../../service/AccessAPi/CourbecaAccessapi/courbeca-accessapi';
 import { CourbecaSignalRService } from '../../service/SignalR/CourbecaSignalRService/courbeca-signal-rservice';
 import { CourbecaEdit } from "./courbeca-edit/courbeca-edit";
 import { toLocalDate } from '../../Helper/date-utils';
+import { DateOnly } from '../../Helper/DateOnly';
 
 @Component({
   selector: 'app-courbeca-page',
@@ -31,7 +32,7 @@ export class CourbecaPage implements OnInit {
 
   @ViewChild(CourbecaEdit) CourbecaEdit!: CourbecaEdit;
 
-  courbes: CourbeCA[] = [];
+  courbes: CourbeCAGroupByDatePoint[] = [];
   totalAmountLast30Days: number = 0;
   isLoading: boolean = false;
   errorMessage: string = '';
@@ -56,34 +57,62 @@ export class CourbecaPage implements OnInit {
   }
 
   // --- Initialisation de SignalR ---
+  // --- Initialisation de SignalR ---
   private initSignalR(): void {
     this.courbecaHub.startConnection(localStorage.getItem('token') || '')
       .then(() => this.courbecaHub.JoinCourbeca());
 
-    // ✅ Création dynamique
+    // Création dynamique
     this.courbecaHub.Created$.subscribe(newItem => {
-      if (!newItem) return; // sécurité contre null
+      if (!newItem) return;
 
-      const item: CourbeCA = {
-        ...newItem,
-        id: newItem.id!, // on force car côté serveur c'est toujours défini
-        datePoint: toLocalDate(newItem.datePoint),
-        userEmail: newItem.userEmail ?? '',
-        userPseudo: newItem.userPseudo ?? '',
-        userIsAdmin: newItem.userIsAdmin ?? false
-      };
+      // Cherche si la date existe déjà dans courbes
+      const existing = this.courbes.find(c => c.datePoint === newItem.datePoint);
 
-      this.courbes.push(item);
+      if (existing) {
+        // Met à jour l'existant
+        existing.ids += `,${newItem.id}`;
+        existing.totalAmount += newItem.amount;
+        existing.countItems += 1;
+      } else {
+        // Crée un nouveau groupe
+        this.courbes.push({
+          ids: `${newItem.id}`,
+          datePoint: newItem.datePoint,
+          datePointDateOnly: DateOnly.fromString(newItem.datePoint),
+          totalAmount: newItem.amount,
+          countItems: 1
+        });
+      }
+
       this.updateGraphAndTotal();
     });
 
-    // ✅ Suppression dynamique
-    this.courbecaHub.Deleted$.subscribe(id => {
-      if (id == null) return;
-      this.courbes = this.courbes.filter(c => c.id !== id);
+    // Suppression dynamique
+    this.courbecaHub.Deleted$.subscribe(deletedItem => {
+      if (!deletedItem) return;
+
+      const { id, datePoint, amount } = deletedItem;
+      const group = this.courbes.find(c => c.datePoint === datePoint);
+      if (!group) return;
+
+      // Supprime l'id du groupe
+      const idsArray = group.ids.split(',').filter(x => x !== String(id));
+      group.ids = idsArray.join(',');
+
+      // Ajuste total et count
+      group.totalAmount -= amount;
+      group.countItems -= 1;
+
+      // Si plus d'éléments, supprime le groupe
+      if (group.countItems <= 0) {
+        this.courbes = this.courbes.filter(c => c.datePoint !== datePoint);
+      }
+
       this.updateGraphAndTotal();
     });
   }
+
 
 
   // --- Chargement initial ---
@@ -94,12 +123,14 @@ export class CourbecaPage implements OnInit {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - 30);
+    const endDateOnly = DateOnly.fromDate(endDate);
+    const startDateOnly = DateOnly.fromDate(startDate);
 
-    this.caApi.getAll(startDate, endDate).subscribe({
-      next: (data: CourbeCA[]) => {
+    this.caApi.getAll(startDateOnly, endDateOnly).subscribe({
+      next: (data: CourbeCAGroupByDatePoint[]) => {
         this.courbes = data.map(c => ({
           ...c,
-          datePoint: toLocalDate(c.datePoint)
+          datePointDateOnly: DateOnly.fromString(c.datePoint)
         }));
         this.updateGraphAndTotal();
         this.isLoading = false;
@@ -115,7 +146,7 @@ export class CourbecaPage implements OnInit {
   // --- Recalcul du total et du graph ---
   private updateGraphAndTotal(): void {
     // Total
-    this.totalAmountLast30Days = this.courbes.reduce((sum, c) => sum + c.amount, 0);
+    this.totalAmountLast30Days = this.courbes.reduce((sum, c) => sum + c.totalAmount, 0);
 
     // Graph
     const startDate = new Date();
@@ -130,9 +161,9 @@ export class CourbecaPage implements OnInit {
     }
 
     this.courbes.forEach(c => {
-      const d = c.datePoint;
-      const key = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}`;
-      map.set(key, (map.get(key) || 0) + c.amount);
+      const d = c.datePointDateOnly;
+      const key = `${d.day.toString().padStart(2,'0')}/${d.month.toString().padStart(2,'0')}`;
+      map.set(key, (map.get(key) || 0) + c.totalAmount);
     });
 
     this.graphData = [

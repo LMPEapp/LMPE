@@ -11,7 +11,7 @@ export class CourbecaSignalRService {
   private hubConnection!: signalR.HubConnection;
 
   public Created$ = new BehaviorSubject<CourbeCA | null>(null);
-  public Deleted$ = new BehaviorSubject<number | null>(null);
+  public Deleted$ = new BehaviorSubject<CourbeCA | null>(null);
 
   constructor() { }
 
@@ -36,8 +36,8 @@ export class CourbecaSignalRService {
       this.Created$.next(agenda);
     });
 
-    this.hubConnection.on('CourbecaDeleted', (agendaId: number) => {
-      this.Deleted$.next(agendaId);
+    this.hubConnection.on('CourbecaDeleted', (agenda: CourbeCA) => {
+      this.Deleted$.next(agenda);
     });
   }
 
