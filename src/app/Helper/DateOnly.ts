@@ -42,4 +42,19 @@ export class DateOnly {
   toDate(): Date {
     return new Date(this.year, this.month - 1, this.day, 0, 0, 0);
   }
+  isBefore(other: DateOnly): boolean {
+    return this.toDate().getTime() < other.toDate().getTime();
+  }
+
+  isAfter(other: DateOnly): boolean {
+    return this.toDate().getTime() > other.toDate().getTime();
+  }
+
+  isEqual(other: DateOnly): boolean {
+    return this.year === other.year && this.month === other.month && this.day === other.day;
+  }
+
+  isBetween(start: DateOnly, end: DateOnly): boolean {
+    return !this.isBefore(start) && !this.isAfter(end);
+  }
 }

@@ -38,6 +38,9 @@ export class CourbecaPage implements OnInit {
   errorMessage: string = '';
   graphData: any[] = [];
 
+  endDateOnly:DateOnly;
+  startDateOnly:DateOnly;
+
   colorScheme: Color = {
     name: 'blueScheme',
     selectable: true,
@@ -49,7 +52,13 @@ export class CourbecaPage implements OnInit {
     private caApi: CourbeCAAccessApi,
     private courbecaHub: CourbecaSignalRService,
     private snackBar: MatSnackBar
-  ) { }
+  ) {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 30);
+    this.endDateOnly = DateOnly.fromDate(endDate);
+    this.startDateOnly = DateOnly.fromDate(startDate);
+  }
 
   ngOnInit(): void {
     this.loadLast30Days();
@@ -66,20 +75,22 @@ export class CourbecaPage implements OnInit {
     this.courbecaHub.Created$.subscribe(newItem => {
       if (!newItem) return;
 
-      // Cherche si la date existe déjà dans courbes
+      const newDate = DateOnly.fromString(newItem.datePoint);
+
+      // Ne push que si la date est dans la plage
+      if (!newDate.isBetween(this.startDateOnly, this.endDateOnly)) return;
+
       const existing = this.courbes.find(c => c.datePoint === newItem.datePoint);
 
       if (existing) {
-        // Met à jour l'existant
         existing.ids += `,${newItem.id}`;
         existing.totalAmount += newItem.amount;
         existing.countItems += 1;
       } else {
-        // Crée un nouveau groupe
         this.courbes.push({
           ids: `${newItem.id}`,
           datePoint: newItem.datePoint,
-          datePointDateOnly: DateOnly.fromString(newItem.datePoint),
+          datePointDateOnly: newDate,
           totalAmount: newItem.amount,
           countItems: 1
         });
@@ -87,6 +98,7 @@ export class CourbecaPage implements OnInit {
 
       this.updateGraphAndTotal();
     });
+
 
     // Suppression dynamique
     this.courbecaHub.Deleted$.subscribe(deletedItem => {
@@ -123,10 +135,10 @@ export class CourbecaPage implements OnInit {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - 30);
-    const endDateOnly = DateOnly.fromDate(endDate);
-    const startDateOnly = DateOnly.fromDate(startDate);
+    this.endDateOnly = DateOnly.fromDate(endDate);
+    this.startDateOnly = DateOnly.fromDate(startDate);
 
-    this.caApi.getAll(startDateOnly, endDateOnly).subscribe({
+    this.caApi.getAll(this.startDateOnly, this.endDateOnly).subscribe({
       next: (data: CourbeCAGroupByDatePoint[]) => {
         this.courbes = data.map(c => ({
           ...c,
