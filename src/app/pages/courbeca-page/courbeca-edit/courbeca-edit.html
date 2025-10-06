@@ -22,7 +22,18 @@
         </mat-error>
       </mat-form-field>
 
-      <div class="flex"></div>
+      <div class="flex">
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="10"></textarea>
+        </mat-form-field>
+        <mat-error *ngIf="form.get('description')?.hasError('required')">
+          description requis
+        </mat-error>
+        <mat-error *ngIf="form.get('description')?.hasError('maxlength')">
+          Maximum 255 caractères
+        </mat-error>
+      </div>
 
       <div class="form-actions">
         <button mat-raised-button color="warn" type="button" (click)="onClose()">Annuler</button>

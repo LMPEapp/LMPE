@@ -99,16 +99,32 @@ export class AgendaEdition {
         isPublic: this.agenda.isPublic
       });
     } else {
-      // Mode création : reset
+      let now = new Date();
+
+      // Arrondir au demi‑heure la plus proche
+      let minutes = now.getMinutes();
+      if (minutes < 30) minutes = 30;
+      else {
+        minutes = 0;
+        now.setHours(now.getHours() + 1);
+      }
+
+      let startDateTime = new Date(now);
+      startDateTime.setMinutes(minutes, 0, 0); // secondes et ms à 0
+
+      // End = 30 minutes après start
+      let endDateTime = new Date(startDateTime.getTime() + 30 * 60000);
+
       this.form.reset({
         title: '',
         description: '',
-        startDate: null,
-        startTime: null,
-        endDate: null,
-        endTime: null,
+        startDate: startDateTime,
+        startTime: this.formatTime(startDateTime),
+        endDate: endDateTime,
+        endTime: this.formatTime(endDateTime),
         isPublic: false
       });
+
     }
   }
 

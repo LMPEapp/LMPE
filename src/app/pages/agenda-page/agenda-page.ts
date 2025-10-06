@@ -56,13 +56,28 @@ export class AgendaPage implements OnInit, OnDestroy {
       .then(() => this.agendaHub.joinAgendasGlobal());
 
     this.agendaHub.agendaCreated$.subscribe(agd => {
-      if (agd && !this.agendas.find(a => a.id === agd.id)) this.agendas.push(agd);
+      if (agd && !this.agendas.find(a => a.id === agd.id)) {
+        if(agd.isPublic || agd.createdBy == this.user?.id){
+          this.agendas.push(agd);
+        }
+      }
     });
 
     this.agendaHub.agendaUpdated$.subscribe(agd => {
       if (agd) {
-        const index = this.agendas.findIndex(a => a.id === agd.id);
-        if (index !== -1) this.agendas[index] = agd;
+        if(!agd.isPublic && agd.createdBy != this.user?.id){
+          this.agendas = this.agendas.filter(a => a.id !== agd.id);
+        }
+        else{
+          const index = this.agendas.findIndex(a => a.id === agd.id);
+          if (index !== -1){
+            this.agendas[index] = agd;
+          }
+          else{
+            this.agendas.push(agd);
+          }
+        }
+        
       }
     });
 

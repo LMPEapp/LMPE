@@ -44,7 +44,8 @@ export class CourbecaEdit {
   constructor(private fb: FormBuilder, public auth: AuthService) {
     this.form = this.fb.group({
       amount: ['', [Validators.required]],
-      datePoint: [null, Validators.required],
+      datePoint: [null, [Validators.required]],
+      description: ['', [Validators.required, Validators.maxLength(255)]],
     });
     this.user = auth.loginData?.user;
   }
@@ -66,6 +67,7 @@ export class CourbecaEdit {
       this.form.patchValue({
         amount: this.courbeCA.amount,
         datePoint: this.courbeCA.datePoint,
+        description: this.courbeCA.description
       });
     } else {
       let dateToday = new Date();
@@ -73,6 +75,7 @@ export class CourbecaEdit {
       this.form.reset({
         amount: "",
         datePoint: dateToday,
+        description: ''
       });
     }
   }
@@ -80,7 +83,7 @@ export class CourbecaEdit {
   onSubmit() {
     if (!this.form.valid) return;
 
-    const { amount, datePoint } = this.form.value;
+    const { amount, datePoint, description } = this.form.value;
 
 
     if(this.user){
@@ -88,7 +91,8 @@ export class CourbecaEdit {
         userId: this.user.id,
         amount,
         datePoint: datePoint,
-        datePointDateOnly: DateOnly.fromDate(datePoint)
+        datePointDateOnly: DateOnly.fromDate(datePoint),
+        description
       };
 
       this.submitForm.emit(courbeCA);
