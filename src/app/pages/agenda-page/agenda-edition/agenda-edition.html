@@ -15,8 +15,8 @@
           </mat-error>
         </mat-form-field>
 
-        <div class="creator-section" *ngIf="agenda != null">
-          <div class="creator-info">
+        <div class="creator-section">
+          <div class="creator-info" *ngIf="agenda != null">
             <span class="creator-pseudo">{{ agenda?.creatorPseudo || 'Inconnu' }}</span>
           </div>
 
