@@ -13,6 +13,7 @@ import { CourbecaSignalRService } from '../../service/SignalR/CourbecaSignalRSer
 import { CourbecaEdit } from "./courbeca-edit/courbeca-edit";
 import { toLocalDate } from '../../Helper/date-utils';
 import { DateOnly } from '../../Helper/DateOnly';
+import { ShortNumberFrPipe } from "../../Helper/ShortNumber/short-number-pipe";
 
 @Component({
   selector: 'app-courbeca-page',
@@ -25,8 +26,9 @@ import { DateOnly } from '../../Helper/DateOnly';
     NgxChartsModule,
     MatButtonModule,
     MatIconModule,
-    CourbecaEdit
-  ]
+    CourbecaEdit,
+    ShortNumberFrPipe
+]
 })
 export class CourbecaPage implements OnInit {
 
