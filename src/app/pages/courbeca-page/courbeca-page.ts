@@ -140,7 +140,7 @@ export class CourbecaPage implements OnInit {
     this.endDateOnly = DateOnly.fromDate(endDate);
     this.startDateOnly = DateOnly.fromDate(startDate);
 
-    this.caApi.getAll(this.startDateOnly, this.endDateOnly).subscribe({
+    this.caApi.GetAllGroupeByDate(this.startDateOnly, this.endDateOnly).subscribe({
       next: (data: CourbeCAGroupByDatePoint[]) => {
         this.courbes = data.map(c => ({
           ...c,
@@ -148,6 +148,16 @@ export class CourbecaPage implements OnInit {
         }));
         this.updateGraphAndTotal();
         this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = 'Impossible de charger les données.';
+        console.error(err);
+        this.isLoading = false;
+      }
+    });
+    this.caApi.GetAll().subscribe({
+      next: (data: CourbeCA[]) => {
+        console.log(data);
       },
       error: (err) => {
         this.errorMessage = 'Impossible de charger les données.';

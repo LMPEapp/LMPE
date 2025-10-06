@@ -12,7 +12,7 @@ export class CourbeCAAccessApi {
 
   constructor(private api: AccessApiService) {}
 
-  getAll(startDate: DateOnly, endDate: DateOnly): Observable<CourbeCAGroupByDatePoint[]> {
+  GetAllGroupeByDate(startDate: DateOnly, endDate: DateOnly): Observable<CourbeCAGroupByDatePoint[]> {
     const token = localStorage.getItem('token') || '';
 
     const params: Record<string, string> = {};
@@ -20,6 +20,15 @@ export class CourbeCAAccessApi {
     if (endDate) params['endDate'] = endDate.toString();
 
     return this.api.get<CourbeCAGroupByDatePoint[]>(this.controller, '', params, token);
+  }
+
+  GetAll(lastId: number | null = null): Observable<CourbeCA[]> {
+    const token = localStorage.getItem('token') || '';
+
+    const params: Record<string, string> = {};
+    if (lastId) params['lastId'] = lastId.toString();
+
+    return this.api.get<CourbeCA[]>(`${this.controller}/data`, '', params, token);
   }
 
   getById(id: number): Observable<CourbeCA> {

@@ -17,7 +17,7 @@
 
         <div class="creator-section">
           <div class="creator-info" *ngIf="agenda != null">
-            <span class="creator-pseudo">{{ agenda?.creatorPseudo || 'Inconnu' }}</span>
+            <span class="creator-pseudo">{{ agenda.creatorPseudo }}</span>
           </div>
 
           <mat-checkbox formControlName="isPublic">Public</mat-checkbox>
