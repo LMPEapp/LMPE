@@ -1,0 +1,43 @@
+<div class="courbeca-container" *ngIf="!isLoading; else loading">
+
+  <mat-card *ngFor="let element of courbes" class="courbe-card mat-elevation-z2">
+
+    <mat-card-header>
+      <mat-card-title class="user">{{ element.userPseudo }}</mat-card-title>
+      <mat-card-subtitle class="user">{{ element.userEmail }}</mat-card-subtitle>
+      <div class="date">{{ formatDate(element.createdAt) }}</div>
+      <div class="amount" [ngClass]="getAmountClass(element.amount)">
+        {{ element.amount | shortNumber:2 }}€
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="description-row">
+        <div class="description">
+          {{ element.description }}
+        </div>
+        <button mat-icon-button color="warn" (click)="deleteCourbe(element)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+
+  </mat-card>
+
+  <div *ngIf="courbes.length === 0" class="no-data">
+    Aucune donnée disponible.
+  </div>
+
+  <!-- Bouton charger plus -->
+  <div class="load-more-container" *ngIf="!isLoading && courbes.length > 0">
+    <button mat-stroked-button color="primary" (click)="loadMore()">Plus de données</button>
+  </div>
+
+</div>
+
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
+    <p>Chargement des données...</p>
+  </div>
+</ng-template>

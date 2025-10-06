@@ -1,25 +1,38 @@
 <div class="courbeca-container" *ngIf="!isLoading; else loading">
+
   <mat-card class="total-card" appearance="outlined">
     <h2>Total CA (30 derniers jours)</h2>
-    <h1 class="total-amount">{{ totalAmountLast30Days | shortNumber }} €</h1>
+    <h1 class="total-amount">{{ totalAmountLast30Days | shortNumber:2 }} €</h1>
   </mat-card>
 
-  <mat-card class="graph-card" appearance="outlined">
-    <h2>Évolution du CA quotidien</h2>
-    <div class="chart-wrapper">
-      <ngx-charts-line-chart
-        [results]="graphData"
-        [xAxis]="true"
-        [yAxis]="true"
-        [legend]="false"
-        [showXAxisLabel]="true"
-        [showYAxisLabel]="true"
-        [autoScale]="true"
-        [timeline]="false"
-        [scheme]="colorScheme">
-      </ngx-charts-line-chart>
-    </div>
-  </mat-card>
+  <mat-tab-group mat-stretch-tabs [dynamicHeight]="true" [selectedIndex]="0">
+
+    <!-- Onglet Graph -->
+    <mat-tab label="Graphique">
+      <mat-card class="graph-card" appearance="outlined">
+        <h2>Évolution du CA quotidien</h2>
+        <div class="chart-wrapper">
+          <ngx-charts-line-chart
+            [results]="graphData"
+            [xAxis]="true"
+            [yAxis]="true"
+            [legend]="false"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            [autoScale]="true"
+            [timeline]="false"
+            [scheme]="colorScheme">
+          </ngx-charts-line-chart>
+        </div>
+      </mat-card>
+    </mat-tab>
+
+    <!-- Onglet Liste -->
+    <mat-tab label="Liste">
+      <app-courbeca-liste></app-courbeca-liste>
+    </mat-tab>
+
+  </mat-tab-group>
 
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}

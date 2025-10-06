@@ -11,7 +11,9 @@ export class CourbecaSignalRService {
   private hubConnection!: signalR.HubConnection;
 
   public Created$ = new BehaviorSubject<CourbeCA | null>(null);
+  public CreatedForListe$ = new BehaviorSubject<CourbeCA | null>(null);
   public Deleted$ = new BehaviorSubject<CourbeCA | null>(null);
+  public DeletedForListe$ = new BehaviorSubject<CourbeCA | null>(null);
 
   constructor() { }
 
@@ -33,10 +35,12 @@ export class CourbecaSignalRService {
 
   private registerEvents() {
     this.hubConnection.on('CourbecaCreated', (agenda: CourbeCA) => {
+      this.CreatedForListe$.next(agenda);
       this.Created$.next(agenda);
     });
 
     this.hubConnection.on('CourbecaDeleted', (agenda: CourbeCA) => {
+      this.DeletedForListe$.next(agenda);
       this.Deleted$.next(agenda);
     });
   }
@@ -55,5 +59,7 @@ export class CourbecaSignalRService {
   private resetSubjects() {
     this.Created$.next(null);
     this.Deleted$.next(null);
+    this.CreatedForListe$.next(null);
+    this.DeletedForListe$.next(null);
   }
 }

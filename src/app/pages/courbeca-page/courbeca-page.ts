@@ -14,6 +14,8 @@ import { CourbecaEdit } from "./courbeca-edit/courbeca-edit";
 import { toLocalDate } from '../../Helper/date-utils';
 import { DateOnly } from '../../Helper/DateOnly';
 import { ShortNumberFrPipe } from "../../Helper/ShortNumber/short-number-pipe";
+import { CourbecaListe } from "./courbeca-liste/courbeca-liste";
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-courbeca-page',
@@ -27,7 +29,9 @@ import { ShortNumberFrPipe } from "../../Helper/ShortNumber/short-number-pipe";
     MatButtonModule,
     MatIconModule,
     CourbecaEdit,
-    ShortNumberFrPipe
+    MatTabsModule,
+    ShortNumberFrPipe,
+    CourbecaListe
 ]
 })
 export class CourbecaPage implements OnInit {
@@ -65,6 +69,9 @@ export class CourbecaPage implements OnInit {
   ngOnInit(): void {
     this.loadLast30Days();
     this.initSignalR();
+  }
+  ngOnDestroy() {
+    this.courbecaHub.LeaveCourbeca();
   }
 
   // --- Initialisation de SignalR ---
@@ -148,16 +155,6 @@ export class CourbecaPage implements OnInit {
         }));
         this.updateGraphAndTotal();
         this.isLoading = false;
-      },
-      error: (err) => {
-        this.errorMessage = 'Impossible de charger les données.';
-        console.error(err);
-        this.isLoading = false;
-      }
-    });
-    this.caApi.GetAll().subscribe({
-      next: (data: CourbeCA[]) => {
-        console.log(data);
       },
       error: (err) => {
         this.errorMessage = 'Impossible de charger les données.';
