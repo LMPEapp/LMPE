@@ -1,3 +1,4 @@
+import { CourbeCA } from './../../../Models/Courbeca.model';
 import { Component, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
@@ -8,11 +9,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { CourbeCAAccessApi } from '../../../service/AccessAPi/CourbecaAccessapi/courbeca-accessapi';
 import { CourbecaSignalRService } from '../../../service/SignalR/CourbecaSignalRService/courbeca-signal-rservice';
-import { CourbeCA } from '../../../Models/Courbeca.model';
 import { ShortNumberFrPipe } from "../../../Helper/ShortNumber/short-number-pipe";
 import { MatCardModule } from "@angular/material/card";
 import { toLocalDate } from '../../../Helper/date-utils';
 import { ValidationDialogComponent } from '../../../ExternComposent/validation-dialog/validation-dialog';
+import { AuthService } from '../../../service/Auth/auth';
+import { User } from '../../../Models/user.model';
 
 @Component({
   selector: 'app-courbeca-liste',
@@ -36,12 +38,16 @@ export class CourbecaListe {
   courbes: CourbeCA[] = [];
   isLoading: boolean = false;
   errorMessage: string = '';
+  user: User | undefined;
 
   constructor(
     private caApi: CourbeCAAccessApi,
     private courbecaHub: CourbecaSignalRService,
-    private snackBar: MatSnackBar
-  ) { }
+    private snackBar: MatSnackBar,
+    public auth: AuthService
+  ) {
+      this.user = auth.loginData?.user;
+    }
 
   ngOnInit(): void {
     this.init();
@@ -49,6 +55,16 @@ export class CourbecaListe {
   }
   ngOnDestroy() {
     this.courbecaHub.LeaveCourbeca();
+  }
+
+  rightDelete(CourbeCA:CourbeCA): boolean{
+    if(this.user?.isAdmin){
+      return true;
+    }
+    if(CourbeCA.userId == this.user?.id){
+      return true;
+    }
+    return false;
   }
 
   // --- Initialisation de SignalR ---

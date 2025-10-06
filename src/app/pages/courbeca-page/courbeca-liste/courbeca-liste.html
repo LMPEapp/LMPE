@@ -16,9 +16,11 @@
         <div class="description">
           {{ element.description }}
         </div>
-        <button mat-icon-button class="delete-btn" (click)="onDeleteMessage(element)">
+        <ng-container *ngIf="rightDelete(element)">
+          <button mat-icon-button class="delete-btn" (click)="onDeleteMessage(element)">
           <mat-icon>delete</mat-icon>
         </button>
+        </ng-container>
       </div>
     </mat-card-content>
 
