@@ -1,7 +1,7 @@
 <div class="courbeca-container" *ngIf="!isLoading; else loading">
   <mat-card class="total-card" appearance="outlined">
     <h2>Total CA (30 derniers jours)</h2>
-    <h1 class="total-amount">{{ totalAmountLast30Days | number:'1.0-0' }} €</h1>
+    <h1 class="total-amount">{{ totalAmountLast30Days | number:'1.2-2' }} €</h1>
   </mat-card>
 
   <mat-card class="graph-card" appearance="outlined">

@@ -20,6 +20,9 @@
         <mat-error *ngIf="form.get('amount')?.hasError('required')">
           Montant requis
         </mat-error>
+        <mat-error *ngIf="form.get('amount')?.hasError('pattern')">
+          Le montant doit respecter le format XXXXXXXXXX.XX
+        </mat-error>
       </mat-form-field>
 
       <div class="flex">

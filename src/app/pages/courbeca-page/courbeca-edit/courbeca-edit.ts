@@ -43,7 +43,7 @@ export class CourbecaEdit {
 
   constructor(private fb: FormBuilder, public auth: AuthService) {
     this.form = this.fb.group({
-      amount: ['', [Validators.required]],
+      amount: ['', [Validators.required,Validators.pattern(/^\d{1,10}(\.\d{1,2})?$/)]],
       datePoint: [null, [Validators.required]],
       description: ['', [Validators.required, Validators.maxLength(255)]],
     });
