@@ -109,7 +109,7 @@ export class CourbecaListe {
     this.LigneSelected=event.id;
     this.alert.open(
       'Supprimer le Message',
-      'Êtes-vous sûr de vouloir Supprimer le Message ?',
+      'Êtes-vous sûr de vouloir Supprimer la Ligne ?',
       false
     );
   }
