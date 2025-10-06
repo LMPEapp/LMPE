@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,7 @@ import { CourbeCA } from '../../../Models/Courbeca.model';
 import { ShortNumberFrPipe } from "../../../Helper/ShortNumber/short-number-pipe";
 import { MatCardModule } from "@angular/material/card";
 import { toLocalDate } from '../../../Helper/date-utils';
+import { ValidationDialogComponent } from '../../../ExternComposent/validation-dialog/validation-dialog';
 
 @Component({
   selector: 'app-courbeca-liste',
@@ -23,12 +24,14 @@ import { toLocalDate } from '../../../Helper/date-utils';
     MatButtonModule,
     MatProgressSpinnerModule,
     ShortNumberFrPipe,
-    MatCardModule
+    MatCardModule,
+    ValidationDialogComponent
 ],
   templateUrl: './courbeca-liste.html',
   styleUrls: ['./courbeca-liste.scss']
 })
 export class CourbecaListe {
+  @ViewChild(ValidationDialogComponent) alert!: ValidationDialogComponent;
 
   courbes: CourbeCA[] = [];
   isLoading: boolean = false;
@@ -85,21 +88,14 @@ export class CourbecaListe {
     });
   }
 
-  deleteCourbe(item: CourbeCA): void {
-    this.caApi.delete(item.id).subscribe({
-      next: () => {
-        const index = this.courbes.findIndex(c => c.id === item.id);
-        if (index !== -1) {
-          this.courbes.splice(index, 1);
-          this.courbes = [...this.courbes];
-        }
-        this.snackBar.open('Ligne supprimée', 'Fermer', { duration: 2000 });
-      },
-      error: (err) => {
-        console.error(err);
-        this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
-      }
-    });
+  LigneSelected?:number;
+  onDeleteMessage(event: CourbeCA) {
+    this.LigneSelected=event.id;
+    this.alert.open(
+      'Supprimer le Message',
+      'Êtes-vous sûr de vouloir Supprimer le Message ?',
+      false
+    );
   }
 
   getAmountClass(amount: number): string {
@@ -122,5 +118,19 @@ export class CourbecaListe {
   }
   loadMore(): void {
     this.loadPage();
+  }
+  onAlertClosed(event: boolean) {
+    if(event && this.LigneSelected){
+      this.caApi.delete(this.LigneSelected).subscribe({
+        next: () => {
+          this.LigneSelected=undefined;
+          this.snackBar.open('Ligne supprimée', 'Fermer', { duration: 2000 });
+        },
+        error: (err) => {
+          console.error(err);
+          this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+        }
+      });
+    }
   }
 }

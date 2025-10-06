@@ -16,7 +16,7 @@
         <div class="description">
           {{ element.description }}
         </div>
-        <button mat-icon-button color="warn" (click)="deleteCourbe(element)">
+        <button mat-icon-button class="delete-btn" (click)="onDeleteMessage(element)">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
@@ -41,3 +41,5 @@
     <p>Chargement des données...</p>
   </div>
 </ng-template>
+
+<app-validation-dialog (closed)="onAlertClosed($event)"></app-validation-dialog>

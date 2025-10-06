@@ -5,6 +5,7 @@
   padding: 8px 0;
 }
 
+/* Carte */
 .courbe-card {
   mat-card-header {
     display: flex;
@@ -13,11 +14,13 @@
 
     mat-card-title {
       font-weight: 600;
+      overflow: hidden;
     }
 
     mat-card-subtitle {
       font-size: 0.8rem;
       color: #777;
+      overflow: hidden;
     }
 
     .date {
@@ -25,22 +28,23 @@
       color: #555;
       white-space: pre-wrap;
     }
-    .user {
-      overflow: hidden;
-    }
 
     .amount {
       font-weight: 600;
       font-size: 1.1rem;
     }
 
-    .amount-positive { color: green; }
-    .amount-negative { color: red; }
+    .amount-positive {
+      color: green;
+    }
+
+    .amount-negative {
+      color: red;
+    }
   }
 
   mat-card-content {
     margin-top: 8px;
-
 
     .description-row {
       display: flex;
@@ -53,16 +57,27 @@
         flex: 1;
         margin-right: 8px;
       }
+
+      .delete-btn {
+        color: #d32f2f; /* rouge corbeille */
+        transition: color 0.2s;
+
+        &:hover {
+          color: #b71c1c;
+        }
+      }
     }
   }
 }
 
+/* Aucun élément */
 .no-data {
   text-align: center;
   color: #777;
   margin-top: 20px;
 }
 
+/* Loader */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -71,6 +86,7 @@
   height: 200px;
 }
 
+/* Bouton "Plus de données" */
 .load-more-container {
   display: flex;
   justify-content: center;
