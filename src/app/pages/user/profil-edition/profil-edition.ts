@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import { ChangePasswordDialogComponent } from '../../../ExternComposent/change-password-dialog/change-password-dialog';
 import { MatCardModule } from '@angular/material/card';
+import { AuthService } from '../../../service/Auth/auth';
 
 @Component({
   selector: 'app-profil-edition',
@@ -32,14 +33,16 @@ export class ProfilEdition {
   @Output() submitForm = new EventEmitter<UserIn>();
 
   form: FormGroup;
+  userLocal?: User;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, public auth: AuthService) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
       pseudo: ['', [Validators.required, Validators.maxLength(50)]],
       urlImage: ['', Validators.maxLength(255)],
       isAdmin: [false]
     });
+    this.userLocal = auth.loginData?.user; 
   }
 
   onOpen(user?: User) {

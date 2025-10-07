@@ -60,7 +60,7 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-checkbox formControlName="isAdmin">Admin</mat-checkbox>
+      <mat-checkbox *ngIf="userLocal?.isAdmin" formControlName="isAdmin">Admin</mat-checkbox>
 
       <div class="flex"></div>
       <div class="form-actions">
