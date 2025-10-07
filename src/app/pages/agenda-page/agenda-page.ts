@@ -51,12 +51,12 @@ export class AgendaPage implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Connexion initiale au hub
-    this.init(true);
+    this.init();
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
-        this.init(false);
+        this.init();
       }
     });
   }
@@ -65,12 +65,7 @@ export class AgendaPage implements OnInit, OnDestroy {
     this.agendaHub.leaveAgendasGlobal();
   }
 
-  private init(isFirstInit: boolean) {
-
-    if(isFirstInit){
-      this.setToday();
-      this.subscibeSignalR();
-    }
+  private init() {
 
     const state = this.agendaHub.connectionState;
 

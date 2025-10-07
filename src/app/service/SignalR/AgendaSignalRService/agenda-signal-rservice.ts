@@ -59,17 +59,6 @@ export class AgendaSignalRService {
   leaveAgendasGlobal() {
     this.resetSubjects();
     this.hubConnection.invoke('LeaveAgendasGlobal')
-      .catch(err => console.error(err));
-  }
-
-  joinAgenda(agendaId: number) {
-    this.hubConnection.invoke('JoinAgenda', agendaId)
-      .catch(err => console.error(err));
-  }
-
-  leaveAgenda(agendaId: number) {
-    this.resetSubjects();
-    this.hubConnection.invoke('LeaveAgenda', agendaId)
       .catch(err => console.error(err))
       .finally(() => {
       if (this.hubConnection) {
@@ -79,6 +68,24 @@ export class AgendaSignalRService {
       }
     });
   }
+
+  // joinAgenda(agendaId: number) {
+  //   this.hubConnection.invoke('JoinAgenda', agendaId)
+  //     .catch(err => console.error(err));
+  // }
+
+  // leaveAgenda(agendaId: number) {
+  //   this.resetSubjects();
+  //   this.hubConnection.invoke('LeaveAgenda', agendaId)
+  //     .catch(err => console.error(err))
+  //     .finally(() => {
+  //     if (this.hubConnection) {
+  //       this.hubConnection.stop()
+  //         .then(() => console.log('🔌 Hub SignalR stoppé proprement'))
+  //         .catch(err => console.error('Erreur lors de l’arrêt du hub', err));
+  //     }
+  //   });
+  // }
 
   private resetSubjects() {
     this.agendaCreated$.next(null);

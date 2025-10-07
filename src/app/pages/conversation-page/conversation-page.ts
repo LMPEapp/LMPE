@@ -67,12 +67,12 @@ export class ConversationPage {
 
   ngOnInit() {    
     // Connexion initiale au hub
-    this.init(true);
+    this.init();
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
-        this.init(false);
+        this.init();
       }
     });
 
@@ -85,12 +85,7 @@ export class ConversationPage {
     }
   }
 
-  private init(isFirstInit: boolean) {
-
-    if(isFirstInit){
-      this.getData();
-      this.subscibeSignalR();
-    }
+  private init() {
     const state = this.messageHub.connectionState;
 
     if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {

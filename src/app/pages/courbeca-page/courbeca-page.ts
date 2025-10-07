@@ -66,12 +66,12 @@ export class CourbecaPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.init(true);
+    this.init();
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
-        this.init(false);
+        this.init();
       }
     });
   }
@@ -79,11 +79,7 @@ export class CourbecaPage implements OnInit {
     this.courbecaHub.LeaveCourbeca();
   }
 
-  private init(isFirstInit: boolean){
-    if(isFirstInit){
-      this.loadLast30Days();
-      this.subscibeSignalR();
-    }
+  private init(){
 
     const state = this.courbecaHub.connectionState;
 
