@@ -15,6 +15,8 @@ import { ConversationComponent } from "../conversation-component/conversation-co
 import { UserAccessapi } from '../../service/AccessAPi/userAccessapi/user-accessapi';
 import { AgendaPage } from "../agenda-page/agenda-page";
 import { CourbecaPage } from "../courbeca-page/courbeca-page";
+import { MessageAccessApi } from '../../service/AccessAPi/MessageAccessApi/message-access-api';
+import { HomeSignalRService } from '../../service/SignalR/HomeSignalRService/home-signal-rservice';
 
 @Component({
   selector: 'app-home',
@@ -42,8 +44,11 @@ export class HomeComponent {
 
   user: User | undefined;
 
+  CountMessageNotification: number = 0;
+
   constructor(private router: Router, public auth: AuthService,private userAccessapi:UserAccessapi,
-    private snackBar: MatSnackBar,private route: ActivatedRoute) {
+    private snackBar: MatSnackBar,private route: ActivatedRoute, private MessageAccessApi:MessageAccessApi,
+    private HomeHub: HomeSignalRService) {
       this.user = auth.loginData?.user;
     }
 
@@ -57,6 +62,60 @@ export class HomeComponent {
     this.route.fragment.subscribe(fragment => {
       if (fragment) {
         this.onSelectTab(fragment as 'stats' | 'messages' | 'agenda' | 'bulletin');
+      }
+    });
+
+    this.init();
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
+        this.init();
+      }
+    });
+  }
+  ngOnDestroy() {
+    if(this.user){
+      this.HomeHub.leave(this.user.id);
+    }
+
+  }
+
+  private init(){
+    const state = this.HomeHub.connectionState;
+
+    if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
+      console.log(`⏸️ SignalR déjà en cours (${state})`);
+      return;
+    }
+
+    this.getData();
+    this.initSignalR();
+    this.subscibeSignalR();
+  }
+  getData(){
+    this.MessageAccessApi.getNotificationCount().subscribe((data)=>{
+      this.CountMessageNotification=data;
+    })
+  }
+
+  private initSignalR(): void {
+    this.HomeHub.startConnection(localStorage.getItem('token') || '')
+      .then(() => {
+        console.log('🔗 SignalR connecté');
+        if(this.user){
+          this.HomeHub.join(this.user.id);
+        }
+      })
+      .catch(err => {
+        console.error('❌ Erreur lors de la connexion SignalR', err);
+      });
+  }
+
+  private subscibeSignalR(): void {
+    this.HomeHub.addmessage$.subscribe(msg => {
+      if (msg) {
+        this.CountMessageNotification++;
       }
     });
   }

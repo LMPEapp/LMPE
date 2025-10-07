@@ -1,86 +1,95 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav-content>
-      <!-- Toolbar -->
-      <mat-toolbar color="primary" class="toolbar">
-        <div class="toolbar">
-          <button mat-icon-button (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-          <span class="toolbar-title">{{ GroupeConversation?.name }}</span>
-        </div>
-        <div class="user-actions">
-          <button mat-icon-button [matMenuTriggerFor]="menu">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <div class="menu">
-              <button mat-menu-item (click)="onGestion()">
-                <mat-icon>group_add</mat-icon>
-                <span>Ajout User</span>
-              </button>
-              <button mat-menu-item (click)="onleaveGroupe()">
-                <mat-icon>exit_to_app</mat-icon>
-                <span>Quiter la Conversation</span>
-              </button>
-            </div>
-          </mat-menu>
-        </div>
-      </mat-toolbar>
+<div class="body">
+  <mat-sidenav-container class="sidenav-container" *ngIf="!isLoading; else loading">
+    <mat-sidenav-content>
+        <!-- Toolbar -->
+        <mat-toolbar color="primary" class="toolbar">
+          <div class="toolbar">
+            <button mat-icon-button (click)="goBack()">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="toolbar-title">{{ GroupeConversation?.name }}</span>
+          </div>
+          <div class="user-actions">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <div class="menu">
+                <button mat-menu-item (click)="onGestion()">
+                  <mat-icon>group_add</mat-icon>
+                  <span>Ajout User</span>
+                </button>
+                <button mat-menu-item (click)="onleaveGroupe()">
+                  <mat-icon>exit_to_app</mat-icon>
+                  <span>Quiter la Conversation</span>
+                </button>
+              </div>
+            </mat-menu>
+          </div>
+        </mat-toolbar>
 
-      <!-- Zone principale -->
-      <div class="conversation-container">
-        <div class="messages-wrapper" #messagesWrapper (scroll)="onScroll()">
-          <div *ngFor="let msg of messages" [id]="'msg-' + msg.id">
-            <app-message [message]="msg" [currentUserId]="user?.id" (update)="onUpdateMessage($event)" (delete)="onDeleteMessage($event)"></app-message>
+        <!-- Zone principale -->
+        <div class="conversation-container">
+          <div class="messages-wrapper" #messagesWrapper (scroll)="onScroll()">
+            <div *ngFor="let msg of messages" [id]="'msg-' + msg.id">
+              <app-message [message]="msg" [currentUserId]="user?.id" (update)="onUpdateMessage($event)" (delete)="onDeleteMessage($event)"></app-message>
+            </div>
           </div>
         </div>
-      </div>
 
 
-      <!-- 👇 Zone "utilisateurs en train d'écrire" -->
-      <div class="typing-users" *ngIf="typingUsers.length > 0">
-        <ng-container *ngIf="typingUsers.length === 1">
-          <span><strong>{{ typingUsers[0].pseudo }}</strong> est en train d'écrire...</span>
-        </ng-container>
+        <!-- 👇 Zone "utilisateurs en train d'écrire" -->
+        <div class="typing-users" *ngIf="typingUsers.length > 0">
+          <ng-container *ngIf="typingUsers.length === 1">
+            <span><strong>{{ typingUsers[0].pseudo }}</strong> est en train d'écrire...</span>
+          </ng-container>
 
-        <ng-container *ngIf="typingUsers.length === 2">
-          <span>
-            <strong>{{ typingUsers[0].pseudo }}</strong> et <strong>{{ typingUsers[1].pseudo }}</strong> sont en train d'écrire...
-          </span>
-        </ng-container>
+          <ng-container *ngIf="typingUsers.length === 2">
+            <span>
+              <strong>{{ typingUsers[0].pseudo }}</strong> et <strong>{{ typingUsers[1].pseudo }}</strong> sont en train d'écrire...
+            </span>
+          </ng-container>
 
-        <ng-container *ngIf="typingUsers.length > 2">
-          <span>
-            <strong>{{ typingUsers[0].pseudo }}</strong>, <strong>{{ typingUsers[1].pseudo }}</strong>
-            et {{ typingUsers.length - 2 }} autre{{ typingUsers.length - 2 > 1 ? 's' : '' }}
-            sont en train d'écrire...
-          </span>
-        </ng-container>
-      </div>
+          <ng-container *ngIf="typingUsers.length > 2">
+            <span>
+              <strong>{{ typingUsers[0].pseudo }}</strong>, <strong>{{ typingUsers[1].pseudo }}</strong>
+              et {{ typingUsers.length - 2 }} autre{{ typingUsers.length - 2 > 1 ? 's' : '' }}
+              sont en train d'écrire...
+            </span>
+          </ng-container>
+        </div>
 
-      <!-- Zone de saisie -->
-      <div class="input-zone">
-        <textarea
-          [(ngModel)]="newMessage"
-          placeholder="Écrire un message..."
-          (input)="onTyping()"
-          (keydown)="onKeyDown($event)"
-          #textArea>
-        </textarea>
-        <button *ngIf="this.messageEdit!=null" mat-icon-button color="primary" (click)="onCoseEdit()">
-          <mat-icon>close</mat-icon>
-        </button>
-        <button mat-icon-button color="primary" (click)="sendMessage()">
-          <mat-icon>send</mat-icon>
-        </button>
-      </div>
-      <!-- Floating Action Button -->
-    <button *ngIf="!isBottom" mat-fab color="primary" class="fab-button" (click)="onBottom()">
-      <mat-icon>keyboard_arrow_down</mat-icon>
-    </button>
-  </mat-sidenav-content>
+        <!-- Zone de saisie -->
+        <div class="input-zone">
+          <textarea
+            [(ngModel)]="newMessage"
+            placeholder="Écrire un message..."
+            (input)="onTyping()"
+            (keydown)="onKeyDown($event)"
+            #textArea>
+          </textarea>
+          <button *ngIf="this.messageEdit!=null" mat-icon-button color="primary" (click)="onCoseEdit()">
+            <mat-icon>close</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="sendMessage()">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
+        <!-- Floating Action Button -->
+      <button *ngIf="!isBottom" mat-fab color="primary" class="fab-button" (click)="onBottom()">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+    </mat-sidenav-content>
 
-</mat-sidenav-container>
+  </mat-sidenav-container>
 
-<app-add-user-conversation></app-add-user-conversation>
-<app-validation-dialog (closed)="onAlertClosed($event)"></app-validation-dialog>
+  <ng-template #loading>
+    <div class="loading-container">
+      <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+      <p>Chargement des données...</p>
+    </div>
+  </ng-template>
+
+  <app-add-user-conversation></app-add-user-conversation>
+  <app-validation-dialog (closed)="onAlertClosed($event)"></app-validation-dialog>
+</div>

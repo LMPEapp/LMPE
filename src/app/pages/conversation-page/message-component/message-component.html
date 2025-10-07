@@ -14,6 +14,11 @@
       </button>
     </div>
 
+    <!-- ✅ Pastille affichée si message NON LU -->
+    <div *ngIf="message.isRead" class="notification-badge">
+      <!-- vide, ou icône, ou check -->
+    </div>
+
     <mat-menu #menu="matMenu">
       <div class="menu">
         <button *ngIf="isMine" mat-menu-item (click)="onUpdate()">

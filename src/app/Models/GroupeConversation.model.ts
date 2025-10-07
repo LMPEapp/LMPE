@@ -3,6 +3,7 @@ export interface GroupeConversation {
   name: string;
   lastActivity: Date;
   createdAt: Date;
+  unReadCount: number;
 }
 
 export interface GroupeConversationIn {

@@ -36,4 +36,15 @@ export class MessageAccessApi {
     const token = localStorage.getItem('token') || '';
     return this.api.delete<null>(`${this.controller}/groupe/${groupId}/${messageId}`, '', token);
   }
+    // GET /message/groupe/{groupId}/readAll
+  readAll(groupId: number): Observable<number> {
+    const token = localStorage.getItem('token') || '';
+    return this.api.get<number>(`${this.controller}/groupe/${groupId}/readAll`, '', {}, token);
+  }
+
+  // GET /message/Notification
+  getNotificationCount(): Observable<number> {
+    const token = localStorage.getItem('token') || '';
+    return this.api.get<number>(`${this.controller}/Notification`, '', {}, token);
+  }
 }
