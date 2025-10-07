@@ -7,11 +7,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
-import { CourbeCA, CourbeCAGroupByDatePoint, CourbeCAIn } from '../../Models/Courbeca.model';
+import { CourbeCAGroupByDatePoint, CourbeCAIn } from '../../Models/Courbeca.model';
 import { CourbeCAAccessApi } from '../../service/AccessAPi/CourbecaAccessapi/courbeca-accessapi';
 import { CourbecaSignalRService } from '../../service/SignalR/CourbecaSignalRService/courbeca-signal-rservice';
 import { CourbecaEdit } from "./courbeca-edit/courbeca-edit";
-import { toLocalDate } from '../../Helper/date-utils';
 import { DateOnly } from '../../Helper/DateOnly';
 import { ShortNumberFrPipe } from "../../Helper/ShortNumber/short-number-pipe";
 import { CourbecaListe } from "./courbeca-liste/courbeca-liste";
@@ -67,20 +66,45 @@ export class CourbecaPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadLast30Days();
-    this.initSignalR();
+    this.init(true);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
+        this.init(false);
+      }
+    });
   }
   ngOnDestroy() {
     this.courbecaHub.LeaveCourbeca();
   }
 
-  // --- Initialisation de SignalR ---
+  private init(isFirstInit: boolean){
+    if(isFirstInit){
+      this.loadLast30Days();
+      this.subscibeSignalR();
+    }
+
+    const state = this.courbecaHub.connectionState;
+
+    if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
+      console.log(`⏸️ SignalR déjà en cours (${state})`);
+      return;
+    }
+
+    this.loadLast30Days();
+    this.initSignalR();
+    this.subscibeSignalR();
+  }
+
   // --- Initialisation de SignalR ---
   private initSignalR(): void {
     this.courbecaHub.startConnection(localStorage.getItem('token') || '')
       .then(() => this.courbecaHub.JoinCourbeca());
+  }
 
-    // Création dynamique
+  private subscibeSignalR(): void {
+        // Création dynamique
     this.courbecaHub.Created$.subscribe(newItem => {
       if (!newItem) return;
 
@@ -107,8 +131,6 @@ export class CourbecaPage implements OnInit {
 
       this.updateGraphAndTotal();
     });
-
-
     // Suppression dynamique
     this.courbecaHub.Deleted$.subscribe(deletedItem => {
       if (!deletedItem) return;

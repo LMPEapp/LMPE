@@ -17,6 +17,10 @@ export class CourbecaSignalRService {
 
   constructor() { }
 
+  get connectionState(): string | undefined {
+    return this.hubConnection?.state;
+  }
+
   startConnection(token?: string): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${environment.apiUrl}/courbecaHub`, {
@@ -53,7 +57,14 @@ export class CourbecaSignalRService {
   LeaveCourbeca() {
     this.resetSubjects();
     this.hubConnection.invoke('LeaveCourbeca')
-      .catch(err => console.error(err));
+      .catch(err => console.error(err))
+      .finally(() => {
+      if (this.hubConnection) {
+        this.hubConnection.stop()
+          .then(() => console.log('🔌 Hub SignalR stoppé proprement'))
+          .catch(err => console.error('Erreur lors de l’arrêt du hub', err));
+      }
+    });
   }
 
   private resetSubjects() {

@@ -20,6 +20,10 @@ export class MessageSignalRService {
 
   constructor() { }
 
+  get connectionState(): string | undefined {
+    return this.hubConnection?.state;
+  }
+
   startConnection(token?: string): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${environment.apiUrl}/messageHub`, {
@@ -63,7 +67,14 @@ export class MessageSignalRService {
     this.deletemessage$.next(null);
     this.updatemessage$.next(null);
     this.hubConnection.invoke('LeaveGroup', groupId)
-      .catch(err => console.error(err));
+      .catch(err => console.error(err))
+      .finally(() => {
+      if (this.hubConnection) {
+        this.hubConnection.stop()
+          .then(() => console.log('🔌 Hub SignalR stoppé proprement'))
+          .catch(err => console.error('Erreur lors de l’arrêt du hub', err));
+      }
+    });
   }
 
   typing(groupId: number, user: User) {

@@ -45,6 +45,7 @@ export class ConversationPage {
   @ViewChild(ValidationDialogComponent) alert!: ValidationDialogComponent;
 
   GroupeConversation?:GroupeConversation;
+  conversationId:number;
   MessageSelectd?:number;
   user: User | undefined;
 
@@ -61,84 +62,104 @@ export class ConversationPage {
     public auth: AuthService,private groupsAccessApi: GroupsAccessApi,
     private MessageAccessApi:MessageAccessApi,private messageHub: MessageSignalRService, private snackBar: MatSnackBar) {
     this.user = auth.loginData?.user;
+    this.conversationId = Number(this.route.snapshot.paramMap.get('id'));
   }
 
-  ngOnInit() {
-    let conversationId = Number(this.route.snapshot.paramMap.get('id'));
-    this.groupsAccessApi.getById(conversationId).subscribe((data)=>{
-      this.GroupeConversation=data;
-    })
+  ngOnInit() {    
+    // Connexion initiale au hub
+    this.init(true);
 
-    this.MessageAccessApi.getByGroup(conversationId).subscribe((data)=>{
-      this.messages=data;
-      setTimeout(()=>{
-         this.gotBottom();
-      })
-
-    })
-
-    this.messageHub.startConnection(localStorage.getItem('token') || '')
-    .then(() => {
-      this.messageHub.joinGroup(conversationId);
-    });
-
-    this.messageHub.addmessage$.subscribe(msg => {
-      if(msg){
-        if (!this.messages.find(m => m.id === msg.id)) {
-          // trouver l'index où l'insérer pour garder l'ordre croissant par id
-          const index = this.messages.findIndex(m => m.id > msg.id);
-          if (index === -1) {
-            // si aucun id supérieur, on push à la fin
-            this.messages.push(msg);
-            if(this.isBottom){
-              setTimeout(()=>{
-                this.gotBottom(true);
-              })
-            }
-          } else {
-            // insérer à la position correcte
-            this.messages.splice(index, 0, msg);
-          }
-        }
-      }
-
-
-      console.log("Add Message:", this.messages);
-    });
-
-    this.messageHub.updatemessage$.subscribe(msg => {
-      if(msg){
-        const index = this.messages.findIndex(m => m.id == msg.id);
-        if (index != -1) {
-          this.messages[index] = msg;
-        }
-      }
-      console.log("Update Message:", this.messages);
-    });
-
-    this.messageHub.deletemessage$.subscribe(id => {
-      if(id){
-        const index = this.messages.findIndex(m => m.id == id);
-        if (index != -1) {
-          this.messages.splice(index, 1);
-        }
-      }
-      console.log("Delete Message:", this.messages);
-    });
-
-    this.messageHub.typingUser$.subscribe(user => {
-      if (user as User && user != null) {
-        this.handleUserTyping(user);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
+        this.init(false);
       }
     });
 
-    console.log('ID de la conversation:', conversationId);
+    console.log('ID de la conversation:', this.conversationId);
     // ici tu peux appeler ton API pour récupérer les messages
   }
   ngOnDestroy() {
     if(this.GroupeConversation){
       this.messageHub.leaveGroup(this.GroupeConversation?.id);
     }
+  }
+
+  private init(isFirstInit: boolean) {
+
+    if(isFirstInit){
+      this.getData();
+      this.subscibeSignalR();
+    }
+    const state = this.messageHub.connectionState;
+
+    if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
+      console.log(`⏸️ SignalR déjà en cours (${state})`);
+      return;
+    }
+
+    this.getData();
+    this.initSignalR();
+    this.subscibeSignalR();
+  }
+
+  private getData(){
+    this.groupsAccessApi.getById(this.conversationId).subscribe((data)=>{
+      this.GroupeConversation=data;
+    })
+
+    this.MessageAccessApi.getByGroup(this.conversationId).subscribe((data)=>{
+      this.messages=data;
+      setTimeout(()=>{
+         this.gotBottom();
+      })
+
+    })
+  }
+
+  private initSignalR(): void {
+    this.messageHub.startConnection(localStorage.getItem('token') || '')
+      .then(() => {
+        console.log('🔗 SignalR connecté');
+        this.messageHub.joinGroup(this.conversationId);
+      })
+      .catch(err => {
+        console.error('❌ Erreur lors de la connexion SignalR', err);
+      });
+  }
+
+  private subscibeSignalR(): void {
+    this.messageHub.addmessage$.subscribe(msg => {
+      if (msg && !this.messages.find(m => m.id === msg.id)) {
+        const index = this.messages.findIndex(m => m.id > msg.id);
+        if (index === -1) {
+          this.messages.push(msg);
+          if (this.isBottom) {
+            setTimeout(() => this.gotBottom(true));
+          }
+        } else {
+          this.messages.splice(index, 0, msg);
+        }
+      }
+    });
+
+    this.messageHub.updatemessage$.subscribe(msg => {
+      if (msg) {
+        const index = this.messages.findIndex(m => m.id == msg.id);
+        if (index != -1) this.messages[index] = msg;
+      }
+    });
+
+    this.messageHub.deletemessage$.subscribe(id => {
+      if (id) {
+        const index = this.messages.findIndex(m => m.id == id);
+        if (index != -1) this.messages.splice(index, 1);
+      }
+    });
+
+    this.messageHub.typingUser$.subscribe(user => {
+      if (user) this.handleUserTyping(user);
+    });
   }
 
 

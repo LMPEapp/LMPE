@@ -50,11 +50,46 @@ export class AgendaPage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.setToday();
+    // Connexion initiale au hub
+    this.init(true);
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
+        this.init(false);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.agendaHub.leaveAgendasGlobal();
+  }
+
+  private init(isFirstInit: boolean) {
+
+    if(isFirstInit){
+      this.setToday();
+      this.subscibeSignalR();
+    }
+
+    const state = this.agendaHub.connectionState;
+
+    if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
+      console.log(`⏸️ SignalR déjà en cours (${state})`);
+      return;
+    }
+
+    this.setToday();
+    this.initSignalR();
+    this.subscibeSignalR();
+  }
+  
+  private initSignalR(): void {
     this.agendaHub.startConnection(localStorage.getItem('token') || '')
       .then(() => this.agendaHub.joinAgendasGlobal());
+  }
 
+  private subscibeSignalR(): void {
     this.agendaHub.agendaCreated$.subscribe(agd => {
       if (agd && !this.agendas.find(a => a.id === agd.id)) {
         if(agd.isPublic || agd.createdBy == this.user?.id){
@@ -84,10 +119,6 @@ export class AgendaPage implements OnInit, OnDestroy {
     this.agendaHub.agendaDeleted$.subscribe(id => {
       if (id) this.agendas = this.agendas.filter(a => a.id !== id);
     });
-  }
-
-  ngOnDestroy(): void {
-    this.agendaHub.leaveAgendasGlobal();
   }
 
   setToday(): void {

@@ -17,6 +17,10 @@ export class AgendaSignalRService {
 
   constructor() { }
 
+  get connectionState(): string | undefined {
+    return this.hubConnection?.state;
+  }
+
   startConnection(token?: string): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${environment.apiUrl}/agendaHub`, {
@@ -66,7 +70,14 @@ export class AgendaSignalRService {
   leaveAgenda(agendaId: number) {
     this.resetSubjects();
     this.hubConnection.invoke('LeaveAgenda', agendaId)
-      .catch(err => console.error(err));
+      .catch(err => console.error(err))
+      .finally(() => {
+      if (this.hubConnection) {
+        this.hubConnection.stop()
+          .then(() => console.log('🔌 Hub SignalR stoppé proprement'))
+          .catch(err => console.error('Erreur lors de l’arrêt du hub', err));
+      }
+    });
   }
 
   private resetSubjects() {
