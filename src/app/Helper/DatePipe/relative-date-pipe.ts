@@ -3,7 +3,8 @@ import { toLocalDate } from '../date-utils';
 
 @Pipe({
   name: 'myRelativeDate',
-  standalone: true
+  standalone: true,
+  pure: false
 })
 export class MyRelativeDatePipe implements PipeTransform {
   transform(value: string | Date): string {
