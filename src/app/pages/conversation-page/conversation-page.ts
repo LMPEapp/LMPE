@@ -51,7 +51,7 @@ export class ConversationPage {
   MessageSelectd?:number;
   user: User | undefined;
   isLoading: boolean = false;
-
+  private scrolledInitially = false;
   messages:MessageOut[]= [];
 
   messageEdit:MessageOut|null= null;
@@ -111,11 +111,8 @@ export class ConversationPage {
     })
 
     this.MessageAccessApi.getByGroup(this.conversationId).subscribe((data)=>{
+      this.scrolledInitially = false;
       this.messages=data;
-      setTimeout(()=>{
-         this.gotBottom();
-      })
-
     })
   }
 
@@ -163,6 +160,13 @@ export class ConversationPage {
       if (user) this.handleUserTyping(user);
     });
   }
+
+  ngAfterViewChecked() {
+    if (!this.scrolledInitially && this.messages.length > 0) {
+      this.scrolledInitially = true;
+      setTimeout(() => this.gotBottom());
+    }
+}
 
 
   private handleUserTyping(user: User) {
