@@ -10,6 +10,7 @@ export interface MessageOut {
   userPseudo: string;
   userUrlImage: string;
   userIsAdmin: boolean;
+  isRead: boolean;
 }
 
 export interface MessageIn {

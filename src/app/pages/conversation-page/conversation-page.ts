@@ -19,6 +19,7 @@ import { MessageAccessApi } from '../../service/AccessAPi/MessageAccessApi/messa
 import { MessageSignalRService } from '../../service/SignalR/MessageSignalRService/message-signal-rservice';
 import { ValidationDialogComponent } from "../../ExternComposent/validation-dialog/validation-dialog";
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-conversation-page',
@@ -33,7 +34,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     AddUserConversation,
     FormsModule,
     MessageComponent,
-    ValidationDialogComponent
+    ValidationDialogComponent,
+    MatProgressSpinnerModule
 ],
   templateUrl: './conversation-page.html',
   styleUrl: './conversation-page.scss'
@@ -48,7 +50,8 @@ export class ConversationPage {
   conversationId:number;
   MessageSelectd?:number;
   user: User | undefined;
-
+  isLoading: boolean = false;
+  private scrolledInitially = false;
   messages:MessageOut[]= [];
 
   messageEdit:MessageOut|null= null;
@@ -65,7 +68,7 @@ export class ConversationPage {
     this.conversationId = Number(this.route.snapshot.paramMap.get('id'));
   }
 
-  ngOnInit() {    
+  ngOnInit() {
     // Connexion initiale au hub
     this.init();
 
@@ -83,6 +86,7 @@ export class ConversationPage {
     if(this.GroupeConversation){
       this.messageHub.leaveGroup(this.GroupeConversation?.id);
     }
+    this.MessageAccessApi.readAll(this.conversationId).subscribe((data)=>{})
   }
 
   private init() {
@@ -99,16 +103,16 @@ export class ConversationPage {
   }
 
   private getData(){
+    this.isLoading = true;
     this.groupsAccessApi.getById(this.conversationId).subscribe((data)=>{
       this.GroupeConversation=data;
+      this.isLoading = false;
+      this.MessageAccessApi.readAll(this.conversationId).subscribe((data)=>{})
     })
 
     this.MessageAccessApi.getByGroup(this.conversationId).subscribe((data)=>{
+      this.scrolledInitially = false;
       this.messages=data;
-      setTimeout(()=>{
-         this.gotBottom();
-      })
-
     })
   }
 
@@ -156,6 +160,13 @@ export class ConversationPage {
       if (user) this.handleUserTyping(user);
     });
   }
+
+  ngAfterViewChecked() {
+    if (!this.scrolledInitially && this.messages.length > 0) {
+      this.scrolledInitially = true;
+      setTimeout(() => this.gotBottom());
+    }
+}
 
 
   private handleUserTyping(user: User) {
@@ -308,7 +319,7 @@ export class ConversationPage {
       this.isBottom=true;
     } else {
       this.isBottom=false;
-    }        
+    }
   }
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {

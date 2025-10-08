@@ -76,6 +76,9 @@
         <div [ngClass]="{'accent': activeTab === 'messages'}">
           <mat-icon>chat</mat-icon>
         </div>
+        <div *ngIf="CountMessageNotification > 0" class="notification-badge">
+          {{ CountMessageNotification }}
+        </div>
       </button>
 
       <button mat-icon-button (click)="onSelectTab('agenda')">

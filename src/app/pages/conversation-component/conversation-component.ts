@@ -15,6 +15,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ValidationDialogComponent } from "../../ExternComposent/validation-dialog/validation-dialog";
 import { Router } from '@angular/router';
 import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-access-api';
+import { HomeSignalRService } from '../../service/SignalR/HomeSignalRService/home-signal-rservice';
 
 @Component({
   selector: 'app-conversation-component',
@@ -45,12 +46,14 @@ export class ConversationComponent {
   groupeSelected:GroupeConversation | null= null;
   user: User | undefined;
 
-  constructor(private groupsAccessApi: GroupsAccessApi, private snackBar: MatSnackBar, public auth: AuthService,private router: Router) {
+  constructor(private groupsAccessApi: GroupsAccessApi, private snackBar: MatSnackBar,
+    public auth: AuthService,private router: Router, private HomeHub: HomeSignalRService) {
       this.user = auth.loginData?.user;
     }
 
   ngOnInit() {
     this.init();
+    this.subscibeSignalR();
   }
 
   init(){
@@ -67,6 +70,21 @@ export class ConversationComponent {
           duration: 5000,
           panelClass: ['error-snackbar']
         });
+      }
+    });
+  }
+
+  private subscibeSignalR(): void {
+    this.HomeHub.addmessage$.subscribe(msg => {
+      if (msg) {
+        var groupe = this.groupeConversation.find((u)=> u.id==msg.groupeId);
+        if(groupe){
+          groupe.lastActivity = new Date()
+          groupe.unReadCount++;
+
+          this.groupeConversation = this.groupeConversation
+            .sort((a, b) => new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime());
+        }
       }
     });
   }

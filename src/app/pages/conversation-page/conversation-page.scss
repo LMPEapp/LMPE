@@ -10,6 +10,7 @@ mat-sidenav-content {
 }
 .sidenav-container {
   height: 100%;
+  width: 100%;
 }
 
 mat-toolbar {
@@ -58,4 +59,21 @@ mat-toolbar {
   right: 24px;
   z-index: 1000;
   opacity: 0.5;
+}
+
+.body{
+  display: flex;
+  height: 100%;
+}
+.loading-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    margin-top: 12px;
+    font-size: 1.2rem;
+  }
 }
