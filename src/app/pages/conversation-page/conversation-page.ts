@@ -215,7 +215,7 @@ export class ConversationPage {
 
 
   goBack() {
-    this.router.navigate(['']); // remplace par la route voulue
+    this.router.navigate(['home']); // remplace par la route voulue
   }
   onGestion() {
     this.AddUserConversation.onOpen(this.GroupeConversation);

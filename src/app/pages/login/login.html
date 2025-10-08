@@ -22,6 +22,11 @@
       <button mat-raised-button color="primary" class="full-width">Se connecter</button>
     </form>
 
+    <button mat-button color="accent" class="full-width retour" (click)="goToHome()">
+      <mat-icon>arrow_back</mat-icon>
+      Retour Accueil
+    </button>
+
     <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
   </mat-card>
 </div>

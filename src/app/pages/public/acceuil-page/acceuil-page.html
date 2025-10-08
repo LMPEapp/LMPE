@@ -1,0 +1,145 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Menu latéral mobile -->
+  <mat-sidenav #drawer [(opened)]="isMenuOpen" mode="over" class="mobile-menu">
+    <mat-nav-list>
+      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.Acceuil)"
+      [class.selected]="PageSelected === HeaderButton.Acceuil">
+        <div class="flex">
+          <mat-icon matListIcon>home</mat-icon>
+          <span matLine>Accueil</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.Equipe)"
+      [class.selected]="PageSelected === HeaderButton.Equipe">
+        <div class="flex">
+          <mat-icon matListIcon>group</mat-icon>
+          <span matLine>L'équipe</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.ProvenanceDesProduits)"
+      [class.selected]="PageSelected === HeaderButton.ProvenanceDesProduits">
+        <div class="flex">
+          <mat-icon matListIcon>local_shipping</mat-icon>
+          <span matLine>Provenance des produits</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.Partenaires)"
+      [class.selected]="PageSelected === HeaderButton.Partenaires">
+        <div class="flex">
+          <mat-icon matListIcon>handshake</mat-icon>
+          <span matLine>Partenaires</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.Contact)"
+      [class.selected]="PageSelected === HeaderButton.Contact">
+        <div class="flex">
+          <mat-icon matListIcon>contact_mail</mat-icon>
+          <span matLine>Nous contacter</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.Actualites)"
+      [class.selected]="PageSelected === HeaderButton.Actualites">
+        <div class="flex">
+          <mat-icon matListIcon>article</mat-icon>
+          <span matLine>Actualités</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.Prive)">
+        <div class="flex">
+          <mat-icon matListIcon>lock</mat-icon>
+          <span matLine>Privé</span>
+        </div>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Contenu principal -->
+  <mat-sidenav-content>
+    <!-- HEADER -->
+    <mat-toolbar color="primary" class="header-toolbar">
+      <div class="header-left">
+        <img src="assets/logo.jpg" alt="Logo" class="logo" (click)="onButtonHeaderClick(HeaderButton.Acceuil)">
+      </div>
+
+      <!-- Menu Desktop -->
+      <div class="header-menu desktop-menu">
+        <button mat-button
+          (click)="onButtonHeaderClick(HeaderButton.Equipe)"
+          [class.selected]="PageSelected === HeaderButton.Equipe">
+          L'équipe
+        </button>
+        <button mat-button
+          (click)="onButtonHeaderClick(HeaderButton.ProvenanceDesProduits)"
+          [class.selected]="PageSelected === HeaderButton.ProvenanceDesProduits">
+          Provenance des produits
+        </button>
+        <button mat-button
+          (click)="onButtonHeaderClick(HeaderButton.Partenaires)"
+          [class.selected]="PageSelected === HeaderButton.Partenaires">
+          Partenaires
+        </button>
+        <button mat-button
+          (click)="onButtonHeaderClick(HeaderButton.Contact)"
+          [class.selected]="PageSelected === HeaderButton.Contact">
+          Nous contacter
+        </button>
+        <button mat-button
+          (click)="onButtonHeaderClick(HeaderButton.Actualites)"
+          [class.selected]="PageSelected === HeaderButton.Actualites">
+          Actualités
+        </button>
+        <button mat-raised-button color="primary"
+          (click)="onButtonHeaderClick(HeaderButton.Prive)">
+          Privé
+        </button>
+      </div>
+
+      <!-- Bouton menu mobile -->
+      <button mat-icon-button class="mobile-menu-button" (click)="toggleMenu()">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <!-- SECTION ACCUEIL -->
+    <div class="home-content">
+      <ng-container [ngSwitch]="PageSelected">
+        <div *ngSwitchCase="HeaderButton.Acceuil">
+          <section class="home-section">
+            <h1>Bienvenue sur notre plateforme</h1>
+            <p>Découvrez notre équipe, nos produits et bien plus encore.</p>
+          </section>
+        </div>
+
+        <div *ngSwitchCase="HeaderButton.Equipe">
+          <app-equipe-page></app-equipe-page>
+        </div>
+
+        <div *ngSwitchCase="HeaderButton.ProvenanceDesProduits">
+          <app-provenance-des-produits-page></app-provenance-des-produits-page>
+        </div>
+
+        <div *ngSwitchCase="HeaderButton.Partenaires">
+          <app-partenaires-page></app-partenaires-page>
+        </div>
+
+        <div *ngSwitchCase="HeaderButton.Contact">
+          <app-contact-page></app-contact-page>
+        </div>
+
+        <div *ngSwitchCase="HeaderButton.Actualites">
+          <app-actualites-page></app-actualites-page>
+        </div>
+
+        <div *ngSwitchDefault>
+          <h1>Bienvenue sur LMPE</h1>
+        </div>
+      </ng-container>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -61,7 +61,7 @@ export class UsersComponent {
   }
 
   goBack() {
-    this.router.navigate(['']); // remplace par la route voulue
+    this.router.navigate(['home']); // remplace par la route voulue
   }
 
   onAdd() {

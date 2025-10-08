@@ -50,7 +50,7 @@ export class LoginComponent {
     this.AuthAccessApiService.login(this.loginForm.value).subscribe({
       next: (data) => {
         this.auth.login(data);
-        const redirect = this.auth.redirectUrl || '/';
+        const redirect = this.auth.redirectUrl || '/home';
         this.router.navigate([redirect]);
         this.auth.redirectUrl = null;
       },
@@ -61,5 +61,8 @@ export class LoginComponent {
         this.errorMessage = err.error || 'Connexion échouée';
       }
     });
+  }
+  goToHome() {
+    this.router.navigate([""]);
   }
 }
