@@ -55,6 +55,9 @@ export class LoginComponent {
         this.auth.redirectUrl = null;
       },
       error: (err) => {
+        if(err.status === 401) {
+          this.auth.logout();
+        }
         this.errorMessage = err.error || 'Connexion échouée';
       }
     });

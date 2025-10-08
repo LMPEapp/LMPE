@@ -13,6 +13,12 @@ export class AccessApiService {
     this.apiBase = environment.apiUrl;
   }
 
+  private buildUrl(controller: string, action?: string): string {
+    return action && action.length > 0
+      ? `${this.apiBase}/${controller}/${action}`
+      : `${this.apiBase}/${controller}`;
+  }
+
   // méthode générique GET
   get<T>(controller: string, action: string, params: any = {}, token?: string): Observable<T> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -20,12 +26,6 @@ export class AccessApiService {
       params: new HttpParams({ fromObject: params }),
       headers
     });
-  }
-
-  private buildUrl(controller: string, action?: string): string {
-    return action && action.length > 0
-      ? `${this.apiBase}/${controller}/${action}`
-      : `${this.apiBase}/${controller}`;
   }
 
   // méthode générique POST

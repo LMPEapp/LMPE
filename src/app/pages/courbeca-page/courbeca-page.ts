@@ -15,6 +15,7 @@ import { DateOnly } from '../../Helper/DateOnly';
 import { ShortNumberFrPipe } from "../../Helper/ShortNumber/short-number-pipe";
 import { CourbecaListe } from "./courbeca-liste/courbeca-liste";
 import { MatTabsModule } from '@angular/material/tabs';
+import { AuthService } from '../../service/Auth/auth';
 
 @Component({
   selector: 'app-courbeca-page',
@@ -56,7 +57,8 @@ export class CourbecaPage implements OnInit {
   constructor(
     private caApi: CourbeCAAccessApi,
     private courbecaHub: CourbecaSignalRService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private auth: AuthService
   ) {
     const endDate = new Date();
     const startDate = new Date();
@@ -175,6 +177,9 @@ export class CourbecaPage implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
+        if(err.status === 401) {
+          this.auth.logout();
+        }
         this.errorMessage = 'Impossible de charger les données.';
         console.error(err);
         this.isLoading = false;
@@ -225,6 +230,9 @@ export class CourbecaPage implements OnInit {
         this.snackBar.open('Événement créé ✅', 'Fermer', { duration: 3000 });
       },
       error: (err) => {
+        if(err.status === 401) {
+          this.auth.logout();
+        }
         this.errorMessage = 'Impossible de créer la donnée.';
         console.error(err);
       }

@@ -94,6 +94,9 @@ export class ChangePasswordDialogComponent {
         this.isOpen = false;
       },
       error: (err) => {
+        if(err.status === 401) {
+          this.auth.logout();
+        }
         console.error(err);
         this.apiError = err.error?.message || err.error || "Erreur inconnue";
       }

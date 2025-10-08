@@ -94,6 +94,9 @@ export class UsersComponent {
               this.router.navigate(['/conversation', result.id]);
             },
             error: (err) => {
+              if(err.status === 401) {
+                this.auth.logout();
+              }
               this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
                 duration: 5000,
                 panelClass: ['error-snackbar']
@@ -107,6 +110,9 @@ export class UsersComponent {
           this.init();
         },
         error: (err) => {
+          if(err.status === 401) {
+            this.auth.logout();
+          }
           this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -126,6 +132,9 @@ export class UsersComponent {
 
         },
         error: (err) => {
+          if(err.status === 401) {
+            this.auth.logout();
+          }
           this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -148,6 +157,9 @@ export class UsersComponent {
           this.init();
         },
         error: (err) => {
+          if(err.status === 401) {
+            this.auth.logout();
+          }
           this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -163,6 +175,9 @@ export class UsersComponent {
           this.init();
         },
         error: (err) => {
+          if(err.status === 401) {
+            this.auth.logout();
+          }
           this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
             duration: 5000,
             panelClass: ['error-snackbar']

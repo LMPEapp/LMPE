@@ -97,6 +97,9 @@ export class CourbecaListe {
         this.isLoading = false;
       },
       error: (err) => {
+        if(err.status === 401) {
+          this.auth.logout();
+        }
         this.errorMessage = 'Impossible de charger les données.';
         console.error(err);
         this.isLoading = false;
@@ -143,6 +146,9 @@ export class CourbecaListe {
           this.snackBar.open('Ligne supprimée', 'Fermer', { duration: 2000 });
         },
         error: (err) => {
+          if(err.status === 401) {
+            this.auth.logout();
+          }
           console.error(err);
           this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
         }

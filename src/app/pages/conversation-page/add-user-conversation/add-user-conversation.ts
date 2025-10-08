@@ -96,6 +96,9 @@ export class AddUserConversation {
         });
       },
       error: (err) => {
+        if(err.status === 401) {
+          this.auth.logout();
+        }
         this.erreur=`Erreur : ${err.error || err.message}`;
       }
     });

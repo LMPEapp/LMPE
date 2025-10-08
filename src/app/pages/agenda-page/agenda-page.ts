@@ -155,7 +155,15 @@ export class AgendaPage implements OnInit, OnDestroy {
   loadAgendas(): void {
     this.agendaAccessApi.getAll(this.currentMonday, this.currentSunday).subscribe({
       next: data => this.agendas = data,
-      error: () => this.snackBar.open('Impossible de charger les agendas.', 'Fermer', { duration: 3000 })
+      error: (err) => {
+        if(err.status === 401) {
+          this.auth.logout();
+        }
+        this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+      }
     });
   }
 
@@ -192,18 +200,45 @@ export class AgendaPage implements OnInit, OnDestroy {
 
   onDeleteElement(agendaId: number): void {
     this.agendaAccessApi.delete(agendaId).subscribe({
-      next: () => this.snackBar.open('Événement Supprimé ✅', 'Fermer', { duration: 3000 })
+      next: () => this.snackBar.open('Événement Supprimé ✅', 'Fermer', { duration: 3000 }),
+      error: (err) => {
+        if(err.status === 401) {
+          this.auth.logout();
+        }
+        this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+      }
     });
   }
 
   handleUserSubmit(agendaData: AgendaIn): void {
     if (this.agendaSelected) {
       this.agendaAccessApi.update(this.agendaSelected.id, agendaData).subscribe({
-        next: () => this.snackBar.open('Événement modifié ✅', 'Fermer', { duration: 3000 })
+        next: () => this.snackBar.open('Événement modifié ✅', 'Fermer', { duration: 3000 }),
+        error: (err) => {
+          if(err.status === 401) {
+            this.auth.logout();
+          }
+          this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+        }
       });
     } else {
       this.agendaAccessApi.create(agendaData).subscribe({
-        next: () => this.snackBar.open('Événement créé ✅', 'Fermer', { duration: 3000 })
+        next: () => this.snackBar.open('Événement créé ✅', 'Fermer', { duration: 3000 }),
+        error: (err) => {
+          if(err.status === 401) {
+            this.auth.logout();
+          }
+          this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+        }
       });
     }
   }
