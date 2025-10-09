@@ -133,8 +133,22 @@ export class HomeComponent {
 
   // Déconnexion
   onLogout() {
+    this.logoutAsync();
     this.auth.logout();
   }
+  async logoutAsync() {
+    // 1️⃣ Supprimer la subscription Push
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    if (subscription) {
+        await subscription.unsubscribe();
+        console.log("Ancienne subscription supprimée !");
+    }
+
+    // 2️⃣ Déconnecter l’utilisateur côté app
+    // ex: localStorage.removeItem('token'); etc.
+  }
+
 
   onProfil() {
     this.sidenav.close();
