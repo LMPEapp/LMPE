@@ -1,4 +1,4 @@
-import { importProvidersFrom, LOCALE_ID } from '@angular/core';
+import { importProvidersFrom, LOCALE_ID, isDevMode } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
@@ -7,6 +7,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
+import { provideServiceWorker } from '@angular/service-worker';
 
 // Enregistre la locale FR
 registerLocaleData(localeFr);
@@ -30,6 +31,9 @@ export const appConfig = {
     provideAnimations(), // nécessaire pour MatDatepicker
     { provide: LOCALE_ID, useValue: 'fr-FR' },
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }, provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          }),
   ]
 };
