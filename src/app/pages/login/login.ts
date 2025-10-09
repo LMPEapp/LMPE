@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../service/Auth/auth';
 import { PushAccessapi } from '../../service/AccessAPi/pushAccessapi/push-accessapi';
 import { PushSubscriptionDto } from '../../Models/push.model';
+import { SwPush } from '@angular/service-worker';
 
 @Component({
   selector: 'app-login',
@@ -33,13 +34,15 @@ export class LoginComponent {
   hidePassword = true;
   errorMessage = '';
   loginForm: FormGroup;
+  readonly VAPID_PUBLIC_KEY = "BJieS9rJZ5dcmEVMOzyjjz4hh-nkIntZ7Zpx61DpirktTSjK9aHfUjw1lNuzFWCPjD-5cR1xj_unleYj3Ru7ySc";
 
   constructor(
     private auth: AuthService,
     private fb: FormBuilder,
     private AuthAccessApiService: AuthAccessApiService,
     private router: Router,
-    private pushApi: PushAccessapi
+    private pushApi: PushAccessapi,
+    private swPush: SwPush
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required]],
@@ -60,46 +63,29 @@ export class LoginComponent {
         // -----------------------------
         // Demander la permission pour les notifications
         // -----------------------------
-        if ('Notification' in window && 'serviceWorker' in navigator) {
-          Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-              navigator.serviceWorker.ready.then(swReg => {
-                swReg.pushManager.subscribe({
-                  userVisibleOnly: true,
-                  applicationServerKey: this.urlBase64ToUint8Array('BH3IbEl1dPjulBkExkqNjA4QpojoTr2H5XSBvB4KNAKtIjd1_TKIroxO7lFcmDTbmSoZrN-BXNSX0pzY-OOaeg8')
-                }).then(sub => {
+        this.swPush.requestSubscription({
+            serverPublicKey: this.VAPID_PUBLIC_KEY
+        }).then(sub => {
+          console.log('Push subscription:', sub);
+            const dto: PushSubscriptionDto = {
+                endpoint: sub.endpoint,
+                keys: {
+                    p256dh: sub.getKey('p256dh')
+                        ? btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')!)))
+                        : '',
+                    auth: sub.getKey('auth')
+                        ? btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')!)))
+                        : ''
+                }
+            };
 
-                  // ⚡ Création correcte du DTO en TypeScript
-                  if (data.user && data.user.id) {
-                    const dto: PushSubscriptionDto = {
-                      userId: data.user.id, 
-                      subscription: {
-                        endpoint: sub.endpoint,
-                        keys: {
-                          p256dh: sub.getKey('p256dh') 
-                            ? btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')!))) 
-                            : '',
-                          auth: sub.getKey('auth') 
-                            ? btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')!))) 
-                            : ''
-                        }
-                      }
-                    };
-                    this.pushApi.register(dto).subscribe({
-                      next: () => console.log('Push enregistré pour l’utilisateur'),
-                      error: err => console.error('Erreur push:', err)
-                    });
-                  }
+            this.pushApi.register(dto).subscribe({
+                next: () => console.log('Push enregistré'),
+                error: err => console.error('Erreur push:', err)
+            });
+        }).catch(err => console.error("Could not subscribe to notifications", err));
 
-                  // Envoi au serveur
-                  
-                }).catch(err => console.error('Erreur abonnement push:', err));
-              });
-            } else {
-              console.warn('Permission notifications refusée');
-            }
-          });
-        }
+
       },
       error: (err) => {
         if(err.status === 401) {

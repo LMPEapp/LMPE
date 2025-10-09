@@ -3,12 +3,7 @@ export interface Keys {
   auth: string;
 }
 
-export interface PushKeys {
+export interface PushSubscriptionDto {
   endpoint: string;
   keys: Keys;
-}
-
-export interface PushSubscriptionDto {
-  userId: number;
-  subscription: PushKeys;
 }
