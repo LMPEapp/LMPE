@@ -18,11 +18,11 @@
         </div>
       </mat-list-item>
 
-      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.ProvenanceDesProduits)"
-      [class.selected]="PageSelected === HeaderButton.ProvenanceDesProduits">
+      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.NosProduits)"
+      [class.selected]="PageSelected === HeaderButton.NosProduits">
         <div class="flex">
           <mat-icon matListIcon>local_shipping</mat-icon>
-          <span matLine>Provenance des produits</span>
+          <span matLine>Nos Produits</span>
         </div>
       </mat-list-item>
 
@@ -31,22 +31,6 @@
         <div class="flex">
           <mat-icon matListIcon>handshake</mat-icon>
           <span matLine>Partenaires</span>
-        </div>
-      </mat-list-item>
-
-      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.Contact)"
-      [class.selected]="PageSelected === HeaderButton.Contact">
-        <div class="flex">
-          <mat-icon matListIcon>contact_mail</mat-icon>
-          <span matLine>Nous contacter</span>
-        </div>
-      </mat-list-item>
-
-      <mat-list-item (click)="onButtonHeaderClick(HeaderButton.Actualites)"
-      [class.selected]="PageSelected === HeaderButton.Actualites">
-        <div class="flex">
-          <mat-icon matListIcon>article</mat-icon>
-          <span matLine>Actualités</span>
         </div>
       </mat-list-item>
 
@@ -60,7 +44,7 @@
   </mat-sidenav>
 
   <!-- Contenu principal -->
-  <mat-sidenav-content>
+  <mat-sidenav-content class="body">
     <!-- HEADER -->
     <mat-toolbar color="primary" class="header-toolbar">
       <div class="header-left">
@@ -75,24 +59,14 @@
           L'équipe
         </button>
         <button mat-button
-          (click)="onButtonHeaderClick(HeaderButton.ProvenanceDesProduits)"
-          [class.selected]="PageSelected === HeaderButton.ProvenanceDesProduits">
-          Provenance des produits
+          (click)="onButtonHeaderClick(HeaderButton.NosProduits)"
+          [class.selected]="PageSelected === HeaderButton.NosProduits">
+          Nos Produits
         </button>
         <button mat-button
           (click)="onButtonHeaderClick(HeaderButton.Partenaires)"
           [class.selected]="PageSelected === HeaderButton.Partenaires">
           Partenaires
-        </button>
-        <button mat-button
-          (click)="onButtonHeaderClick(HeaderButton.Contact)"
-          [class.selected]="PageSelected === HeaderButton.Contact">
-          Nous contacter
-        </button>
-        <button mat-button
-          (click)="onButtonHeaderClick(HeaderButton.Actualites)"
-          [class.selected]="PageSelected === HeaderButton.Actualites">
-          Actualités
         </button>
         <button mat-raised-button color="primary"
           (click)="onButtonHeaderClick(HeaderButton.Prive)">
@@ -106,40 +80,76 @@
       </button>
     </mat-toolbar>
 
-    <!-- SECTION ACCUEIL -->
-    <div class="home-content">
-      <ng-container [ngSwitch]="PageSelected">
-        <div *ngSwitchCase="HeaderButton.Acceuil">
-          <section class="home-section">
-            <h1>Bienvenue sur notre plateforme</h1>
-            <p>Découvrez notre équipe, nos produits et bien plus encore.</p>
-          </section>
-        </div>
+    <div class="home-body">
+      <!-- SECTION ACCUEIL -->
+      <div class="home-content">
+        <ng-container [ngSwitch]="PageSelected">
+          <div *ngSwitchCase="HeaderButton.Acceuil">
+            <section class="home-section">
+              <h1 class="home-title">Bienvenue chez LMPE</h1>
+              <h2 class="home-subtitle">Créateurs de produits innovants depuis Replonges, France</h2>
+              <p class="home-intro">
+                LMPE est une entreprise de création de produits en tout genre basée en France, à Replonges, une petite ville de l'Ain.
+                Nous nous spécialisons dans les produits à base de semence humaine, avec pour vocation de les exporter dans le monde entier.
+              </p>
 
-        <div *ngSwitchCase="HeaderButton.Equipe">
-          <app-equipe-page></app-equipe-page>
-        </div>
+              <div class="home-highlights">
+                <mat-card class="highlight-card" color="primary">
+                  <mat-card-header>
+                    <mat-icon color="primary" class="highlight-icon">emoji_objects</mat-icon>
+                    <mat-card-title>Innovation</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    Des idées uniques et créatives pour des produits jamais vus ailleurs.
+                  </mat-card-content>
+                </mat-card>
 
-        <div *ngSwitchCase="HeaderButton.ProvenanceDesProduits">
-          <app-provenance-des-produits-page></app-provenance-des-produits-page>
-        </div>
+                <mat-card class="highlight-card">
+                  <mat-card-header>
+                    <mat-icon color="accent" class="highlight-icon">public</mat-icon>
+                    <mat-card-title>Export</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    Nous avons pour ambition de faire découvrir nos produits à l'international.
+                  </mat-card-content>
+                </mat-card>
 
-        <div *ngSwitchCase="HeaderButton.Partenaires">
-          <app-partenaires-page></app-partenaires-page>
-        </div>
+                <mat-card class="highlight-card">
+                  <mat-card-header>
+                    <mat-icon color="warn" class="highlight-icon">people</mat-icon>
+                    <mat-card-title>Expertise</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    Une équipe passionnée qui maîtrise chaque étape de la création.
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </section>
 
-        <div *ngSwitchCase="HeaderButton.Contact">
-          <app-contact-page></app-contact-page>
-        </div>
+            <app-actualites-page></app-actualites-page>
+          </div>
 
-        <div *ngSwitchCase="HeaderButton.Actualites">
-          <app-actualites-page></app-actualites-page>
-        </div>
 
-        <div *ngSwitchDefault>
-          <h1>Bienvenue sur LMPE</h1>
-        </div>
-      </ng-container>
+
+          <div *ngSwitchCase="HeaderButton.Equipe">
+            <app-equipe-page></app-equipe-page>
+          </div>
+
+          <div *ngSwitchCase="HeaderButton.NosProduits">
+            <app-nos-produits-page></app-nos-produits-page>
+          </div>
+
+          <div *ngSwitchCase="HeaderButton.Partenaires">
+            <app-partenaires-page></app-partenaires-page>
+          </div>
+
+          <div *ngSwitchDefault>
+            <h1>Bienvenue sur LMPE</h1>
+          </div>
+        </ng-container>
+      </div>
+      <app-contact-page></app-contact-page>
     </div>
+
   </mat-sidenav-content>
 </mat-sidenav-container>

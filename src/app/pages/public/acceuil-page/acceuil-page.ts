@@ -7,18 +7,17 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { Router } from '@angular/router';
 import { EquipePage } from "../equipe-page/equipe-page";
-import { ProvenanceDesProduitsPage } from "../provenance-des-produits-page/provenance-des-produits-page";
 import { PartenairesPage } from "../partenaires-page/partenaires-page";
 import { ContactPage } from "../contact-page/contact-page";
 import { ActualitesPage } from "../actualites-page/actualites-page";
+import { NosProduitsPage } from "../nos-produits-page/nos-produits-page";
+import { MatCard, MatCardModule } from "@angular/material/card";
 
 enum HeaderButton {
   Acceuil,
   Equipe,
-  ProvenanceDesProduits,
+  NosProduits,
   Partenaires,
-  Contact,
-  Actualites,
   Prive
 }
 
@@ -33,10 +32,12 @@ enum HeaderButton {
     MatSidenavModule,
     MatListModule,
     EquipePage,
-    ProvenanceDesProduitsPage,
     PartenairesPage,
     ContactPage,
-    ActualitesPage
+    ActualitesPage,
+    NosProduitsPage,
+    MatCard,
+    MatCardModule
 ],
   templateUrl: './acceuil-page.html',
   styleUrls: ['./acceuil-page.scss']
@@ -71,24 +72,14 @@ export class AcceuilPage {
         // Action pour l'équipe
         break;
 
-      case HeaderButton.ProvenanceDesProduits:
-        console.log("Provenance des produits cliqué");
+      case HeaderButton.NosProduits:
+        console.log("NosProduits");
         // Action pour provenance
         break;
 
       case HeaderButton.Partenaires:
         console.log("Partenaires cliqué");
         // Action pour partenaires
-        break;
-
-      case HeaderButton.Contact:
-        console.log("Contact cliqué");
-        // Action pour contact
-        break;
-
-      case HeaderButton.Actualites:
-        console.log("Actualités cliqué");
-        // Action pour actualités
         break;
 
       case HeaderButton.Prive:

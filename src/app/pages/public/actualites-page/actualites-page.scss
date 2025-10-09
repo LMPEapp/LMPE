@@ -1,0 +1,57 @@
+.actus-section {
+  background-color: var(--mat-sys-surface-container-low);
+  color: var(--mat-sys-on-surface);
+  padding: 40px 20px;
+  border-top: 2px solid var(--mat-sys-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.actus-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-secondary-container);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.actus-card {
+  background-color: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.actus-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.actus-card h3 {
+  color: var(--mat-sys-secondary);
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+
+.actus-card p {
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.actus-image {
+  width: 160px;
+  height: auto;
+  margin-top: 12px;
+}
+.container-image{
+  display: flex;
+  justify-content: center;
+}
+
