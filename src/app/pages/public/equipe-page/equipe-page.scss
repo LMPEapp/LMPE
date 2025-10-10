@@ -1,0 +1,105 @@
+.equipe-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px;
+}
+
+.titre {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--md-sys-color-primary);
+}
+
+/* --- Styles communs --- */
+.membre {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.membre-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.membre-card:hover {
+  transform: scale(1.02);
+}
+
+.photo {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid currentColor;
+}
+
+.texte {
+  flex: 1;
+}
+
+.nom {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.poste {
+  margin: 4px 0 12px;
+  font-weight: 500;
+}
+
+.desc {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --- Type 1 --- */
+.type1 .membre-card {
+  flex-direction: row;
+}
+/* --- Type 2 --- */
+.type2 .membre-card {
+  background-color: var(--mat-sys-secondary-container); /* fond doux bleu-gris */
+  color: var(--mat-sys-on-secondary-container); /* texte contrasté */
+  flex-direction: row-reverse;
+}
+
+.type2 .photo {
+  border-color: var(--mat-sys-secondary); /* contour accentué bleu-vert */
+}
+
+.type2 .nom {
+  color: var(--mat-sys-primary); /* garde la couleur principale pour cohérence */
+}
+
+.type2 .poste {
+  color: var(--mat-sys-secondary-fixed-dim); /* ton secondaire plus doux */
+}
+
+.type2 .desc {
+  color: var(--mat-sys-on-secondary-container); /* lisible sur fond secondaire */
+}
+
+
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .membre-card {
+    flex-direction: column !important;
+    text-align: center;
+  }
+
+  .photo {
+    width: 140px;
+    height: 140px;
+  }
+}

@@ -1,1 +1,17 @@
-<p>equipe-page works!</p>
+<div class="equipe-container">
+  <h1 class="titre">Notre Équipe</h1>
+
+  <div
+    class="membre"
+    *ngFor="let m of membres; let i = index"
+    [ngClass]="{ type1: i % 2 !== 0, type2: i % 2 === 0 }">
+    <mat-card class="membre-card">
+      <img [src]="m.image" [alt]="m.nom" class="photo" />
+      <div class="texte">
+        <h2 class="nom">{{ m.nom }}</h2>
+        <h3 class="poste">{{ m.poste }}</h3>
+        <p class="desc">{{ m.description }}</p>
+      </div>
+    </mat-card>
+  </div>
+</div>

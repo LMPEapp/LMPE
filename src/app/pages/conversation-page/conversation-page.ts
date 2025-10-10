@@ -327,7 +327,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     if (el.scrollTop === 0) this.addOlderMessages();
 
     const scrollBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-    this.isBottom = scrollBottom <= 50;
+    this.isBottom = scrollBottom <= 200;
   }
 
   private addOlderMessages(): void {
