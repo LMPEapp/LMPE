@@ -6,7 +6,7 @@
       <!-- Seulement en mode édition -->
       <div *ngIf="user" class="avatar-box">
         <label for="fileInput" class="image-picker">
-          <img *ngIf="previewUrl; else placeholder" [src]="previewUrl" alt="Avatar" />
+          <img *ngIf="previewUrl!=apiBase+'/' && previewUrl; else placeholder" [src]="previewUrl" alt="Avatar" />
           <ng-template #placeholder>
             <div class="placeholder">+</div>
           </ng-template>

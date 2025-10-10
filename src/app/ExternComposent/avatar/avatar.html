@@ -3,8 +3,8 @@
     [src]="avatarUrl"
     [alt]="alt"
     class="avatar"
-    [style.width.px]="size"
-    [style.height.px]="size"
+    [style.width]="computedSize"
+    [style.height]="computedSize"
     (error)="onError()"
   />
 </ng-container>
@@ -12,9 +12,9 @@
 <ng-template #defaultIcon>
   <mat-icon
     class="avatar-icon"
-    [style.fontSize.px]="size"
-    [style.width.px]="size"
-    [style.height.px]="size"
+    [style.fontSize]="computedSize"
+    [style.width]="computedSize"
+    [style.height]="computedSize"
   >
     account_circle
   </mat-icon>

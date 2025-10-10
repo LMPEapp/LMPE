@@ -10,6 +10,8 @@ import { ChangePasswordDialogComponent } from '../../../ExternComposent/change-p
 import { MatCardModule } from '@angular/material/card';
 import { AuthService } from '../../../service/Auth/auth';
 import { UserAccessapi } from '../../../service/AccessAPi/userAccessapi/user-accessapi';
+import { AvatarComponent } from "../../../ExternComposent/avatar/avatar";
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-profil-edition',
@@ -21,8 +23,9 @@ import { UserAccessapi } from '../../../service/AccessAPi/userAccessapi/user-acc
     MatButtonModule,
     ReactiveFormsModule,
     ChangePasswordDialogComponent,
-    MatCardModule
-  ],
+    MatCardModule,
+    AvatarComponent
+],
   templateUrl: './profil-edition.html',
   styleUrl: './profil-edition.scss'
 })
@@ -32,6 +35,9 @@ export class ProfilEdition {
   public isOpen = false;
   user?: User;
   @Output() submitForm = new EventEmitter<UserIn>();
+
+
+  public apiBase: string;
 
   form: FormGroup;
   userLocal?: User;
@@ -46,6 +52,7 @@ export class ProfilEdition {
       isAdmin: [false]
     });
     this.userLocal = auth.loginData?.user;
+    this.apiBase = environment.apiUrl;
   }
 
   onOpen(user?: User) {
@@ -69,7 +76,7 @@ export class ProfilEdition {
         urlImage: ['', Validators.maxLength(255)],
         isAdmin: [this.user.isAdmin]
       });
-      this.previewUrl = this.user.urlImage;
+      this.previewUrl = `${this.apiBase}/${this.user.urlImage}`;
     } else {
       // Mode création (avec mot de passe + confirm)
       this.form = this.fb.group({

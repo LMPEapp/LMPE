@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { MatIconModule } from "@angular/material/icon";
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-avatar',
@@ -14,15 +15,15 @@ import { MatIconModule } from "@angular/material/icon";
 })
 export class AvatarComponent implements OnChanges {
   @Input() url?: string;
-  @Input() alt? = 'Avatar';
-  @Input() size = 50;
+  @Input() alt = 'Avatar';
+  @Input() size: string | number = 50; // 👈 peut être '40%' ou 50
 
   avatarUrl?: string;
+  public apiBase: string;
 
-  // cache partagé entre toutes les instances
-  private static cache = new Map<string, string>();
-
-  constructor(private cd: ChangeDetectorRef){}
+  constructor(private cd: ChangeDetectorRef) {
+    this.apiBase = environment.apiUrl;
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.url) {
@@ -30,16 +31,11 @@ export class AvatarComponent implements OnChanges {
       return;
     }
 
-    // si déjà chargé, on prend la version en cache
-    if (AvatarComponent.cache.has(this.url)) {
-      this.avatarUrl = AvatarComponent.cache.get(this.url);
-      return;
-    }
+    this.url = `${this.apiBase}/${this.url}`;
 
     const img = new Image();
     img.src = this.url;
     img.onload = () => {
-      AvatarComponent.cache.set(this.url!, this.url!);
       this.avatarUrl = this.url;
       this.cd.markForCheck();
     };
@@ -49,9 +45,12 @@ export class AvatarComponent implements OnChanges {
     };
   }
 
+  get computedSize(): string {
+    return typeof this.size === 'number' ? `${this.size}px` : this.size;
+  }
+
   onError() {
     this.avatarUrl = undefined;
     this.cd.markForCheck();
   }
 }
-
