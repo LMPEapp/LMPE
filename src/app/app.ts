@@ -30,7 +30,7 @@ export class App {
           // Force le reload immédiatement après un petit délai
           setTimeout(() => {
             window.location.reload();
-          }, 1000); // 1 seconde avant reload pour voir le snackBar
+          }, 3000); // 1 seconde avant reload pour voir le snackBar
         });
     }
     this.swPush.messages.subscribe(message => {

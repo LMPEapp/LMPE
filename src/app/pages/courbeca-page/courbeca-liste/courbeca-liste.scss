@@ -27,6 +27,7 @@
       font-size: 0.8rem;
       color: #555;
       white-space: pre-wrap;
+      text-align: end;
     }
 
     .amount {
@@ -94,6 +95,7 @@
 }
 .date-amount{
   display: flex;
+  justify-content: flex-end;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 8px;
