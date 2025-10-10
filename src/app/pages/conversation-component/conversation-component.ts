@@ -48,7 +48,7 @@ export class ConversationComponent {
   user: User | undefined;
 
   private visibilityHandler?: () => void;
-  
+
   // Subscriptions SignalR
   private addmessage?: Subscription;
 
@@ -67,8 +67,6 @@ export class ConversationComponent {
       }
     };
     document.addEventListener('visibilitychange', this.visibilityHandler);
-
-    this.subscibeSignalR();
   }
   ngOnDestroy(): void {
     this.cleanSignalRSubscriptions();
