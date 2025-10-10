@@ -33,5 +33,9 @@ export class App {
           }, 1000); // 1 seconde avant reload pour voir le snackBar
         });
     }
+    this.swPush.messages.subscribe(message => {
+      console.log('Push reçu côté client :', message);
+      // Ajouter dans la liste des messages visibles dans ton app
+    });
   }
 }
