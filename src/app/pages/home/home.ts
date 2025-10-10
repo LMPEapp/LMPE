@@ -78,6 +78,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.visibilityHandler = () => {
       if (document.visibilityState === 'visible') {
         console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
+        this.closeNotification();
         this.loadNotifications();
         this.ensureSignalRConnected();
       }
@@ -99,9 +100,23 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   /** 🔄 Initialisation principale */
   private init(): void {
+    this.closeNotification();
     this.loadNotifications();
     this.subscribeSignalR();
     this.ensureSignalRConnected();
+  }
+
+  private closeNotification(){
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg && reg.getNotifications) {
+          // Ferme toutes les notifications affichées
+          reg.getNotifications().then(notifications => {
+            notifications.forEach(n => n.close());
+          });
+        }
+      });
+    }
   }
 
   /** 🧠 Chargement du nombre de notifications */

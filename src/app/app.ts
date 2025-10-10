@@ -34,16 +34,4 @@ export class App {
         });
     }
   }
-  ngOnInit() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistration().then(reg => {
-        if (reg && reg.getNotifications) {
-          // Ferme toutes les notifications affichées
-          reg.getNotifications().then(notifications => {
-            notifications.forEach(n => n.close());
-          });
-        }
-      });
-    }
-  }
 }
