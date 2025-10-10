@@ -33,10 +33,5 @@ export class App {
           }, 1000); // 1 seconde avant reload pour voir le snackBar
         });
     }
-    this.swPush.notificationClicks.subscribe(event => {
-      console.log('Notification click:', event);
-      // ouvrir page spécifique
-      window.open(event.action === 'explore' ? '/home' : '/', '_blank');
-    });
   }
 }
