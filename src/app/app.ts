@@ -20,16 +20,30 @@ export class App {
       this.swUpdate.versionUpdates
         .pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
         .subscribe(() => {
-          const ref = this.snackBar.open(
-            'Une nouvelle version du site est disponible.',
-            'Mettre à jour',
-            { duration: 10000 }
+          // Affiche un message pendant quelques secondes si tu veux
+          this.snackBar.open(
+            'Nouvelle version disponible, rechargement obligatoire...',
+            undefined,
+            { duration: 3000 }
           );
 
-          ref.onAction().subscribe(() => {
+          // Force le reload immédiatement après un petit délai
+          setTimeout(() => {
             window.location.reload();
-          });
+          }, 1000); // 1 seconde avant reload pour voir le snackBar
         });
+    }
+  }
+  ngOnInit() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg && reg.getNotifications) {
+          // Ferme toutes les notifications affichées
+          reg.getNotifications().then(notifications => {
+            notifications.forEach(n => n.close());
+          });
+        }
+      });
     }
   }
 }
