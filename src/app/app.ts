@@ -34,4 +34,22 @@ export class App {
         });
     }
   }
+
+  ngOnInit() {
+    if ('serviceWorker' in navigator) {
+      // Ferme les notifications ouvertes
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg && reg.getNotifications) {
+          reg.getNotifications().then(notifications => {
+            notifications.forEach(n => n.close());
+          });
+        }
+      });
+
+      // Enregistre le custom service worker pour gérer les clics
+      navigator.serviceWorker.register('/assets/custom-service-worker.js')
+        .then(reg => console.log('Custom SW registered', reg))
+        .catch(err => console.error('SW registration failed', err));
+    }
+  }
 }
