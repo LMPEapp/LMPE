@@ -293,6 +293,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
 
     const timer = setTimeout(() => this.removeTypingUser(user.id), 2000);
     this.typingTimers.set(user.id, timer);
+    if (this.isBottom) setTimeout(() => this.scrollToBottom(true));
   }
 
   private removeTypingUser(userId: number): void {
@@ -326,7 +327,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     if (el.scrollTop === 0) this.addOlderMessages();
 
     const scrollBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-    this.isBottom = scrollBottom <= 0;
+    this.isBottom = scrollBottom <= 50;
   }
 
   private addOlderMessages(): void {
