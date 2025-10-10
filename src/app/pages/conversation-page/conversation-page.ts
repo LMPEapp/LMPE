@@ -92,7 +92,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     this.visibilityHandler = () => {
       if (document.visibilityState === 'visible') {
         console.log('🌐 Retour sur la page → vérification SignalR');
-        this.loadMessages();
+        this.loadData();
         this.ensureSignalRConnected();
       }
     };
@@ -167,6 +167,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
       next: data => {
         this.messages = data;
         this.scrolledInitially = false;
+        console.log(this.messages)
       },
       error: err => console.error(err)
     });

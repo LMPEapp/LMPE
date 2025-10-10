@@ -213,7 +213,10 @@ export class AgendaPage implements OnInit, OnDestroy {
   // ─────────────────────────────
   loadAgendas(): void {
     this.agendaAccessApi.getAll(this.currentMonday, this.currentSunday).subscribe({
-      next: data => this.agendas = data,
+      next: (data) => {
+        this.agendas = data;
+        console.log(this.agendas);
+      },
       error: (err) => {
         if (err.status === 401) this.auth.logout();
         this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {

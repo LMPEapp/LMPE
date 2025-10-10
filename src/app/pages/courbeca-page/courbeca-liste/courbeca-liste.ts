@@ -53,9 +53,6 @@ export class CourbecaListe {
     this.init();
     this.initSignalR();
   }
-  ngOnDestroy() {
-    this.courbecaHub.LeaveCourbeca();
-  }
 
   rightDelete(CourbeCA:CourbeCA): boolean{
     if(this.user?.isAdmin){

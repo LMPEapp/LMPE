@@ -192,6 +192,7 @@ export class CourbecaPage implements OnInit {
         }));
         this.updateGraphAndTotal();
         this.isLoading = false;
+        console.log(this.courbes)
       },
       error: (err) => {
         if(err.status === 401) {

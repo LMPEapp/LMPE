@@ -16,6 +16,7 @@ import { ValidationDialogComponent } from "../../ExternComposent/validation-dial
 import { Router } from '@angular/router';
 import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-access-api';
 import { HomeSignalRService } from '../../service/SignalR/HomeSignalRService/home-signal-rservice';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-conversation-component',
@@ -46,6 +47,11 @@ export class ConversationComponent {
   groupeSelected:GroupeConversation | null= null;
   user: User | undefined;
 
+  private visibilityHandler?: () => void;
+  
+  // Subscriptions SignalR
+  private addmessage?: Subscription;
+
   constructor(private groupsAccessApi: GroupsAccessApi, private snackBar: MatSnackBar,
     public auth: AuthService,private router: Router, private HomeHub: HomeSignalRService) {
       this.user = auth.loginData?.user;
@@ -53,10 +59,31 @@ export class ConversationComponent {
 
   ngOnInit() {
     this.init();
+
+    this.visibilityHandler = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🌐 Retour sur la page → vérification SignalR');
+        this.loadData();
+      }
+    };
+    document.addEventListener('visibilitychange', this.visibilityHandler);
+
     this.subscibeSignalR();
   }
-
-  init(){
+  ngOnDestroy(): void {
+    this.cleanSignalRSubscriptions();
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
+  }
+  private cleanSignalRSubscriptions(): void {
+    this.addmessage?.unsubscribe();
+  }
+  private init(): void {
+    this.loadData();
+    this.subscibeSignalR();
+  }
+  loadData(){
     this.groupsAccessApi.getAll().subscribe({
       next: (res) => {
         this.groupeConversation = res; // déjà trié côté API
@@ -75,6 +102,8 @@ export class ConversationComponent {
   }
 
   private subscibeSignalR(): void {
+    this.cleanSignalRSubscriptions();
+
     this.HomeHub.addmessage$.subscribe(msg => {
       if (msg) {
         var groupe = this.groupeConversation.find((u)=> u.id==msg.groupeId);
