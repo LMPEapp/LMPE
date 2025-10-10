@@ -15,7 +15,7 @@ import { environment } from '../../../environments/environment';
 })
 export class AvatarComponent implements OnChanges {
   @Input() url?: string;
-  @Input() alt = 'Avatar';
+  @Input() alt? = 'Avatar';
   @Input() size: string | number = 50; // 👈 peut être '40%' ou 50
 
   avatarUrl?: string;

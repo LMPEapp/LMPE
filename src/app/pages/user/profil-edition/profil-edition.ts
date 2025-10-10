@@ -23,8 +23,7 @@ import { environment } from '../../../../environments/environment';
     MatButtonModule,
     ReactiveFormsModule,
     ChangePasswordDialogComponent,
-    MatCardModule,
-    AvatarComponent
+    MatCardModule
 ],
   templateUrl: './profil-edition.html',
   styleUrl: './profil-edition.scss'
