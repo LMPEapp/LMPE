@@ -71,9 +71,21 @@
           <button *ngIf="this.messageEdit!=null" mat-icon-button color="primary" (click)="onCoseEdit()">
             <mat-icon>close</mat-icon>
           </button>
-          <button mat-icon-button color="primary" (click)="sendMessage()">
-            <mat-icon>send</mat-icon>
-          </button>
+          <ng-container *ngIf="!isLoadingSendMessage; else loading">
+            <button mat-icon-button color="primary" (click)="sendMessage()">
+              <mat-icon>send</mat-icon>
+            </button>
+          </ng-container>
+
+          <ng-template #loading>
+            <button mat-icon-button disabled>
+              <mat-progress-spinner
+                diameter="24"
+                mode="indeterminate"
+                color="primary">
+              </mat-progress-spinner>
+            </button>
+          </ng-template>
         </div>
         <!-- Floating Action Button -->
       <button *ngIf="!isBottom" mat-fab color="primary" class="fab-button" (click)="scrollToBottom()">

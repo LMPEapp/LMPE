@@ -57,6 +57,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   newMessage: string = '';
 
   isLoading = false;
+  isLoadingSendMessage = false;
   isBottom = true;
   scrolledInitially = false;
 
@@ -147,6 +148,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
 
   private loadData(): void {
     this.isLoading = true;
+    this.isLoadingSendMessage = false;
     this.groupsAccessApi.getById(this.conversationId).subscribe({
       next: data => {
         this.GroupeConversation = data;
@@ -218,8 +220,8 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   // ✉️ Gestion des messages
   // ─────────────────────────────
   sendMessage() {
-    if (!this.newMessage.trim() || !this.GroupeConversation) return;
-
+    if (!this.newMessage.trim() || !this.GroupeConversation || this.isLoadingSendMessage) return;
+    this.isLoadingSendMessage = true;
     if(this.messageEdit==null){
       const input:MessageIn = {
         userId: this.user?.id ?? 0,
@@ -233,6 +235,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
         setTimeout(()=>{
           this.scrollToBottom(true);
         })
+        this.isLoadingSendMessage = false;
       });
     }
     else{
@@ -245,6 +248,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
       if (!this.GroupeConversation) return;
       this.messageApi.update(this.GroupeConversation.id,this.messageEdit.id, input).subscribe((msg) => {
         this.onCoseEdit();
+        this.isLoadingSendMessage = false;
        });
     }
 
