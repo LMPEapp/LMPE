@@ -14,11 +14,16 @@
       border-radius: 12px 12px 0 12px;
       align-items: flex-end;
     }
+
+
+    .avatar{
+      order: 3;
+    }
     .date{
       order: 1;
     }
     .pseudo{
-      order: 2;
+      order:2;
     }
     .button-more{
       order: 1;
@@ -43,12 +48,16 @@
       border-radius: 12px 12px 12px 0;
       align-items: flex-end;
     }
-    .date{
-      order: 2;
-    }
-    .pseudo{
+    .avatar{
       order: 1;
     }
+    .pseudo{
+      order: 2;
+    }
+    .date{
+      order: 3;
+    }
+
     .button-more{
       order: 2;
     }
