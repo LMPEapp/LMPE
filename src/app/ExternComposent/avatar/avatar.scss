@@ -1,0 +1,11 @@
+.avatar, .avatar-icon {
+  border-radius: 50%;
+  object-fit: cover;
+  display: inline-block;
+}
+
+.avatar-icon {
+  color: #ccc;
+  text-align: center;
+  line-height: 1;
+}

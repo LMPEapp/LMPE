@@ -92,3 +92,9 @@
   justify-content: center;
   margin: 16px 0;
 }
+.date-amount{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}

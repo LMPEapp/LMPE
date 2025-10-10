@@ -20,7 +20,7 @@
           (contextmenu)="$event.preventDefault()">
           <div class="user-info">
             <div class="user-details">
-              <mat-icon>account_circle</mat-icon>
+              <app-avatar [url]="useritem?.urlImage" [alt]="useritem?.pseudo"></app-avatar>
             </div>
             <div class="user-details">
               <p><strong>Email:</strong> {{ useritem.email }}</p>

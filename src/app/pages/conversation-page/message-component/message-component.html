@@ -34,6 +34,7 @@
 
     <div class="message-box">
       <div class="message-header">
+        <app-avatar [url]="message.userUrlImage" [alt]="message.userPseudo" [size]="20"></app-avatar>
         <span class="date">{{ message.createdAt | myRelativeDate }}</span>
         <span class="pseudo">{{ isMine ? 'Moi' : message.userPseudo }}</span>
       </div>

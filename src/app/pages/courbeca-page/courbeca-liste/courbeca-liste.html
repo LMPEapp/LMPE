@@ -3,11 +3,16 @@
   <mat-card *ngFor="let element of courbes" class="courbe-card mat-elevation-z2">
 
     <mat-card-header>
+      <div mat-card-avatar>
+        <app-avatar [url]="element.userUrlImage" [alt]="element.userPseudo" [size]="40"></app-avatar>
+      </div>
       <mat-card-title class="user">{{ element.userPseudo }}</mat-card-title>
       <mat-card-subtitle class="user">{{ element.userEmail }}</mat-card-subtitle>
-      <div class="date">{{ formatDate(element.createdAt) }}</div>
-      <div class="amount" [ngClass]="getAmountClass(element.amount)">
-        {{ element.amount | shortNumber:2 }}€
+      <div class="date-amount">
+        <div class="date">{{ formatDate(element.createdAt) }}</div>
+        <div class="amount" [ngClass]="getAmountClass(element.amount)">
+          {{ element.amount | shortNumber:2 }}€
+        </div>
       </div>
     </mat-card-header>
 

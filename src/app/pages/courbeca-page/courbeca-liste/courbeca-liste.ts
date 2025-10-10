@@ -15,6 +15,7 @@ import { toLocalDate } from '../../../Helper/date-utils';
 import { ValidationDialogComponent } from '../../../ExternComposent/validation-dialog/validation-dialog';
 import { AuthService } from '../../../service/Auth/auth';
 import { User } from '../../../Models/user.model';
+import { AvatarComponent } from "../../../ExternComposent/avatar/avatar";
 
 @Component({
   selector: 'app-courbeca-liste',
@@ -27,7 +28,8 @@ import { User } from '../../../Models/user.model';
     MatProgressSpinnerModule,
     ShortNumberFrPipe,
     MatCardModule,
-    ValidationDialogComponent
+    ValidationDialogComponent,
+    AvatarComponent
 ],
   templateUrl: './courbeca-liste.html',
   styleUrls: ['./courbeca-liste.scss']

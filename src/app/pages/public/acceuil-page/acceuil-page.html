@@ -54,6 +54,11 @@
       <!-- Menu Desktop -->
       <div class="header-menu desktop-menu">
         <button mat-button
+          (click)="onButtonHeaderClick(HeaderButton.Acceuil)"
+          [class.selected]="PageSelected === HeaderButton.Acceuil">
+          Acceuil
+        </button>
+        <button mat-button
           (click)="onButtonHeaderClick(HeaderButton.Equipe)"
           [class.selected]="PageSelected === HeaderButton.Equipe">
           L'équipe

@@ -25,16 +25,24 @@ mat-sidenav-content{
 mat-list-item mat-icon {
   margin-right: 1rem;
 }
+mat-list-item app-avatar {
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+}
 
 .flex{
   display: flex;
+  align-items: center;
 }
 .accent{
   color: #ff4081;
 }
 
 //end commun
-
+.button{
+  cursor: pointer;
+}
 
 
 

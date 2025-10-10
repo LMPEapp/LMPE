@@ -16,6 +16,7 @@ import { ValidationDialogComponent, ValidationDialogData } from '../../ExternCom
 import { GroupeConversationIn, UserGroupeIn } from '../../Models/GroupeConversation.model';
 import { UserAccessapi } from '../../service/AccessAPi/userAccessapi/user-accessapi';
 import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-access-api';
+import { AvatarComponent } from "../../ExternComposent/avatar/avatar";
 
 @Component({
   selector: 'app-users',
@@ -28,7 +29,8 @@ import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-
     MatMenuModule,
     MatSidenavModule,
     ProfilEdition,
-    ValidationDialogComponent
+    ValidationDialogComponent,
+    AvatarComponent
 ],
   templateUrl: './users.html',
   styleUrl: './users.scss'

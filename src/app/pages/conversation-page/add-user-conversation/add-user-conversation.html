@@ -9,7 +9,10 @@
           [checked]="isUserInGroup(u.id) || listSelected.includes(u.id)"
           [disabled]="isUserInGroup(u.id)"
           (change)="toggleUserSelection(u.id)">
-          {{ u.pseudo }} ({{ u.email }})
+          <div class="label">
+            <app-avatar [url]="u.urlImage" [alt]="u.pseudo" ></app-avatar>
+            {{ u.pseudo }} ({{ u.email }})
+          </div>
         </mat-checkbox>
       </div>
     </div>

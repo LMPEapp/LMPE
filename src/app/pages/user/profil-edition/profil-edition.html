@@ -3,6 +3,18 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <h2 mat-dialog-title>{{ user ? 'Modifier utilisateur' : 'Créer utilisateur' }}</h2>
 
+      <!-- Seulement en mode édition -->
+      <div *ngIf="user" class="avatar-box">
+        <label for="fileInput" class="image-picker">
+          <img *ngIf="previewUrl; else placeholder" [src]="previewUrl" alt="Avatar" />
+          <ng-template #placeholder>
+            <div class="placeholder">+</div>
+          </ng-template>
+        </label>
+        <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.gif" (change)="onFileSelected($event)" hidden />
+      </div>
+
+
       <mat-form-field appearance="fill">
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" type="email">

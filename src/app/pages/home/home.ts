@@ -19,6 +19,7 @@ import { ConversationComponent } from "../conversation-component/conversation-co
 import { AgendaPage } from "../agenda-page/agenda-page";
 import { CourbecaPage } from "../courbeca-page/courbeca-page";
 import { Subscription } from 'rxjs';
+import { AvatarComponent } from "../../ExternComposent/avatar/avatar";
 
 @Component({
   selector: 'app-home',
@@ -35,8 +36,9 @@ import { Subscription } from 'rxjs';
     ProfilEdition,
     ConversationComponent,
     AgendaPage,
-    CourbecaPage
-  ]
+    CourbecaPage,
+    AvatarComponent
+]
 })
 export class HomeComponent implements OnInit, OnDestroy {
 

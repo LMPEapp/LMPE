@@ -7,13 +7,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { User } from '../../../Models/user.model';
 import { AuthService } from '../../../service/Auth/auth';
 import { MyRelativeDatePipe } from '../../../Helper/DatePipe/relative-date-pipe';
+import { AvatarComponent } from "../../../ExternComposent/avatar/avatar";
 
 @Component({
   selector: 'app-message',
   templateUrl: './message-component.html',
   styleUrls: ['./message-component.scss'],
   standalone: true,
-  imports: [MyRelativeDatePipe, CommonModule, MatMenuModule, MatButtonModule, MatIconModule]
+  imports: [MyRelativeDatePipe, CommonModule, MatMenuModule, MatButtonModule, MatIconModule, AvatarComponent]
 })
 export class MessageComponent implements OnDestroy {
   @Input() message!: MessageOut;

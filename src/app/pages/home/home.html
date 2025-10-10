@@ -3,7 +3,7 @@
     <mat-nav-list>
       <mat-list-item (click)="onProfil()">
         <div class="flex">
-          <mat-icon matListIcon>account_circle</mat-icon>
+          <app-avatar [url]="user?.urlImage" [alt]="user?.pseudo" [size]="25"></app-avatar>
           <span matLine>Profil</span>
         </div>
       </mat-list-item>
@@ -33,9 +33,9 @@
 
   <mat-sidenav-content>
     <mat-toolbar color="primary" class="toolbar">
-      <button mat-icon-button (click)="sidenav.toggle()">
-        <mat-icon>account_circle</mat-icon>
-      </button>
+      <div class="button" (click)="sidenav.toggle()">
+        <app-avatar [url]="user?.urlImage" [alt]="user?.pseudo" [size]="30"></app-avatar>
+      </div>
       <span class="toolbar-title">LMPE</span>
     </mat-toolbar>
 

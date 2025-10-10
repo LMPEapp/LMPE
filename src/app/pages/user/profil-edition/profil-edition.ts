@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { ChangePasswordDialogComponent } from '../../../ExternComposent/change-password-dialog/change-password-dialog';
 import { MatCardModule } from '@angular/material/card';
 import { AuthService } from '../../../service/Auth/auth';
+import { UserAccessapi } from '../../../service/AccessAPi/userAccessapi/user-accessapi';
 
 @Component({
   selector: 'app-profil-edition',
@@ -34,15 +35,17 @@ export class ProfilEdition {
 
   form: FormGroup;
   userLocal?: User;
+  previewUrl?: string;
+  selectedFile?: File;
 
-  constructor(private fb: FormBuilder, public auth: AuthService) {
+  constructor(private fb: FormBuilder, public auth: AuthService, private userApi:UserAccessapi) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
       pseudo: ['', [Validators.required, Validators.maxLength(50)]],
       urlImage: ['', Validators.maxLength(255)],
       isAdmin: [false]
     });
-    this.userLocal = auth.loginData?.user; 
+    this.userLocal = auth.loginData?.user;
   }
 
   onOpen(user?: User) {
@@ -56,6 +59,8 @@ export class ProfilEdition {
   }
 
   init() {
+    this.previewUrl = undefined;
+    this.selectedFile = undefined;
     if (this.user) {
       // Mode édition (sans mots de passe obligatoires)
       this.form = this.fb.group({
@@ -64,6 +69,7 @@ export class ProfilEdition {
         urlImage: ['', Validators.maxLength(255)],
         isAdmin: [this.user.isAdmin]
       });
+      this.previewUrl = this.user.urlImage;
     } else {
       // Mode création (avec mot de passe + confirm)
       this.form = this.fb.group({
@@ -88,11 +94,42 @@ export class ProfilEdition {
     return null;
   }
 
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Format non autorisé !');
+      return;
+    }
+
+    this.selectedFile = file;
+
+    // Prévisualisation en direct
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
   onSubmit() {
     if (this.form.valid) {
       const userData: UserIn = this.form.value;
       userData.passwordHash = userData.passwordHash ?? "";
       this.submitForm.emit(userData);
+
+      if (this.selectedFile && this.user) {
+        this.userApi.uploadImage(this.user.id, this.selectedFile).subscribe({
+          next: res => {
+            console.log('Image uploadée:', res.url);
+            this.form.patchValue({ urlImage: res.url });
+          },
+          error: err => console.error(err)
+        });
+      }
       this.onClose();
     }
   }

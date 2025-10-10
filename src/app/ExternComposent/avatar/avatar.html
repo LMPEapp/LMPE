@@ -1,0 +1,21 @@
+<ng-container *ngIf="avatarUrl; else defaultIcon">
+  <img
+    [src]="avatarUrl"
+    [alt]="alt"
+    class="avatar"
+    [style.width.px]="size"
+    [style.height.px]="size"
+    (error)="onError()"
+  />
+</ng-container>
+
+<ng-template #defaultIcon>
+  <mat-icon
+    class="avatar-icon"
+    [style.fontSize.px]="size"
+    [style.width.px]="size"
+    [style.height.px]="size"
+  >
+    account_circle
+  </mat-icon>
+</ng-template>

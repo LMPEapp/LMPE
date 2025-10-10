@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { GroupsAccessApi } from '../../../service/AccessAPi/GroupsAccessApi/groups-access-api';
 import { UserAccessapi } from '../../../service/AccessAPi/userAccessapi/user-accessapi';
 import { MatCardModule } from '@angular/material/card';
+import { AvatarComponent } from "../../../ExternComposent/avatar/avatar";
 
 @Component({
   selector: 'app-add-user-conversation',
@@ -19,8 +20,9 @@ import { MatCardModule } from '@angular/material/card';
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
-    MatCardModule
-  ],
+    MatCardModule,
+    AvatarComponent
+],
   templateUrl: './add-user-conversation.html',
   styleUrls: ['./add-user-conversation.scss']
 })
@@ -58,7 +60,7 @@ export class AddUserConversation {
         this.usersInGroupe = data;
       });
     }
-    
+
   }
   isUserInGroup(userId: number): boolean {
     return this.usersInGroupe.some(u => u.id === userId);
