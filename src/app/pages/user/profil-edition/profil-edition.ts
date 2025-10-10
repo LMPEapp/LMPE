@@ -12,6 +12,7 @@ import { AuthService } from '../../../service/Auth/auth';
 import { UserAccessapi } from '../../../service/AccessAPi/userAccessapi/user-accessapi';
 import { AvatarComponent } from "../../../ExternComposent/avatar/avatar";
 import { environment } from '../../../../environments/environment';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-profil-edition',
@@ -43,7 +44,7 @@ export class ProfilEdition {
   previewUrl?: string;
   selectedFile?: File;
 
-  constructor(private fb: FormBuilder, public auth: AuthService, private userApi:UserAccessapi) {
+  constructor(private fb: FormBuilder, public auth: AuthService, private userApi:UserAccessapi, private snackBar: MatSnackBar, ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
       pseudo: ['', [Validators.required, Validators.maxLength(50)]],
@@ -133,7 +134,13 @@ export class ProfilEdition {
             console.log('Image uploadée:', res.url);
             this.form.patchValue({ urlImage: res.url });
           },
-          error: err => console.error(err)
+          error: err => {
+            console.error(err);
+            this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
+          }
         });
       }
       this.onClose();
