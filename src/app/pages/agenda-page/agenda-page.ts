@@ -1,29 +1,32 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { AgendaIn, AgendaOut } from './../../Models/Agenda.model';
-import { AgendaEdition } from './agenda-edition/agenda-edition';
-import { AgendaAccessApi } from '../../service/AccessAPi/AgendaAccessapi/agenda-accessapi';
+import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { User } from '../../Models/user.model';
-import { AuthService } from '../../service/Auth/auth';
-import { toLocalDate } from '../../Helper/date-utils';
-import { AgendaSignalRService } from '../../service/SignalR/AgendaSignalRService/agenda-signal-rservice';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from "@angular/material/icon";
+
+import { AgendaEdition } from './agenda-edition/agenda-edition';
 import { WeekSelectorComponent } from "./week-selector/week-selector";
 import { AgendaGridComponent } from "./agenda-grid/agenda-grid";
-import { MatIconModule } from "@angular/material/icon";
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
+
+import { AgendaIn, AgendaOut } from './../../Models/Agenda.model';
+import { AgendaAccessApi } from '../../service/AccessAPi/AgendaAccessapi/agenda-accessapi';
+import { AgendaSignalRService } from '../../service/SignalR/AgendaSignalRService/agenda-signal-rservice';
+import { AuthService } from '../../service/Auth/auth';
+import { toLocalDate } from '../../Helper/date-utils';
+import { User } from '../../Models/user.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-agenda-page',
   templateUrl: './agenda-page.html',
   styleUrls: ['./agenda-page.scss'],
   imports: [
-    WeekSelectorComponent,
-    AgendaGridComponent,
-    MatIconModule,
-    AgendaEdition,
     CommonModule,
     MatButtonModule,
+    MatIconModule,
+    WeekSelectorComponent,
+    AgendaGridComponent,
+    AgendaEdition
   ],
 })
 export class AgendaPage implements OnInit, OnDestroy {
@@ -39,89 +42,131 @@ export class AgendaPage implements OnInit, OnDestroy {
   hours: string[] = [];
 
   user?: User;
+  private visibilityHandler?: () => void;
+
+  private createdSub?: Subscription;
+  private updatedSub?: Subscription;
+  private deletedSub?: Subscription;
 
   constructor(
     private agendaAccessApi: AgendaAccessApi,
     private snackBar: MatSnackBar,
-    public auth: AuthService,
-    private agendaHub: AgendaSignalRService
+    private agendaHub: AgendaSignalRService,
+    private auth: AuthService
   ) {
     this.user = auth.loginData?.user;
   }
 
+  // ─────────────────────────────
+  // 🚀 Cycle de vie
+  // ─────────────────────────────
   ngOnInit(): void {
-    // Connexion initiale au hub
     this.init();
 
-    document.addEventListener('visibilitychange', () => {
+    this.visibilityHandler = () => {
       if (document.visibilityState === 'visible') {
-        console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
-        this.init();
+        console.log('🌐 Page revenue au premier plan → Vérification SignalR');
+        this.loadAgendas();
+        this.ensureSignalRConnected();
       }
-    });
+    };
+    document.addEventListener('visibilitychange', this.visibilityHandler);
   }
 
   ngOnDestroy(): void {
+    this.createdSub?.unsubscribe();
+    this.updatedSub?.unsubscribe();
+    this.deletedSub?.unsubscribe();
     this.agendaHub.leaveAgendasGlobal();
+
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
   }
 
-  private init() {
+  // ─────────────────────────────
+  // ⚙️ Initialisation principale
+  // ─────────────────────────────
+  private init(): void {
+    this.setToday();
+    this.subscibeSignalR();
+    this.ensureSignalRConnected();
+  }
 
+  // ─────────────────────────────
+  // 🔗 Connexion SignalR
+  // ─────────────────────────────
+  private async ensureSignalRConnected(): Promise<void> {
     const state = this.agendaHub.connectionState;
 
     if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
-      console.log(`⏸️ SignalR déjà en cours (${state})`);
+      console.log(`⏸️ SignalR déjà actif (${state})`);
       return;
     }
 
-    this.setToday();
-    this.initSignalR();
-    this.subscibeSignalR();
-  }
-  
-  private initSignalR(): void {
-    this.agendaHub.startConnection(localStorage.getItem('token') || '')
-      .then(() => this.agendaHub.joinAgendasGlobal());
+    console.log('🚀 Démarrage SignalR...');
+    await this.agendaHub.startConnection(localStorage.getItem('token') || '');
+    this.agendaHub.joinAgendasGlobal();
   }
 
   private subscibeSignalR(): void {
-    this.agendaHub.agendaCreated$.subscribe(agd => {
-      if (agd && !this.agendas.find(a => a.id === agd.id)) {
-        if(agd.isPublic || agd.createdBy == this.user?.id){
+    this.createdSub?.unsubscribe();
+    this.updatedSub?.unsubscribe();
+    this.deletedSub?.unsubscribe();
+
+    this.createdSub = this.agendaHub.agendaCreated$.subscribe(agd => {
+      if (!agd) return;
+
+      if (!this.agendas.find(a => a.id === agd.id)) {
+        if (agd.isPublic || agd.createdBy === this.user?.id) {
           this.agendas.push(agd);
         }
       }
     });
 
-    this.agendaHub.agendaUpdated$.subscribe(agd => {
-      if (agd) {
-        if(!agd.isPublic && agd.createdBy != this.user?.id){
-          this.agendas = this.agendas.filter(a => a.id !== agd.id);
-        }
-        else{
-          const index = this.agendas.findIndex(a => a.id === agd.id);
-          if (index !== -1){
-            this.agendas[index] = agd;
-          }
-          else{
-            this.agendas.push(agd);
-          }
-        }
-        
+    this.updatedSub = this.agendaHub.agendaUpdated$.subscribe(agd => {
+      if (!agd) return;
+
+      if (!agd.isPublic && agd.createdBy !== this.user?.id) {
+        this.agendas = this.agendas.filter(a => a.id !== agd.id);
+        return;
+      }
+
+      const index = this.agendas.findIndex(a => a.id === agd.id);
+      if (index !== -1) {
+        this.agendas[index] = agd;
+      } else {
+        this.agendas.push(agd);
       }
     });
 
-    this.agendaHub.agendaDeleted$.subscribe(id => {
-      if (id) this.agendas = this.agendas.filter(a => a.id !== id);
+    this.deletedSub = this.agendaHub.agendaDeleted$.subscribe(id => {
+      if (!id) return;
+      this.agendas = this.agendas.filter(a => a.id !== id);
     });
   }
 
+  // ─────────────────────────────
+  // 📅 Gestion des semaines
+  // ─────────────────────────────
   setToday(): void {
     const today = new Date();
     this.setWeek(today);
     this.generateWeekDays();
     this.generateHours();
     this.loadAgendas();
+  }
+  isCurrentWeek(): boolean {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    return this.currentMonday >= startOfWeek && this.currentSunday <= endOfWeek;
   }
 
   private setWeek(reference: Date): void {
@@ -152,38 +197,6 @@ export class AgendaPage implements OnInit, OnDestroy {
     });
   }
 
-  loadAgendas(): void {
-    this.agendaAccessApi.getAll(this.currentMonday, this.currentSunday).subscribe({
-      next: data => this.agendas = data,
-      error: (err) => {
-        if(err.status === 401) {
-          this.auth.logout();
-        }
-        this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
-      }
-    });
-  }
-
-  isMine(agenda: AgendaOut): boolean {
-    return agenda.createdBy === this.user?.id;
-  }
-
-  isCurrentWeek(): boolean {
-    const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() + 1);
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    return this.currentMonday >= startOfWeek && this.currentSunday <= endOfWeek;
-  }
-
   prevWeek(): void { this.changeWeek(-7); }
   nextWeek(): void { this.changeWeek(7); }
 
@@ -195,20 +208,44 @@ export class AgendaPage implements OnInit, OnDestroy {
     this.loadAgendas();
   }
 
-  onAdd(): void { this.agendaSelected = null; this.AgendaEdition.onOpen(); }
-  onEditEvenement(event: AgendaOut): void { this.agendaSelected = event; this.AgendaEdition.onOpen(event); }
+  // ─────────────────────────────
+  // 📡 Chargement / API
+  // ─────────────────────────────
+  loadAgendas(): void {
+    this.agendaAccessApi.getAll(this.currentMonday, this.currentSunday).subscribe({
+      next: data => this.agendas = data,
+      error: (err) => {
+        if (err.status === 401) this.auth.logout();
+        this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  // ─────────────────────────────
+  // 🧩 Actions UI
+  // ─────────────────────────────
+  onAdd(): void {
+    this.agendaSelected = null;
+    this.AgendaEdition.onOpen();
+  }
+
+  onEditEvenement(event: AgendaOut): void {
+    this.agendaSelected = event;
+    this.AgendaEdition.onOpen(event);
+  }
 
   onDeleteElement(agendaId: number): void {
     this.agendaAccessApi.delete(agendaId).subscribe({
-      next: () => this.snackBar.open('Événement Supprimé ✅', 'Fermer', { duration: 3000 }),
+      next: () => this.snackBar.open('Événement supprimé ✅', 'Fermer', { duration: 3000 }),
       error: (err) => {
-        if(err.status === 401) {
-          this.auth.logout();
-        }
+        if (err.status === 401) this.auth.logout();
         this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }
@@ -243,12 +280,15 @@ export class AgendaPage implements OnInit, OnDestroy {
     }
   }
 
+  // ─────────────────────────────
+  // 🎨 Positionnement dans la grille
+  // ─────────────────────────────
   getEventStyleByDay(event: AgendaOut, day: Date): { [key: string]: string } {
     const start = toLocalDate(event.startDate);
     const end = toLocalDate(event.endDate);
 
-    const dayStart = new Date(day); dayStart.setHours(0,0,0,0);
-    const dayEnd = new Date(day); dayEnd.setHours(23,50,0,0);
+    const dayStart = new Date(day); dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(day); dayEnd.setHours(23, 50, 0, 0);
 
     const rowStartDate = start > dayStart ? start : dayStart;
     const rowEndDate = end < dayEnd ? end : dayEnd;
@@ -261,5 +301,4 @@ export class AgendaPage implements OnInit, OnDestroy {
 
     return { 'grid-column': `${dayIndex + 1}`, 'grid-row': `${startRow} / ${endRow}` };
   }
-
 }

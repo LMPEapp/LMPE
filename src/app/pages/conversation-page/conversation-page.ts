@@ -1,6 +1,6 @@
 import { User } from './../../Models/user.model';
 import { GroupeConversation } from './../../Models/GroupeConversation.model';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../service/Auth/auth';
 import { CommonModule } from '@angular/common';
@@ -20,6 +20,7 @@ import { MessageSignalRService } from '../../service/SignalR/MessageSignalRServi
 import { ValidationDialogComponent } from "../../ExternComposent/validation-dialog/validation-dialog";
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-conversation-page',
@@ -36,219 +37,185 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     MessageComponent,
     ValidationDialogComponent,
     MatProgressSpinnerModule
-],
+  ],
   templateUrl: './conversation-page.html',
   styleUrl: './conversation-page.scss'
 })
-export class ConversationPage {
+export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild(AddUserConversation) AddUserConversation!: AddUserConversation;
   @ViewChild('messagesWrapper') messagesWrapper!: ElementRef;
   @ViewChild(ValidationDialogComponent) alert!: ValidationDialogComponent;
 
-  GroupeConversation?:GroupeConversation;
-  conversationId:number;
-  MessageSelectd?:number;
-  user: User | undefined;
-  isLoading: boolean = false;
-  private scrolledInitially = false;
-  messages:MessageOut[]= [];
+  GroupeConversation?: GroupeConversation;
+  conversationId: number;
+  MessageSelectd?: number;
+  user?: User;
 
-  messageEdit:MessageOut|null= null;
+  messages: MessageOut[] = [];
+  messageEdit: MessageOut | null = null;
+  newMessage: string = '';
 
-  isBottom:boolean = true;
+  isLoading = false;
+  isBottom = true;
+  scrolledInitially = false;
 
   typingUsers: User[] = [];
   private typingTimers = new Map<number, any>();
+  private visibilityHandler?: () => void;
 
-  constructor(private router: Router,private route: ActivatedRoute,
-    public auth: AuthService,private groupsAccessApi: GroupsAccessApi,
-    private MessageAccessApi:MessageAccessApi,private messageHub: MessageSignalRService, private snackBar: MatSnackBar) {
+  // Subscriptions SignalR
+  private addSub?: Subscription;
+  private updateSub?: Subscription;
+  private deleteSub?: Subscription;
+  private typingSub?: Subscription;
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    public auth: AuthService,
+    private groupsAccessApi: GroupsAccessApi,
+    private messageApi: MessageAccessApi,
+    private messageHub: MessageSignalRService,
+    private snackBar: MatSnackBar
+  ) {
     this.user = auth.loginData?.user;
     this.conversationId = Number(this.route.snapshot.paramMap.get('id'));
   }
 
-  ngOnInit() {
-    // Connexion initiale au hub
+  // ─────────────────────────────
+  // 🚀 Cycle de vie
+  // ─────────────────────────────
+  ngOnInit(): void {
     this.init();
 
-    document.addEventListener('visibilitychange', () => {
+    this.visibilityHandler = () => {
       if (document.visibilityState === 'visible') {
-        console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
-        this.init();
+        console.log('🌐 Retour sur la page → vérification SignalR');
+        this.loadMessages();
+        this.ensureSignalRConnected();
       }
-    });
-
-    console.log('ID de la conversation:', this.conversationId);
-    // ici tu peux appeler ton API pour récupérer les messages
+    };
+    document.addEventListener('visibilitychange', this.visibilityHandler);
   }
-  ngOnDestroy() {
-    if(this.GroupeConversation){
-      this.messageHub.leaveGroup(this.GroupeConversation?.id);
+
+  ngOnDestroy(): void {
+    this.cleanSignalRSubscriptions();
+
+    if (this.GroupeConversation) {
+      this.messageHub.leaveGroup(this.GroupeConversation.id);
     }
-    this.MessageAccessApi.readAll(this.conversationId).subscribe((data)=>{})
+
+    this.messageApi.readAll(this.conversationId).subscribe();
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
   }
 
-  private init() {
+  ngAfterViewChecked(): void {
+    if (!this.scrolledInitially && this.messages.length > 0) {
+      this.scrolledInitially = true;
+      setTimeout(() => this.scrollToBottom());
+    }
+  }
+
+  // ─────────────────────────────
+  // ⚙️ Initialisation
+  // ─────────────────────────────
+  private init(): void {
+    this.loadData();
+    this.subscibeSignalR();
+    this.ensureSignalRConnected();
+  }
+
+  private async ensureSignalRConnected(): Promise<void> {
     const state = this.messageHub.connectionState;
 
     if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
-      console.log(`⏸️ SignalR déjà en cours (${state})`);
+      console.log(`⏸️ SignalR déjà actif (${state})`);
       return;
     }
 
-    this.getData();
-    this.initSignalR();
-    this.subscibeSignalR();
+    console.log('🚀 Connexion SignalR...');
+    try {
+      await this.messageHub.startConnection(localStorage.getItem('token') || '');
+      this.messageHub.joinGroup(this.conversationId);
+    } catch (err) {
+      console.error('❌ Erreur SignalR', err);
+    }
   }
 
-  private getData(){
+  private loadData(): void {
     this.isLoading = true;
-    this.groupsAccessApi.getById(this.conversationId).subscribe((data)=>{
-      this.GroupeConversation=data;
-      this.isLoading = false;
-      this.MessageAccessApi.readAll(this.conversationId).subscribe((data)=>{})
-    })
-
-    this.MessageAccessApi.getByGroup(this.conversationId).subscribe((data)=>{
-      this.scrolledInitially = false;
-      this.messages=data;
-    })
+    this.groupsAccessApi.getById(this.conversationId).subscribe({
+      next: data => {
+        this.GroupeConversation = data;
+        this.isLoading = false;
+        this.messageApi.readAll(this.conversationId).subscribe();
+        this.loadMessages();
+      },
+      error: err => {
+        this.isLoading = false;
+        if (err.status === 401) this.auth.logout();
+        this.snackBar.open('Erreur de chargement du groupe', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 
-  private initSignalR(): void {
-    this.messageHub.startConnection(localStorage.getItem('token') || '')
-      .then(() => {
-        console.log('🔗 SignalR connecté');
-        this.messageHub.joinGroup(this.conversationId);
-      })
-      .catch(err => {
-        console.error('❌ Erreur lors de la connexion SignalR', err);
-      });
+  private loadMessages(): void {
+    this.messageApi.getByGroup(this.conversationId).subscribe({
+      next: data => {
+        this.messages = data;
+        this.scrolledInitially = false;
+      },
+      error: err => console.error(err)
+    });
   }
 
+  // ─────────────────────────────
+  // 🔗 SignalR
+  // ─────────────────────────────
   private subscibeSignalR(): void {
-    this.messageHub.addmessage$.subscribe(msg => {
+    this.cleanSignalRSubscriptions();
+
+    this.addSub = this.messageHub.addmessage$.subscribe(msg => {
       if (msg && !this.messages.find(m => m.id === msg.id)) {
         const index = this.messages.findIndex(m => m.id > msg.id);
         if (index === -1) {
           this.messages.push(msg);
-          if (this.isBottom) {
-            setTimeout(() => this.gotBottom(true));
-          }
+          if (this.isBottom) setTimeout(() => this.scrollToBottom(true));
         } else {
           this.messages.splice(index, 0, msg);
         }
       }
     });
 
-    this.messageHub.updatemessage$.subscribe(msg => {
-      if (msg) {
-        const index = this.messages.findIndex(m => m.id == msg.id);
-        if (index != -1) this.messages[index] = msg;
-      }
+    this.updateSub = this.messageHub.updatemessage$.subscribe(msg => {
+      if (!msg) return;
+      const i = this.messages.findIndex(m => m.id === msg.id);
+      if (i !== -1) this.messages[i] = msg;
     });
 
-    this.messageHub.deletemessage$.subscribe(id => {
-      if (id) {
-        const index = this.messages.findIndex(m => m.id == id);
-        if (index != -1) this.messages.splice(index, 1);
-      }
+    this.deleteSub = this.messageHub.deletemessage$.subscribe(id => {
+      if (!id) return;
+      this.messages = this.messages.filter(m => m.id !== id);
     });
 
-    this.messageHub.typingUser$.subscribe(user => {
+    this.typingSub = this.messageHub.typingUser$.subscribe(user => {
       if (user) this.handleUserTyping(user);
     });
   }
 
-  ngAfterViewChecked() {
-    if (!this.scrolledInitially && this.messages.length > 0) {
-      this.scrolledInitially = true;
-      setTimeout(() => this.gotBottom());
-    }
-}
-
-
-  private handleUserTyping(user: User) {
-    // Si l'utilisateur n'est pas déjà dans la liste, on l'ajoute
-    if (!this.typingUsers.find(u => u.id === user.id)) {
-      this.typingUsers.push(user);
-    }
-
-    // Si un timer existait déjà pour cet utilisateur, on le supprime
-    const existingTimer = this.typingTimers.get(user.id);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
-    }
-
-    // On recrée un timer de 2s : si pas de nouvelle frappe, on le retire
-    const timer = setTimeout(() => {
-      this.removeTypingUser(user.id);
-    }, 2000);
-
-    this.typingTimers.set(user.id, timer);
+  private cleanSignalRSubscriptions(): void {
+    this.addSub?.unsubscribe();
+    this.updateSub?.unsubscribe();
+    this.deleteSub?.unsubscribe();
+    this.typingSub?.unsubscribe();
   }
 
-  /**
-   * Supprime un user de la liste typingUsers et nettoie son timer
-   */
-  private removeTypingUser(userId: number) {
-    this.typingUsers = this.typingUsers.filter(u => u.id !== userId);
-    const timer = this.typingTimers.get(userId);
-    if (timer) {
-      clearTimeout(timer);
-      this.typingTimers.delete(userId);
-    }
-  }
-
-  scrollToMessage(messageId: number, smooth: boolean = false) {
-    const el = document.getElementById('msg-' + messageId);
-    if (el) {
-      el.scrollIntoView({
-        behavior: smooth ? 'smooth' : 'auto',
-        block: 'start'
-      });
-    }
-  }
-
-
-
-
-  goBack() {
-    this.router.navigate(['home']); // remplace par la route voulue
-  }
-  onGestion() {
-    this.AddUserConversation.onOpen(this.GroupeConversation);
-  }
-
-  addMessage(){
-    if(this.GroupeConversation){
-      const lastId = this.messages.length > 0 ? this.messages[0].id : undefined;
-
-      if(lastId){
-        this.MessageAccessApi.getByGroup(this.GroupeConversation?.id, lastId).subscribe((data) => {
-          this.messages.unshift(...data);
-          setTimeout(()=>{
-            this.scrollToMessage(lastId);
-          })
-
-        });
-        }
-
-
-    }
-  }
-  adjustTextarea() {
-    setTimeout(()=>{
-      const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
-      textarea.style.height = 'auto'; // réinitialise la hauteur
-      const maxHeight = 10 * 15; // environ 10 lignes (24px par ligne)
-      textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
-    })
-  }
-
-  newMessage: string = '';
-
+  // ─────────────────────────────
+  // ✉️ Gestion des messages
+  // ─────────────────────────────
   sendMessage() {
     if (!this.newMessage.trim() || !this.GroupeConversation) return;
 
@@ -259,11 +226,11 @@ export class ConversationPage {
         content: this.newMessage.trim(),
       };
 
-      this.MessageAccessApi.create(this.GroupeConversation.id, input).subscribe((msg) => {
+      this.messageApi.create(this.GroupeConversation.id, input).subscribe((msg) => {
         this.newMessage = '';
         this.adjustTextarea();
         setTimeout(()=>{
-          this.gotBottom(true);
+          this.scrollToBottom(true);
         })
       });
     }
@@ -275,101 +242,143 @@ export class ConversationPage {
       };
 
       if (!this.GroupeConversation) return;
-      this.MessageAccessApi.update(this.GroupeConversation.id,this.messageEdit.id, input).subscribe((msg) => {
+      this.messageApi.update(this.GroupeConversation.id,this.messageEdit.id, input).subscribe((msg) => {
         this.onCoseEdit();
        });
     }
 
 
   }
-  onCoseEdit(){
-    this.messageEdit=null;
-    this.newMessage = '';
-    this.adjustTextarea();
-  }
-  onTyping() {
-    if(this.GroupeConversation && this.user){
+
+  onTyping(): void {
+    if (this.GroupeConversation && this.user) {
       this.messageHub.typing(this.GroupeConversation.id, this.user);
     }
     this.adjustTextarea();
   }
 
-  onDeleteMessage(event: MessageOut) {
-    this.MessageSelectd=event.id;
-    this.deleteorleave = "delete";
-    this.alert.open(
-      'Supprimer le Message',
-      'Êtes-vous sûr de vouloir Supprimer le Message ?',
-      false
-    );
-  }
-  onUpdateMessage(event: MessageOut) {
+  onUpdateMessage(event: MessageOut): void {
     this.messageEdit = event;
     this.newMessage = event.content;
     this.adjustTextarea();
   }
-  onScroll() {
-    const element = this.messagesWrapper.nativeElement;
-    if (element.scrollTop === 0) {
-      this.addMessage();
-    }
-    // Détection quand on est en bas
-    const scrollBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
-    if (scrollBottom <= 0) {
-      this.isBottom=true;
-    } else {
-      this.isBottom=false;
-    }
-  }
-  onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault(); // ⛔ Empêche le saut de ligne normal
-      this.sendMessage();     // ✅ Envoie le message
-    }
-  }
-  deleteorleave?:"delete"|"leave";
 
-  onleaveGroupe() {
-    this.deleteorleave = "leave";
-    this.alert.open(
-      'Quitter la Conversation',
-      'Êtes-vous sûr de vouloir Quitter cet Conversation ?',
-      false
-    );
+  onDeleteMessage(event: MessageOut): void {
+    this.MessageSelectd = event.id;
+    this.deleteorleave = "delete";
+    this.alert.open('Supprimer le message', 'Confirmer la suppression ?', false);
   }
-  onAlertClosed(event: boolean) {
-    if(event && this.GroupeConversation && this.user){
-      if(this.deleteorleave=="leave"){
-        this.groupsAccessApi.removeUser(this.GroupeConversation.id,this.user?.id).subscribe({
-          next: (res) => {
-            this.snackBar.open('Groupe quitté avec succès ✅', 'Fermer', {
-              duration: 3000
-            });
-            this.goBack();
-          },
-          error: (err) => {
-            if(err.status === 401) {
-              this.auth.logout();
-            }
-            this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
-      }else{
-        if (!this.GroupeConversation || !this.MessageSelectd) return;
-        this.MessageAccessApi.delete(this.GroupeConversation.id,this.MessageSelectd).subscribe((msg) => {
-          this.MessageSelectd=undefined;
-         });
+
+  onCoseEdit(): void {
+    this.messageEdit = null;
+    this.newMessage = '';
+    this.adjustTextarea();
+  }
+
+  // ─────────────────────────────
+  // 🧍 Gestion des utilisateurs
+  // ─────────────────────────────
+  private handleUserTyping(user: User): void {
+    if (!this.typingUsers.find(u => u.id === user.id)) {
+      this.typingUsers.push(user);
+    }
+
+    const oldTimer = this.typingTimers.get(user.id);
+    if (oldTimer) clearTimeout(oldTimer);
+
+    const timer = setTimeout(() => this.removeTypingUser(user.id), 2000);
+    this.typingTimers.set(user.id, timer);
+  }
+
+  private removeTypingUser(userId: number): void {
+    this.typingUsers = this.typingUsers.filter(u => u.id !== userId);
+    const timer = this.typingTimers.get(userId);
+    if (timer) {
+      clearTimeout(timer);
+      this.typingTimers.delete(userId);
+    }
+  }
+
+  // ─────────────────────────────
+  // 🧩 UI / Scroll / Textarea
+  // ─────────────────────────────
+  adjustTextarea(): void {
+    setTimeout(() => {
+      const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+      if (textarea) {
+        textarea.style.height = 'auto';
+        const maxHeight = 10 * 15;
+        textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
       }
+    });
+  }
 
+  onGestion() {
+    this.AddUserConversation.onOpen(this.GroupeConversation);
+  }
+  onScroll(): void {
+    const el = this.messagesWrapper.nativeElement;
+    if (el.scrollTop === 0) this.addOlderMessages();
+
+    const scrollBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    this.isBottom = scrollBottom <= 0;
+  }
+
+  private addOlderMessages(): void {
+    if (!this.GroupeConversation || this.messages.length === 0) return;
+
+    const lastId = this.messages[0].id;
+    this.messageApi.getByGroup(this.GroupeConversation.id, lastId).subscribe(data => {
+      this.messages.unshift(...data);
+      setTimeout(() => this.scrollToMessage(lastId));
+    });
+  }
+
+  scrollToMessage(id: number, smooth: boolean = false): void {
+    const el = document.getElementById(`msg-${id}`);
+    if (el) el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+  }
+
+  scrollToBottom(smooth: boolean = false): void {
+    if (this.messages.length === 0) return;
+    this.scrollToMessage(this.messages[this.messages.length - 1].id, smooth);
+  }
+
+  // ─────────────────────────────
+  // 🧭 Divers
+  // ─────────────────────────────
+  goBack(): void { this.router.navigate(['home']); }
+
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
     }
   }
-  onBottom() {
-    this.gotBottom(true);
+
+  deleteorleave?: "delete" | "leave";
+
+  onleaveGroupe(): void {
+    this.deleteorleave = "leave";
+    this.alert.open('Quitter la conversation', 'Confirmer ?', false);
   }
-  gotBottom(smooth: boolean = false) {
-    this.scrollToMessage(this.messages[this.messages.length-1].id,smooth);
+
+  onAlertClosed(event: boolean): void {
+    if (!event || !this.GroupeConversation || !this.user) return;
+
+    if (this.deleteorleave === "leave") {
+      this.groupsAccessApi.removeUser(this.GroupeConversation.id, this.user.id).subscribe({
+        next: () => {
+          this.snackBar.open('Groupe quitté ✅', 'Fermer', { duration: 3000 });
+          this.goBack();
+        },
+        error: err => {
+          if (err.status === 401) this.auth.logout();
+          this.snackBar.open(`Erreur : ${err.error || err.message}`, 'Fermer', { duration: 5000 });
+        }
+      });
+    } else if (this.deleteorleave === "delete" && this.MessageSelectd) {
+      this.messageApi.delete(this.GroupeConversation.id, this.MessageSelectd).subscribe();
+    }
   }
 }
