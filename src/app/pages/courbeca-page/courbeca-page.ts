@@ -228,10 +228,15 @@ export class CourbecaPage implements OnInit {
       map.set(key, (map.get(key) || 0) + c.totalAmount);
     });
 
+    // Conversion en série cumulée
+    let cumulative = 0;
     this.graphData = [
       {
         name: 'CA',
-        series: Array.from(map.entries()).map(([date, amount]) => ({ name: date, value: amount }))
+        series: Array.from(map.entries()).map(([date, amount]) => {
+          cumulative += amount; // somme progressive
+          return { name: date, value: cumulative };
+        })
       }
     ];
   }
