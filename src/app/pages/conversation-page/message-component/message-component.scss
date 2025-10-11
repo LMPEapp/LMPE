@@ -181,7 +181,8 @@
 }
 @media (max-width: 700px) {
   .button-more {
-    display: none; /* cacher le bouton-more */
+    visibility: hidden;
+    width: 0px;
   }
   .message-container {
     max-width: 90%; /* élargir la carte du message */
