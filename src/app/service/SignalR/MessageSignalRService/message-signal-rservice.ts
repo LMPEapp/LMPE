@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { MessageOut } from '../../../Models/Message.model';
 import { environment } from '../../../../environments/environment';
 import { User } from '../../../Models/user.model';
+import { MessageReactionOut } from '../../../Models/MessageReaction.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,8 @@ export class MessageSignalRService {
   public deletemessage$ = new BehaviorSubject<number | null>(null);
   public updatemessage$ = new BehaviorSubject<MessageOut | null>(null);
   public typingUser$ = new BehaviorSubject<User | null>(null);
+  public addreaction$ = new BehaviorSubject<MessageReactionOut | null>(null);
+  public deletereaction$ = new BehaviorSubject<number | null>(null);
 
   constructor() { }
 
@@ -50,6 +53,12 @@ export class MessageSignalRService {
     this.hubConnection.on('DeleteMessage', (message: number) => {
       this.deletemessage$.next(message); // on ne garde que le dernier message
     });
+    this.hubConnection.on('ReceiveReaction', (message: MessageReactionOut) => {
+      this.addreaction$.next(message); // on ne garde que le dernier message
+    });
+    this.hubConnection.on('DeleteReaction', (message: number) => {
+      this.deletereaction$.next(message); // on ne garde que le dernier message
+    });
 
     this.hubConnection.on('UserTyping', (user: User) => {
       this.typingUser$.next(user);
@@ -66,6 +75,8 @@ export class MessageSignalRService {
     this.addmessage$.next(null);
     this.deletemessage$.next(null);
     this.updatemessage$.next(null);
+    this.deletemessage$.next(null);
+    this.deletereaction$.next(null);
     this.hubConnection.invoke('LeaveGroup', groupId)
       .catch(err => console.error(err))
       .finally(() => {

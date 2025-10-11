@@ -1,3 +1,5 @@
+import { MessageReactionOut } from "./MessageReaction.model";
+
 // Message.model.ts
 export interface MessageOut {
   id: number;
@@ -11,6 +13,8 @@ export interface MessageOut {
   userUrlImage: string;
   userIsAdmin: boolean;
   isRead: boolean;
+
+  reactions: MessageReactionOut[];
 }
 
 export interface MessageIn {

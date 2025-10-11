@@ -1,75 +1,83 @@
-<div class="message-wrapper"
-     [ngClass]="{ mine: isMine, other: !isMine }"
-     (pointerdown)="startPress($event)"
-     (pointerup)="endPress()"
+<div class="message-wrapper" [ngClass]="{ mine: isMine, other: !isMine }">
+
+  <div class="message-container">
+    <div class="message-card"
+     (pointerdown)="onPointerDown($event)"
+     (pointerup)="onPointerUp()"
      (pointercancel)="cancelPress()"
      (touchmove)="cancelPress()"
      (mouseleave)="cancelPress()"
      (contextmenu)="$event.preventDefault()">
+      <div *ngIf="user?.isAdmin || isMine" class="button-more">
+        <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger" aria-label="Plus d'options">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
 
-  <div class="message-card">
-    <div *ngIf="user?.isAdmin || isMine" class="button-more">
-      <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger" aria-label="Plus d'options">
-        <mat-icon>more_vert</mat-icon>
-      </button>
+      <!-- Pastille pour message lu/non lu -->
+      <div *ngIf="message.isRead" class="notification-badge"></div>
+
+      <mat-menu #menu="matMenu">
+        <div class="menu">
+          <button *ngIf="isMine && message.type=='texte'" mat-menu-item (click)="onCopier()">
+            <mat-icon>content_copy</mat-icon>
+            <span>Copier</span>
+          </button>
+          <button *ngIf="isMine && message.type=='texte'" mat-menu-item (click)="onUpdate()">
+            <mat-icon>edit</mat-icon>
+            <span>Modifier</span>
+          </button>
+          <button mat-menu-item *ngIf="message.type !== 'texte'" (click)="downloadFile()">
+            <mat-icon>download</mat-icon>
+            <span>Télécharger</span>
+          </button>
+          <button mat-menu-item class="delete-button" (click)="onDelete()">
+            <mat-icon color="warn">delete</mat-icon>
+            <span>Supprimer</span>
+          </button>
+        </div>
+      </mat-menu>
+
+      <div class="message-box">
+        <div class="message-header">
+          <app-avatar class="avatar" [url]="message.userUrlImage" [alt]="message.userPseudo" [size]="20"></app-avatar>
+          <span class="date">{{ message.createdAt | myRelativeDate }}</span>
+          <span class="pseudo">{{ isMine ? 'Moi' : message.userPseudo }}</span>
+        </div>
+
+        <div class="message-content">
+
+          <!-- Texte -->
+          <ng-container *ngIf="message.type === 'texte'">
+            <span>{{ message.content }}</span>
+          </ng-container>
+
+          <!-- Image -->
+          <ng-container *ngIf="message.type === 'image'">
+            <img [src]="getUrl()" alt="Image" class="message-media"/>
+          </ng-container>
+
+          <!-- Vidéo -->
+          <ng-container *ngIf="message.type === 'video'">
+            <video class="message-media" controls [src]="getUrl()"></video>
+          </ng-container>
+
+          <!-- Fichier -->
+          <ng-container *ngIf="message.type === 'fichier'">
+            <mat-icon class="large-icon">insert_drive_file</mat-icon>
+            <span>{{ message.content }}</span>
+          </ng-container>
+
+        </div>
+      </div>
     </div>
 
-    <!-- Pastille pour message lu/non lu -->
-    <div *ngIf="message.isRead" class="notification-badge"></div>
-
-    <mat-menu #menu="matMenu">
-      <div class="menu">
-        <button *ngIf="isMine && message.type=='texte'" mat-menu-item (click)="onCopier()">
-          <mat-icon>content_copy</mat-icon>
-          <span>Copier</span>
-        </button>
-        <button *ngIf="isMine && message.type=='texte'" mat-menu-item (click)="onUpdate()">
-          <mat-icon>edit</mat-icon>
-          <span>Modifier</span>
-        </button>
-        <button mat-menu-item *ngIf="message.type !== 'texte'" (click)="downloadFile()">
-          <mat-icon>download</mat-icon>
-          <span>Télécharger</span>
-        </button>
-        <button mat-menu-item class="delete-button" (click)="onDelete()">
-          <mat-icon color="warn">delete</mat-icon>
-          <span>Supprimer</span>
-        </button>
-      </div>
-    </mat-menu>
-
-    <div class="message-box">
-      <div class="message-header">
-        <app-avatar class="avatar" [url]="message.userUrlImage" [alt]="message.userPseudo" [size]="20"></app-avatar>
-        <span class="date">{{ message.createdAt | myRelativeDate }}</span>
-        <span class="pseudo">{{ isMine ? 'Moi' : message.userPseudo }}</span>
-      </div>
-
-      <div class="message-content">
-
-        <!-- Texte -->
-        <ng-container *ngIf="message.type === 'texte'">
-          <span>{{ message.content }}</span>
-        </ng-container>
-
-        <!-- Image -->
-        <ng-container *ngIf="message.type === 'image'">
-          <img [src]="getUrl()" alt="Image" class="message-media"/>
-        </ng-container>
-
-        <!-- Vidéo -->
-        <ng-container *ngIf="message.type === 'video'">
-          <video class="message-media" controls [src]="getUrl()"></video>
-        </ng-container>
-
-        <!-- Fichier -->
-        <ng-container *ngIf="message.type === 'fichier'">
-          <mat-icon class="large-icon">insert_drive_file</mat-icon>
-          <span>{{ message.content }}</span>
-        </ng-container>
-
+    <!-- Réactions sous le message, hors du card -->
+    <div class="message-reactions" *ngIf="message.reactions.length > 0">
+      <div *ngFor="let reaction of message.reactions" class="item" (click)="onReactionClick(reaction)">
+        <app-avatar class="avatar" [url]="reaction.userUrlImage" [alt]="reaction.userPseudo" [size]="20"></app-avatar>
+        {{ reaction.emoji }}
       </div>
     </div>
-
   </div>
 </div>

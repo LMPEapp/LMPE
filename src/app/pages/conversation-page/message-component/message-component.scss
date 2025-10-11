@@ -17,7 +17,15 @@
   -moz-user-select: none;    /* Firefox */
   -ms-user-select: none;     /* IE/Edge */
 
+  .message-container{
+    display: flex;
+    flex-direction: column;
+  }
+
   &.mine {
+    .message-container{
+      align-items: flex-end;
+    }
     justify-content: flex-end;
 
     .button-more > button{
@@ -52,6 +60,9 @@
   }
 
   &.other {
+    .message-container{
+      align-items: flex-start;
+    }
     justify-content: flex-start;
 
     .button-more > button{
@@ -154,3 +165,28 @@
 .delete-button {
   color: red; /* texte + icône héritent de la couleur */
 }
+
+.message-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+
+  .item {
+    display: flex;
+    align-items: center;
+    background-color: #e0e0e0;
+    border-radius: 16px;
+    padding: 2px 6px;
+    font-size: 0.85rem;
+    gap: 4px;
+
+    app-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  }
+}
+

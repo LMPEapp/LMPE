@@ -11,6 +11,11 @@ import { AvatarComponent } from "../../../ExternComposent/avatar/avatar";
 import { environment } from '../../../../environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { MessageReactionAccessApi } from '../../../service/AccessAPi/MessageReactionAccessApi/message-reaction-access-api';
+import { MessageReactionIn, MessageReactionOut } from '../../../Models/MessageReaction.model';
+import { ActivatedRoute } from '@angular/router';
+import { MessageSignalRService } from '../../../service/SignalR/MessageSignalRService/message-signal-rservice';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-message',
@@ -25,21 +30,57 @@ export class MessageComponent implements OnDestroy {
 
   @Output() update = new EventEmitter<MessageOut>();
   @Output() delete = new EventEmitter<MessageOut>();
+  conversationId: number;
 
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
-  private pressTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly pressDelay = 500; // ms
+  private pressTimer: any = null;
+  private lastTap = 0;
+  private doubleTapTimeout: any = null;
+  private pressDelay = 600; // durée du long press (ms)
 
   user: User | undefined;
 
+  private deleteSub?: Subscription;
+  private addSub?: Subscription;
+
   constructor(public auth: AuthService,private clipboard: Clipboard,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar, private reactionAccessApi: MessageReactionAccessApi,
+    private route: ActivatedRoute, private messageHub: MessageSignalRService) {
       this.user = auth.loginData?.user;
+      this.conversationId = Number(this.route.snapshot.paramMap.get('id'));
     }
 
   get isMine(): boolean {
     return this.message?.userId === this.currentUserId;
+  }
+
+  ngOnInit(): void {
+    this.subscibeSignalR();
+  }
+
+  private subscibeSignalR(): void {
+    this.cleanSignalRSubscriptions();
+
+    this.addSub = this.messageHub.addreaction$.subscribe(msg => {
+      if (msg && msg.messageId == this.message.id) {
+        const index = this.message.reactions.findIndex(m => m.id == msg.id);
+        if (index === -1) {
+          this.message.reactions.push(msg);
+        } else {
+          this.message.reactions.splice(index, 1, msg);
+        }
+      }
+    });
+
+    this.deleteSub = this.messageHub.deletereaction$.subscribe(id => {
+      if (!id) return;
+      this.message.reactions = this.message.reactions.filter(m => m.id !== id);
+    });
+  }
+  private cleanSignalRSubscriptions(): void {
+    this.addSub?.unsubscribe();
+    this.deleteSub?.unsubscribe();
   }
 
   onCopier(): void {
@@ -58,21 +99,35 @@ export class MessageComponent implements OnDestroy {
     this.delete.emit(this.message);
   }
 
-  // Start long-press detection
-  startPress(event: Event) {
-    if (!this.isMine && !this.user?.isAdmin) return;
-    // évite certains comportements natifs (sélection, etc.)
-    try { (event as Event).preventDefault(); } catch { /* ignore */ }
+  onPointerDown(event: PointerEvent) {
+    // Empêche sélection ou clic natif
+    event.preventDefault();
 
-    this.cancelPress();
-    this.pressTimer = setTimeout(() => {
-      // ouvre le menu si présent
-      this.menuTrigger?.openMenu();
-    }, this.pressDelay);
+    const now = Date.now();
+    const timeSinceLastTap = now - this.lastTap;
+
+    // 🔹 Si double tap détecté (< 300ms entre deux taps)
+    if (timeSinceLastTap > 0 && timeSinceLastTap < 300) {
+      clearTimeout(this.doubleTapTimeout);
+      this.cancelPress();
+      this.onDoubleTap(event);
+    } else {
+      // 🔹 Sinon, on prépare un long press
+      this.cancelPress();
+      this.pressTimer = setTimeout(() => {
+        this.onLongPress(event);
+      }, this.pressDelay);
+
+      // 🔹 Et on prévoit que si c’est pas un double tap → simple tap
+      this.doubleTapTimeout = setTimeout(() => {
+        this.onSingleTap(event);
+      }, 300);
+    }
+
+    this.lastTap = now;
   }
 
-  // End / cancel
-  endPress() {
+  onPointerUp() {
     this.cancelPress();
   }
 
@@ -83,8 +138,38 @@ export class MessageComponent implements OnDestroy {
     }
   }
 
+  // 🟢 Simple tap
+  onSingleTap(event: PointerEvent) {
+    console.log('👆 Simple tap détecté');
+    // ton code ici
+  }
+
+  // 🟢 Double tap
+  onDoubleTap(event: PointerEvent) {
+    const reactionIn: MessageReactionIn = {
+      messageId: this.message.id,
+      userId: this.user!.id,  // ou le vrai ID de l'utilisateur
+      emoji: '❤️'
+    };
+    this.reactionAccessApi.addReaction(this.conversationId, reactionIn).subscribe({
+      next: id => {
+        console.log('Réaction ajoutée avec id', id);
+      },
+      error: err => console.error('Erreur ajout réaction', err)
+    });
+  }
+
+  // 🟢 Long press
+  onLongPress(event: PointerEvent) {
+    // ouvre ton menu contextuel
+    if (this.menuTrigger) {
+      this.menuTrigger.openMenu();
+    }
+  }
+
   ngOnDestroy(): void {
     this.cancelPress();
+    this.cleanSignalRSubscriptions();
   }
 
   getUrl():string{
@@ -101,6 +186,17 @@ export class MessageComponent implements OnDestroy {
     document.body.appendChild(a);
     a.click();               // déclenche le téléchargement
     document.body.removeChild(a);
+  }
+
+  onReactionClick(reaction: MessageReactionOut) {
+
+    if(reaction.userId==this.user?.id){
+      this.reactionAccessApi.deleteReaction(this.conversationId, reaction.id).subscribe({
+        next: id => console.log('Réaction supprimé avec id', id),
+        error: err => console.error('Erreur supprimé réaction', err)
+      });
+    }
+
   }
 
 }
