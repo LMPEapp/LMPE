@@ -76,3 +76,14 @@ mat-toolbar {
     font-size: 1.2rem;
   }
 }
+.selected-file{
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 200px;
+  .file-preview{
+    height: 100%;
+    overflow: hidden;
+  }
+}

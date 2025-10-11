@@ -61,18 +61,53 @@
 
         <!-- Zone de saisie -->
         <div class="input-zone">
-          <textarea
-            [(ngModel)]="newMessage"
-            placeholder="Écrire un message..."
-            (input)="onTyping()"
-            (keydown)="onKeyDown($event)"
-            #textArea>
-          </textarea>
+          <!-- Bouton fichier/image -->
+          <button mat-icon-button color="primary" (click)="fileInput.click()">
+            <mat-icon>attach_file</mat-icon>
+          </button>
+          <input #fileInput type="file" style="display:none" (change)="onFileSelected($event)" />
+
+          <ng-container *ngIf="selectedFile; else messageInput">
+            <div class="selected-file">
+              <ng-container *ngIf="isImage(selectedFile); else checkVideo">
+                <img [src]="imagePreview" alt="Aperçu" class="file-preview" />
+              </ng-container>
+
+              <ng-template #checkVideo>
+                <ng-container *ngIf="isVideo(selectedFile); else otherFile">
+                  <video class="file-preview" [src]="videoPreview" controls></video>
+                </ng-container>
+              </ng-template>
+
+              <ng-template #otherFile>
+                <div class="file-info">
+                  <mat-icon>insert_drive_file</mat-icon>
+                  <span>{{ selectedFile.name }}</span>
+                </div>
+              </ng-template>
+            </div>
+          </ng-container>
+
+
+          <!-- Textarea pour le message -->
+          <ng-template #messageInput>
+            <textarea
+              [(ngModel)]="newMessage"
+              placeholder="Écrire un message..."
+              (input)="onTyping()"
+              (keydown)="onKeyDown($event)"
+              #textArea>
+            </textarea>
+          </ng-template>
+
+          <button *ngIf="selectedFile" mat-icon-button color="warn" (click)="removeSelectedFile()">
+            <mat-icon>close</mat-icon>
+          </button>
           <button *ngIf="this.messageEdit!=null" mat-icon-button color="primary" (click)="onCoseEdit()">
             <mat-icon>close</mat-icon>
           </button>
           <ng-container *ngIf="!isLoadingSendMessage; else loading">
-            <button mat-icon-button color="primary" (click)="sendMessage()">
+            <button mat-icon-button color="primary" (click)="sendMessageOrUpload()">
               <mat-icon>send</mat-icon>
             </button>
           </ng-container>

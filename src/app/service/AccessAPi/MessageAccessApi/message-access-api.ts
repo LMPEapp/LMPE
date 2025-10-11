@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { from, Observable, switchMap, throwError } from 'rxjs';
 import { AccessApiService } from '../access-api-service';
 import { MessageOut, MessageIn } from '../../../Models/Message.model';
+import imageCompression from 'browser-image-compression';
 
 @Injectable({
   providedIn: 'root'
@@ -46,5 +47,39 @@ export class MessageAccessApi {
   getNotificationCount(): Observable<number> {
     const token = localStorage.getItem('token') || '';
     return this.api.get<number>(`${this.controller}/Notification`, '', {}, token);
+  }
+
+  upload(groupId: number, file: File): Observable<MessageOut> {
+    const token = localStorage.getItem('token') || '';
+    const type = file.type;
+
+    const isImage = type.startsWith('image/') && type !== 'image/gif';
+
+    // 🧩 Cas 1 : Image (jpg/png/webp…) → compression légère
+    if (isImage) {
+      const options = {
+        maxSizeMB: 2,            // environ 2 Mo
+        maxWidthOrHeight: 1920,  // bonne qualité
+        initialQuality: 0.8,     // légère compression
+        useWebWorker: true
+      };
+
+      return from(imageCompression(file, options)).pipe(
+        switchMap((compressedFile) => {
+          const formData = new FormData();
+          formData.append('file', compressedFile, compressedFile.name);
+          return this.api.post<MessageOut>(`${this.controller}/groupe/${groupId}/upload`, '', formData, token);
+        })
+      );
+    }
+
+    // 🧩 Cas 2 : GIF ou tout autre fichier → pas de compression, limite 20 Mo
+    if (file.size > 20 * 1024 * 1024) {
+      return throwError(() => new Error('Le fichier dépasse la limite de 20 Mo'));
+    }
+
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.api.post<MessageOut>(`${this.controller}/groupe/${groupId}/upload`, '', formData, token);
   }
 }

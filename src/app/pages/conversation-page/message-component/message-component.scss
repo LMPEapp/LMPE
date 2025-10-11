@@ -1,6 +1,21 @@
+.message-card,
+.message-box,
+.message-content,
+.message-header {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
 .message-wrapper {
   display: flex;
   margin: 6px 0;
+
+  user-select: none;
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE/Edge */
 
   &.mine {
     justify-content: flex-end;
@@ -94,6 +109,9 @@
   font-size: 0.95rem;
   white-space: pre-wrap;
   word-wrap: break-word;
+  .message-media{
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 600px) {

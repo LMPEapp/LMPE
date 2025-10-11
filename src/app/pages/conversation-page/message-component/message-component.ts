@@ -8,6 +8,9 @@ import { User } from '../../../Models/user.model';
 import { AuthService } from '../../../service/Auth/auth';
 import { MyRelativeDatePipe } from '../../../Helper/DatePipe/relative-date-pipe';
 import { AvatarComponent } from "../../../ExternComposent/avatar/avatar";
+import { environment } from '../../../../environments/environment';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-message',
@@ -30,13 +33,22 @@ export class MessageComponent implements OnDestroy {
 
   user: User | undefined;
 
-  constructor(public auth: AuthService) {
+  constructor(public auth: AuthService,private clipboard: Clipboard,
+    private snackBar: MatSnackBar) {
       this.user = auth.loginData?.user;
     }
 
   get isMine(): boolean {
     return this.message?.userId === this.currentUserId;
   }
+
+  onCopier(): void {
+    if (this.message.type === 'texte' && this.message.content) {
+      this.clipboard.copy(this.message.content);
+      this.snackBar.open('Texte copié ✅', 'Fermer', { duration: 2000 });
+    }
+  }
+
 
   onUpdate() {
     this.update.emit(this.message);
@@ -74,4 +86,21 @@ export class MessageComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.cancelPress();
   }
+
+  getUrl():string{
+    return environment.apiUrl+"/uploads/messages/"+this.message.content;
+  }
+  downloadFile() {
+    const url = this.getUrl(); // URL du fichier
+    const fileName = this.message.content || 'fichier';
+
+    // Crée un élément <a> temporaire
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName; // nom du fichier
+    document.body.appendChild(a);
+    a.click();               // déclenche le téléchargement
+    document.body.removeChild(a);
+  }
+
 }

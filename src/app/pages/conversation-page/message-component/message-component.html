@@ -14,20 +14,26 @@
       </button>
     </div>
 
-    <!-- ✅ Pastille affichée si message NON LU -->
-    <div *ngIf="message.isRead" class="notification-badge">
-      <!-- vide, ou icône, ou check -->
-    </div>
+    <!-- Pastille pour message lu/non lu -->
+    <div *ngIf="message.isRead" class="notification-badge"></div>
 
     <mat-menu #menu="matMenu">
       <div class="menu">
-        <button *ngIf="isMine" mat-menu-item (click)="onUpdate()">
+        <button *ngIf="isMine && message.type=='texte'" mat-menu-item (click)="onCopier()">
+          <mat-icon>content_copy</mat-icon>
+          <span>Copier</span>
+        </button>
+        <button *ngIf="isMine && message.type=='texte'" mat-menu-item (click)="onUpdate()">
           <mat-icon>edit</mat-icon>
           <span>Modifier</span>
         </button>
         <button mat-menu-item (click)="onDelete()">
           <mat-icon>delete</mat-icon>
           <span>Supprimer</span>
+        </button>
+        <button mat-menu-item *ngIf="message.type !== 'texte'" (click)="downloadFile()">
+          <mat-icon>download</mat-icon>
+          <span>Télécharger</span>
         </button>
       </div>
     </mat-menu>
@@ -40,7 +46,28 @@
       </div>
 
       <div class="message-content">
-        <span>{{ message.content }}</span>
+
+        <!-- Texte -->
+        <ng-container *ngIf="message.type === 'texte'">
+          <span>{{ message.content }}</span>
+        </ng-container>
+
+        <!-- Image -->
+        <ng-container *ngIf="message.type === 'image'">
+          <img [src]="getUrl()" alt="Image" class="message-media"/>
+        </ng-container>
+
+        <!-- Vidéo -->
+        <ng-container *ngIf="message.type === 'video'">
+          <video class="message-media" controls [src]="getUrl()"></video>
+        </ng-container>
+
+        <!-- Fichier -->
+        <ng-container *ngIf="message.type === 'fichier'">
+          <mat-icon>insert_drive_file</mat-icon>
+          <span>{{ message.content }}</span>
+        </ng-container>
+
       </div>
     </div>
 

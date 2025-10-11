@@ -71,6 +71,10 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   private deleteSub?: Subscription;
   private typingSub?: Subscription;
 
+  selectedFile?: File;
+  imagePreview?: string;
+  videoPreview?: string;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -385,6 +389,61 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
       });
     } else if (this.deleteorleave === "delete" && this.MessageSelectd) {
       this.messageApi.delete(this.GroupeConversation.id, this.MessageSelectd).subscribe();
+    }
+  }
+
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.selectedFile = file;
+
+    if (this.isImage(file)) {
+      const reader = new FileReader();
+      reader.onload = e => this.imagePreview = reader.result as string;
+      reader.readAsDataURL(file);
+      this.videoPreview = undefined;
+    } else if (this.isVideo(file)) {
+      this.videoPreview = URL.createObjectURL(file);
+      this.imagePreview = undefined;
+    } else {
+      this.imagePreview = undefined;
+      this.videoPreview = undefined;
+    }
+  }
+
+  isVideo(file: File): boolean {
+    return file.type.startsWith('video/');
+  }
+
+  isImage(file: File): boolean {
+    return file.type.startsWith('image/');
+  }
+
+  removeSelectedFile() {
+    this.selectedFile = undefined;
+    this.imagePreview = undefined;
+  }
+
+  sendMessageOrUpload() {
+    if (this.selectedFile) {
+      // ⚡ Upload fichier/image
+      this.isLoadingSendMessage = true;
+      this.messageApi.upload(this.conversationId, this.selectedFile).subscribe({
+        next: (msg) => {
+          this.selectedFile = undefined;
+          this.isLoadingSendMessage = false;
+          setTimeout(()=>{
+            this.scrollToBottom(true);
+          })
+        },
+        error: (err) => {
+          this.snackBar.open(err.message || 'Erreur lors de l\'upload', 'Fermer', { duration: 3000 });
+          this.isLoadingSendMessage = false;
+        }
+      });
+    } else {
+      // ⚡ Envoi message texte
+      this.sendMessage();
     }
   }
 }
