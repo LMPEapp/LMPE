@@ -157,7 +157,6 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
       next: data => {
         this.GroupeConversation = data;
         this.isLoading = false;
-        this.messageApi.readAll(this.conversationId).subscribe();
         this.loadMessages();
       },
       error: err => {
@@ -171,6 +170,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   private loadMessages(): void {
     this.messageApi.getByGroup(this.conversationId).subscribe({
       next: data => {
+        this.messageApi.readAll(this.conversationId).subscribe();
         this.messages = data;
         this.scrolledInitially = false;
         console.log(this.messages)
