@@ -128,7 +128,8 @@
 
 /* Texte */
 .message-content .text {
-  white-space: normal;
+  white-space: pre-wrap; /* garde les sauts de ligne */
+  word-break: break-word;
 }
 
 /* Media */
