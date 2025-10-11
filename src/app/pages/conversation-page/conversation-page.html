@@ -62,7 +62,7 @@
         <!-- Zone de saisie -->
         <div class="input-zone">
           <!-- Bouton fichier/image -->
-          <button mat-icon-button color="primary" (click)="fileInput.click()">
+          <button mat-icon-button color="primary" (click)="onFileInputClick(); fileInput.click()">
             <mat-icon>attach_file</mat-icon>
           </button>
           <input #fileInput type="file" style="display:none" (change)="onFileSelected($event)" />

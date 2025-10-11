@@ -393,6 +393,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.selectedFile = file;
@@ -409,6 +410,10 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
       this.imagePreview = undefined;
       this.videoPreview = undefined;
     }
+    if (this.visibilityHandler) {
+      document.addEventListener('visibilitychange', this.visibilityHandler);
+    }
+    input.value = '';
   }
 
   isVideo(file: File): boolean {
@@ -444,6 +449,12 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     } else {
       // ⚡ Envoi message texte
       this.sendMessage();
+    }
+  }
+  onFileInputClick() {
+    // désactiver temporairement
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
     }
   }
 }
