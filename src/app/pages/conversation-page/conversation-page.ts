@@ -350,8 +350,8 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   scrollToBottom(smooth: boolean = false): void {
-    if (this.messages.length === 0) return;
-    this.scrollToMessage(this.messages[this.messages.length - 1].id, smooth);
+    const el = document.getElementById('msg-end');
+    if (el) el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
   }
 
   // ─────────────────────────────

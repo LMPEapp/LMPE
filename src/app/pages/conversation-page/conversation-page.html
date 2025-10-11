@@ -34,6 +34,7 @@
             <div *ngFor="let msg of messages" [id]="'msg-' + msg.id">
               <app-message [message]="msg" [currentUserId]="user?.id" (update)="onUpdateMessage($event)" (delete)="onDeleteMessage($event)"></app-message>
             </div>
+            <div id="msg-end"></div>
           </div>
         </div>
 
