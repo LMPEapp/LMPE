@@ -1,20 +1,22 @@
 <div class="message-wrapper" [ngClass]="{ mine: isMine, other: !isMine }">
-
   <div class="message-container">
+
     <div class="message-card"
-     (pointerdown)="onPointerDown($event)"
-     (pointerup)="onPointerUp()"
-     (pointercancel)="cancelPress()"
-     (touchmove)="cancelPress()"
-     (mouseleave)="cancelPress()"
-     (contextmenu)="$event.preventDefault()">
-      <div *ngIf="user?.isAdmin || isMine" class="button-more">
+         (pointerdown)="onPointerDown($event)"
+         (pointerup)="onPointerUp()"
+         (pointercancel)="cancelPress()"
+         (touchmove)="cancelPress()"
+         (mouseleave)="cancelPress()"
+         (contextmenu)="$event.preventDefault()">
+
+      <!-- Bouton plus d'options -->
+      <div class="button-more">
         <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger" aria-label="Plus d'options">
           <mat-icon>more_vert</mat-icon>
         </button>
       </div>
 
-      <!-- Pastille pour message lu/non lu -->
+      <!-- Pastille message lu -->
       <div *ngIf="message.isRead" class="notification-badge"></div>
 
       <mat-menu #menu="matMenu">
@@ -38,41 +40,33 @@
         </div>
       </mat-menu>
 
+      <!-- Contenu du message -->
       <div class="message-box">
         <div class="message-header">
           <app-avatar class="avatar" [url]="message.userUrlImage" [alt]="message.userPseudo" [size]="20"></app-avatar>
-          <span class="date">{{ message.createdAt | myRelativeDate }}</span>
           <span class="pseudo">{{ isMine ? 'Moi' : message.userPseudo }}</span>
+          <span class="date">{{ message.createdAt | myRelativeDate }}</span>
         </div>
 
         <div class="message-content">
-
-          <!-- Texte -->
           <ng-container *ngIf="message.type === 'texte'">
-            <span>{{ message.content }}</span>
+            <span class="text">{{ message.content }}</span>
           </ng-container>
-
-          <!-- Image -->
           <ng-container *ngIf="message.type === 'image'">
             <img [src]="getUrl()" alt="Image" class="message-media"/>
           </ng-container>
-
-          <!-- Vidéo -->
           <ng-container *ngIf="message.type === 'video'">
             <video class="message-media" controls [src]="getUrl()"></video>
           </ng-container>
-
-          <!-- Fichier -->
           <ng-container *ngIf="message.type === 'fichier'">
             <mat-icon class="large-icon">insert_drive_file</mat-icon>
-            <span>{{ message.content }}</span>
+            <span class="text">{{ message.content }}</span>
           </ng-container>
-
         </div>
       </div>
     </div>
 
-    <!-- Réactions sous le message, hors du card -->
+    <!-- Réactions -->
     <div class="message-reactions" *ngIf="message.reactions.length > 0">
       <div *ngFor="let reaction of message.reactions" class="item" (click)="onReactionClick(reaction)">
         <app-avatar class="avatar" [url]="reaction.userUrlImage" [alt]="reaction.userPseudo" [size]="20"></app-avatar>

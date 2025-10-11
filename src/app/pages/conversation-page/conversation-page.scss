@@ -23,7 +23,6 @@ mat-toolbar {
   display: flex;
   flex-direction: column;
   overflow: hidden;        /* cacher scroll du container principal */
-  padding: 0.5rem;
   justify-content: flex-end; /* colle les messages en bas quand il y en a peu */
 }
 
