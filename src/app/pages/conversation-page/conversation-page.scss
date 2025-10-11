@@ -87,3 +87,13 @@ mat-toolbar {
     overflow: hidden;
   }
 }
+.file-info{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.large-icon {
+  font-size: 100px; /* taille désirée */
+  width: fit-content;
+  height: fit-content;
+}

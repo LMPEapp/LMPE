@@ -27,13 +27,13 @@
           <mat-icon>edit</mat-icon>
           <span>Modifier</span>
         </button>
-        <button mat-menu-item (click)="onDelete()">
-          <mat-icon>delete</mat-icon>
-          <span>Supprimer</span>
-        </button>
         <button mat-menu-item *ngIf="message.type !== 'texte'" (click)="downloadFile()">
           <mat-icon>download</mat-icon>
           <span>Télécharger</span>
+        </button>
+        <button mat-menu-item class="delete-button" (click)="onDelete()">
+          <mat-icon color="warn">delete</mat-icon>
+          <span>Supprimer</span>
         </button>
       </div>
     </mat-menu>
