@@ -81,6 +81,11 @@ export class MessageComponent implements OnDestroy {
 
   sortEmojisOther: string[] = [];
   quickEmojis: string[] = [];
+  popupTop = 0;
+  popupLeft = 0;
+  popupWidth = 300;  // largeur approximative du popup
+  popupHeight = 200; // hauteur approximative
+  margin = 8;
 
   private autolinker = new Autolinker({
     urls: true,
@@ -213,6 +218,12 @@ export class MessageComponent implements OnDestroy {
 
   // 🟢 Double tap
   onDoubleTap(event: PointerEvent) {
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+
+    // limiter la position pour ne pas dépasser l'écran
+    this.popupLeft = Math.min(window.innerWidth - this.popupWidth - this.margin, Math.max(this.margin, clientX));
+    this.popupTop = Math.min(window.innerHeight - this.popupHeight - this.margin, Math.max(this.margin, clientY));
     this.openEmojiPopup();
   }
 

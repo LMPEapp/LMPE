@@ -1,7 +1,12 @@
 <div class="message-wrapper" [ngClass]="{ mine: isMine, other: !isMine }">
   <div class="message-container">
     <!-- barre rapide -->
-    <div *ngIf="showEmojiPopup" class="emoji-popup" tabindex="0" (blur)="closeEmojiPopup()" #popup>
+    <div *ngIf="showEmojiPopup"
+        class="emoji-popup"
+        tabindex="0"
+        (blur)="closeEmojiPopup()"
+        #popup
+        [ngStyle]="{'top.px': popupTop, 'left.px': popupLeft}">
       <div class="quick-emojis">
         <span *ngFor="let emoji of quickEmojis" (click)="addReaction(emoji)">{{emoji}}</span>
         <span class="more" (click)="openFullEmojiPicker()">➕</span>
@@ -13,6 +18,7 @@
         </div>
       </div>
     </div>
+
 
 
 

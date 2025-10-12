@@ -202,10 +202,8 @@
   left: 60%;
 }
 .emoji-popup {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  position: fixed; /* au lieu de absolute */
+  transform: translate(0, 0); /* plus besoin de centrer avec translateX */
   background: rgba(40, 40, 40, 0.95);
   border-radius: 16px;
   padding: 8px 12px;
@@ -215,7 +213,9 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   animation: fadeIn 0.15s ease-in-out;
   z-index: 1000;
+  max-width: 290px;
 }
+
 
 .quick-emojis {
   display: flex;
@@ -226,9 +226,6 @@
     cursor: pointer;
     font-size: 26px;
     transition: transform 0.1s ease-in;
-    &:hover {
-      transform: scale(1.3);
-    }
   }
 
   .more {
