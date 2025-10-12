@@ -76,7 +76,7 @@ export class ProfilEdition {
         urlImage: ['', Validators.maxLength(255)],
         isAdmin: [this.user.isAdmin]
       });
-      this.previewUrl = `${this.apiBase}/${this.user.urlImage}`;
+      this.previewUrl = `${this.apiBase}/uploads/users/${this.user.urlImage}`;
     } else {
       // Mode création (avec mot de passe + confirm)
       this.form = this.fb.group({
