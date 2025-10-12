@@ -117,6 +117,12 @@
   font-size: 0.75rem;
 }
 
+.mine .message-content{
+  align-items: flex-end;
+}
+.other .message-content{
+  align-items: flex-start;
+}
 /* Contenu du message */
 .message-content {
   display: flex;
