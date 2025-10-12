@@ -32,7 +32,7 @@
 
       <!-- Bouton plus d'options -->
       <div class="button-more">
-        <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger" aria-label="Plus d'options">
+        <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger" aria-label="Plus d'options" (click)="setPosition($event)">
           <mat-icon>more_vert</mat-icon>
         </button>
       </div>
