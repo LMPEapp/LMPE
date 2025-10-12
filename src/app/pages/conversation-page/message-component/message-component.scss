@@ -195,9 +195,15 @@
     max-width: 90%; /* élargir la carte du message */
   }
 }
+.mine .emoji-popup{
+  left: 5%;
+}
+.other .emoji-popup{
+  left: 60%;
+}
 .emoji-popup {
   position: absolute;
-  bottom: 50%;
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(40, 40, 40, 0.95);
@@ -218,7 +224,7 @@
 
   span {
     cursor: pointer;
-    font-size: 22px;
+    font-size: 26px;
     transition: transform 0.1s ease-in;
     &:hover {
       transform: scale(1.3);
@@ -226,7 +232,7 @@
   }
 
   .more {
-    font-size: 20px;
+    font-size: 22px;
     color: #ccc;
   }
 }
