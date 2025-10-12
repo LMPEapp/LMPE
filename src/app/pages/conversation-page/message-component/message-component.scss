@@ -12,6 +12,7 @@
 }
 
 .message-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -193,4 +194,49 @@
   .message-container {
     max-width: 90%; /* élargir la carte du message */
   }
+}
+.emoji-popup {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(40, 40, 40, 0.95);
+  border-radius: 16px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  animation: fadeIn 0.15s ease-in-out;
+  z-index: 1000;
+}
+
+.quick-emojis {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  span {
+    cursor: pointer;
+    font-size: 22px;
+    transition: transform 0.1s ease-in;
+    &:hover {
+      transform: scale(1.3);
+    }
+  }
+
+  .more {
+    font-size: 20px;
+    color: #ccc;
+  }
+}
+
+.full-emoji-picker {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }

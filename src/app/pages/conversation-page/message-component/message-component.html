@@ -1,5 +1,20 @@
 <div class="message-wrapper" [ngClass]="{ mine: isMine, other: !isMine }">
   <div class="message-container">
+    <!-- barre rapide -->
+    <div *ngIf="showEmojiPopup" class="emoji-popup" tabindex="0" (blur)="closeEmojiPopup()" #popup>
+      <div class="quick-emojis">
+        <span *ngFor="let emoji of quickEmojis" (click)="addReaction(emoji)">{{emoji}}</span>
+        <span class="more" (click)="openFullEmojiPicker()">➕</span>
+      </div>
+
+      <div *ngIf="showFullPicker" class="full-emoji-picker">
+        <div class="emoji-grid">
+          <span *ngFor="let emoji of sortEmojisOther" (click)="addReaction(emoji)">{{emoji}}</span>
+        </div>
+      </div>
+    </div>
+
+
 
     <div class="message-card"
          (pointerdown)="onPointerDown($event)"
@@ -21,6 +36,10 @@
 
       <mat-menu #menu="matMenu">
         <div class="menu">
+          <button mat-menu-item (click)="openEmojiPopup()">
+            <mat-icon>mood</mat-icon>
+            <span>Reaction</span>
+          </button>
           <button *ngIf="message.type=='texte'" mat-menu-item (click)="onCopier()">
             <mat-icon>content_copy</mat-icon>
             <span>Copier</span>

@@ -24,7 +24,14 @@ import { SafeHtml } from '@angular/platform-browser';
   templateUrl: './message-component.html',
   styleUrls: ['./message-component.scss'],
   standalone: true,
-  imports: [MyRelativeDatePipe, CommonModule, MatMenuModule, MatButtonModule, MatIconModule, AvatarComponent]
+  imports: [
+    MyRelativeDatePipe,
+    CommonModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule,
+    AvatarComponent,
+  ]
 })
 export class MessageComponent implements OnDestroy {
   @Input() message!: MessageOut;
@@ -45,6 +52,35 @@ export class MessageComponent implements OnDestroy {
 
   private deleteSub?: Subscription;
   private addSub?: Subscription;
+
+  showEmojiPopup = false;
+  showFullPicker = false;
+  private localStorageKey = 'emojiUsage';
+
+  // liste complète d'emojis
+  allEmojis = [
+    '😀','😃','😄','😁','😆','😅','😂','🤣','🥲','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚',
+    '😋','😛','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔',
+    '😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','😎','🤓','🧐','😕',
+    '😟','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓',
+    '😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖','😺',
+    '😸','😹','😻','😼','😽','🙀','😿','😾','🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮',
+    '🐷','🐽','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🦆','🦅','🦉','🦇','🐺','🐗',
+    '🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🪰','🪲','🪳','🦟','🦗','🕷️','🕸️','🦂','🐢','🐍','🦎','🦖',
+    '🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘',
+    '🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮',
+    '🐕‍🦺','🐈','🐓','🦃','🦚','🦜','🦢','🦩','🕊️','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀','🐿️','🦔',
+    '🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑',
+    '🥦','🥬','🥒','🌶️','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳',
+    '🥞','🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🥪','🥙','🫔','🌮','🌯','🫱','🥗','🥘','🍲','🫕',
+    '🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🫓','🥠','🥡','🍤','🍙','🍚','🍘','🍥','🥮','🍢','🍡','🍧',
+    '🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🧂','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃',
+    '🍸','🍹','🧉','🍾','🧊','🥄','🍴','🍽️','🥣','🥡','🥢','🧇','🧈'
+  ];
+
+
+  sortEmojisOther: string[] = [];
+  quickEmojis: string[] = [];
 
   private autolinker = new Autolinker({
     urls: true,
@@ -70,6 +106,17 @@ export class MessageComponent implements OnDestroy {
   ngOnInit(): void {
     this.subscibeSignalR();
   }
+
+  updateEmojis() {
+    const usage = JSON.parse(localStorage.getItem(this.localStorageKey) || '{}');
+
+    // trier tous les emojis par utilisation
+    const sorted = [...this.allEmojis].sort((a, b) => (usage[b] || 0) - (usage[a] || 0));
+
+    this.quickEmojis = sorted.slice(0, 5);
+    this.sortEmojisOther = sorted.slice(5);
+  }
+
 
   formatMessageContent(content: string): SafeHtml {
     const linkedText = this.autolinker.link(content);
@@ -166,17 +213,51 @@ export class MessageComponent implements OnDestroy {
 
   // 🟢 Double tap
   onDoubleTap(event: PointerEvent) {
+    this.openEmojiPopup();
+  }
+
+  openEmojiPopup() {
+    this.updateEmojis();
+    this.showEmojiPopup = true;
+    this.showFullPicker = false;
+
+    // focus sur le popup pour détecter blur
+    setTimeout(() => {
+      const popup = document.querySelector('.emoji-popup') as HTMLElement;
+      popup?.focus();
+    }, 0);
+  }
+
+  closeEmojiPopup() {
+    this.showEmojiPopup = false;
+    this.showFullPicker = false;
+  }
+
+
+  addReaction(emoji: string) {
+    // mise à jour localStorage
+    const usage = JSON.parse(localStorage.getItem(this.localStorageKey) || '{}');
+    usage[emoji] = (usage[emoji] || 0) + 1;
+    localStorage.setItem(this.localStorageKey, JSON.stringify(usage));
+
+    // appel API
     const reactionIn: MessageReactionIn = {
       messageId: this.message.id,
-      userId: this.user!.id,  // ou le vrai ID de l'utilisateur
-      emoji: '❤️'
+      userId: this.user!.id,
+      emoji
     };
     this.reactionAccessApi.addReaction(this.conversationId, reactionIn).subscribe({
       next: id => {
-        console.log('Réaction ajoutée avec id', id);
+        console.log('Réaction ajoutée', emoji);
+        this.closeEmojiPopup();
       },
       error: err => console.error('Erreur ajout réaction', err)
     });
+  }
+
+  // ouverture sélecteur complet
+  openFullEmojiPicker() {
+    this.showFullPicker = true;
   }
 
   // 🟢 Long press
