@@ -31,7 +31,7 @@ export class AvatarComponent implements OnChanges {
       return;
     }
 
-    this.url = `${this.apiBase}/${this.url}`;
+    this.url = `${this.apiBase}/uploads/users/${this.url}`;
 
     const img = new Image();
     img.src = this.url;
