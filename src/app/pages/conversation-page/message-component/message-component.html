@@ -21,7 +21,7 @@
 
       <mat-menu #menu="matMenu">
         <div class="menu">
-          <button *ngIf="isMine && message.type=='texte'" mat-menu-item (click)="onCopier()">
+          <button *ngIf="message.type=='texte'" mat-menu-item (click)="onCopier()">
             <mat-icon>content_copy</mat-icon>
             <span>Copier</span>
           </button>
@@ -50,7 +50,7 @@
 
         <div class="message-content">
           <ng-container *ngIf="message.type === 'texte'">
-            <span class="text">{{ message.content }}</span>
+            <span class="text" [innerHTML]="formatMessageContent(message.content)"></span>
           </ng-container>
           <ng-container *ngIf="message.type === 'image'">
             <img [src]="getUrl()" alt="Image" class="message-media"/>

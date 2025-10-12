@@ -16,6 +16,8 @@ import { MessageReactionIn, MessageReactionOut } from '../../../Models/MessageRe
 import { ActivatedRoute } from '@angular/router';
 import { MessageSignalRService } from '../../../service/SignalR/MessageSignalRService/message-signal-rservice';
 import { Subscription } from 'rxjs';
+import Autolinker from 'autolinker';
+import { SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-message',
@@ -44,6 +46,16 @@ export class MessageComponent implements OnDestroy {
   private deleteSub?: Subscription;
   private addSub?: Subscription;
 
+  private autolinker = new Autolinker({
+    urls: true,
+    email: true,
+    phone: true,
+    stripPrefix: true,
+    truncate: { length: 40, location: 'smart' },
+    className: 'url-link',
+  });
+
+
   constructor(public auth: AuthService,private clipboard: Clipboard,
     private snackBar: MatSnackBar, private reactionAccessApi: MessageReactionAccessApi,
     private route: ActivatedRoute, private messageHub: MessageSignalRService) {
@@ -57,6 +69,11 @@ export class MessageComponent implements OnDestroy {
 
   ngOnInit(): void {
     this.subscibeSignalR();
+  }
+
+  formatMessageContent(content: string): SafeHtml {
+    const linkedText = this.autolinker.link(content);
+    return linkedText;
   }
 
   private subscibeSignalR(): void {
@@ -100,9 +117,12 @@ export class MessageComponent implements OnDestroy {
   }
 
   onPointerDown(event: PointerEvent) {
-    // Empêche sélection ou clic natif
-    event.preventDefault();
+    // ⚠️ Si l'utilisateur clique sur un lien, on laisse le comportement normal
+    const target = event.target as HTMLElement;
+    if (target.closest('a')) return; // ✅ autoriser les liens
 
+    // sinon, on empêche le comportement par défaut
+    event.preventDefault();
     const now = Date.now();
     const timeSinceLastTap = now - this.lastTap;
 
