@@ -36,7 +36,7 @@
   </div>
 
   <!-- Bouton charger plus -->
-  <div class="load-more-container" *ngIf="!isLoading && courbes.length > 0">
+  <div class="load-more-container" *ngIf="courbes.length % 30 == 0">
     <button mat-stroked-button color="primary" (click)="loadMore()">Plus de données</button>
   </div>
 
