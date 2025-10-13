@@ -1,21 +1,24 @@
-<ng-container *ngIf="avatarUrl; else defaultIcon">
-  <img
-    [src]="avatarUrl"
-    [alt]="alt"
-    class="avatar"
-    [style.width]="computedSize"
-    [style.height]="computedSize"
-    (error)="onError()"
-  />
-</ng-container>
+<div class="avatar-container">
+  <ng-container *ngIf="avatarUrl; else defaultIcon">
+    <img
+      [src]="avatarUrl"
+      [alt]="alt"
+      class="avatar"
+      [style.width]="computedSize"
+      [style.height]="computedSize"
+      (error)="onError()"
+    />
+  </ng-container>
 
-<ng-template #defaultIcon>
-  <mat-icon
-    class="avatar-icon"
-    [style.fontSize]="computedSize"
-    [style.width]="computedSize"
-    [style.height]="computedSize"
-  >
-    account_circle
-  </mat-icon>
-</ng-template>
+  <ng-template #defaultIcon>
+    <mat-icon
+      class="avatar-icon"
+      [style.fontSize]="computedSize"
+      [style.width]="computedSize"
+      [style.height]="computedSize"
+    >
+      account_circle
+    </mat-icon>
+  </ng-template>
+</div>
+

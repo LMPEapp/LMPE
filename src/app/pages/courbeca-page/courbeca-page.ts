@@ -17,6 +17,12 @@ import { CourbecaListe } from "./courbeca-liste/courbeca-liste";
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthService } from '../../service/Auth/auth';
 import { Subscription } from 'rxjs';
+import { UserAccessapi } from '../../service/AccessAPi/userAccessapi/user-accessapi';
+import { User } from '../../Models/user.model';
+import { MatInputModule } from "@angular/material/input";
+import { AvatarComponent } from "../../ExternComposent/avatar/avatar";
+import { MatOption } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-courbeca-page',
@@ -32,12 +38,17 @@ import { Subscription } from 'rxjs';
     CourbecaEdit,
     MatTabsModule,
     ShortNumberFrPipe,
-    CourbecaListe
+    CourbecaListe,
+    MatInputModule,
+    MatOption,
+    AvatarComponent,
+    MatSelectModule,
 ]
 })
 export class CourbecaPage implements OnInit {
 
   @ViewChild(CourbecaEdit) CourbecaEdit!: CourbecaEdit;
+  @ViewChild(CourbecaListe) CourbecaListe!: CourbecaListe;
 
   courbes: CourbeCAGroupByDatePoint[] = [];
   totalAmountLast30Days: number = 0;
@@ -47,6 +58,10 @@ export class CourbecaPage implements OnInit {
 
   endDateOnly:DateOnly;
   startDateOnly:DateOnly;
+
+  user: User | undefined;
+  public users:User[] = [];
+  userSelected?:User;
 
   private visibilityHandler?: () => void;
 
@@ -61,13 +76,15 @@ export class CourbecaPage implements OnInit {
     private caApi: CourbeCAAccessApi,
     private courbecaHub: CourbecaSignalRService,
     private snackBar: MatSnackBar,
-    private auth: AuthService
+    private auth: AuthService,
+    private userAccessapi:UserAccessapi
   ) {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - 30);
     this.endDateOnly = DateOnly.fromDate(endDate);
     this.startDateOnly = DateOnly.fromDate(startDate);
+    this.user = auth.loginData?.user;
   }
 
   ngOnInit(): void {
@@ -96,6 +113,10 @@ export class CourbecaPage implements OnInit {
     this.loadLast30Days();
     this.subscibeSignalR();
     this.ensureSignalRConnected();
+
+    this.userAccessapi.get().subscribe((data)=>{
+      this.users = data;
+    })
   }
 
   // --- Initialisation de SignalR ---
@@ -174,7 +195,7 @@ export class CourbecaPage implements OnInit {
 
 
   // --- Chargement initial ---
-  loadLast30Days(): void {
+  loadLast30Days(idUser?: number): void {
     this.isLoading = true;
     this.errorMessage = '';
 
@@ -184,7 +205,7 @@ export class CourbecaPage implements OnInit {
     this.endDateOnly = DateOnly.fromDate(endDate);
     this.startDateOnly = DateOnly.fromDate(startDate);
 
-    this.caApi.GetAllGroupeByDate(this.startDateOnly, this.endDateOnly).subscribe({
+    this.caApi.GetAllGroupeByDate(this.startDateOnly, this.endDateOnly, idUser).subscribe({
       next: (data: CourbeCAGroupByDatePoint[]) => {
         this.courbes = data.map(c => ({
           ...c,
@@ -241,6 +262,11 @@ export class CourbecaPage implements OnInit {
     ];
   }
 
+  onUserChange(user?: User) {
+    this.userSelected = user;
+    console.log('Utilisateur sélectionné :', user);
+    this.loadLast30Days(user?.id);
+  }
   // --- Ouverture du formulaire d'ajout ---
   onAdd(): void {
     this.CourbecaEdit.onOpen();

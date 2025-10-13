@@ -1,5 +1,5 @@
 import { CourbeCA } from './../../../Models/Courbeca.model';
-import { Component, HostListener, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -41,6 +41,8 @@ export class CourbecaListe {
   isLoading: boolean = false;
   errorMessage: string = '';
   user: User | undefined;
+
+  @Input() idUserFilter?: User;
 
   constructor(
     private caApi: CourbeCAAccessApi,
@@ -90,7 +92,7 @@ export class CourbecaListe {
   init(): void {
     this.isLoading = true;
 
-    this.caApi.GetAll().subscribe({
+    this.caApi.GetAll(null,this.idUserFilter?.id).subscribe({
       next: (data: CourbeCA[]) => {
         this.courbes = data;
         this.isLoading = false;
@@ -125,7 +127,7 @@ export class CourbecaListe {
   }
 
   loadPage(): void {
-    this.caApi.GetAll(this.courbes[this.courbes.length-1].id).subscribe({
+    this.caApi.GetAll(this.courbes[this.courbes.length-1].id,this.idUserFilter?.id).subscribe({
       next: data => {
         this.courbes.push(...data);
       },

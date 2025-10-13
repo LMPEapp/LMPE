@@ -1,5 +1,43 @@
 <div class="courbeca-container" *ngIf="!isLoading; else loading">
 
+  <div class="user-filter-container">
+    <mat-form-field appearance="outline" class="user-select-field">
+      <mat-label>Utilisateur</mat-label>
+      <mat-select [(value)]="userSelected" (selectionChange)="onUserChange($event.value)">
+        <!-- Ce qui s'affiche quand on sélectionne -->
+        <mat-select-trigger class="user-option">
+          <ng-container *ngIf="userSelected;">
+            <app-avatar [url]="userSelected.urlImage" [alt]="userSelected.pseudo" [size]="30"></app-avatar>
+            {{ userSelected.pseudo }}
+          </ng-container>
+        </mat-select-trigger>
+
+        <!-- Option Tous -->
+        <mat-option [value]="undefined">
+          <div class="user-option">
+            <app-avatar [url]="undefined" [size]="40"></app-avatar>
+            <div class="user-info">
+              <span class="pseudo">Tous les utilisateurs</span>
+            </div>
+          </div>
+        </mat-option>
+
+        <!-- Options utilisateurs -->
+        <mat-option *ngFor="let u of users" [value]="u">
+          <div class="user-option">
+            <app-avatar [url]="u.urlImage" [alt]="u.pseudo" [size]="40"></app-avatar>
+            <div class="user-info">
+              <span class="pseudo">{{ u.pseudo }}</span>
+              <span class="email">{{ u.email }}</span>
+            </div>
+          </div>
+        </mat-option>
+      </mat-select>
+
+    </mat-form-field> 
+  </div>
+
+
   <mat-card class="total-card" appearance="outlined">
     <h2>Total CA (30 derniers jours)</h2>
     <h1 class="total-amount">{{ totalAmountLast30Days | shortNumber:2 }} €</h1>
@@ -29,7 +67,7 @@
 
     <!-- Onglet Liste -->
     <mat-tab label="Liste">
-      <app-courbeca-liste></app-courbeca-liste>
+      <app-courbeca-liste [idUserFilter]="userSelected"></app-courbeca-liste>
     </mat-tab>
 
   </mat-tab-group>

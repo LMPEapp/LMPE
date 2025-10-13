@@ -23,7 +23,6 @@ import { AvatarComponent } from "../../ExternComposent/avatar/avatar";
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   templateUrl: './home.html',
   styleUrls: ['./home.scss'],
   imports: [
