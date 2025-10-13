@@ -48,6 +48,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   user?: User;
   CountMessageNotification: number = 0;
 
+  private visibilityHandler?: () => void;
   private messageSub?: Subscription;
 
   constructor(
@@ -74,14 +75,16 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.init();
 
-    window.addEventListener('focus', async () => {
-      console.log('🌐 Focus sur la fenêtre → vérification SignalR');
-      const alreadyConnected = await this.ensureSignalRConnected();
-      if (alreadyConnected) {
+    // ✅ Reconnexion SignalR quand la page redevient visible
+    this.visibilityHandler = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🌐 Page revenue au premier plan → Reconnexion SignalR');
         this.closeNotification();
         this.loadNotifications();
+        this.ensureSignalRConnected();
       }
-    });
+    };
+    document.addEventListener('visibilitychange', this.visibilityHandler);
   }
 
   ngOnDestroy(): void {
@@ -89,6 +92,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     if (this.user) {
       this.homeHub.leave(this.user.id);
+    }
+
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
     }
   }
 
@@ -125,24 +132,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   /** 🔗 Connexion SignalR propre */
-  private async ensureSignalRConnected(): Promise<boolean> {
+  private async ensureSignalRConnected(): Promise<void> {
     const state = this.homeHub.connectionState;
 
     if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
       console.log(`⏸️ SignalR déjà actif (${state})`);
-      return false;
+      return;
     }
 
-    console.log('🚀 Connexion SignalR...');
-    try {
-      await this.homeHub.startConnection(localStorage.getItem('token') || '');
-      if (this.user) this.homeHub.join(this.user.id);
-      return true;
-    } catch (err) {
-      console.error('❌ Erreur SignalR', err);
-      return false;
-    }
+    console.log('🚀 Démarrage SignalR...');
+    await this.homeHub.startConnection(localStorage.getItem('token') || '');
+    if (this.user) this.homeHub.join(this.user.id);
   }
+
   /** 👂 Écoute des événements SignalR */
   private subscribeSignalR(): void {
     this.messageSub?.unsubscribe();
@@ -151,7 +153,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (msg) this.CountMessageNotification++;
     });
   }
-  
+
   /** 🧭 Navigation via le menu */
   onNavigate(route: string): void {
     this.router.navigate([route]);

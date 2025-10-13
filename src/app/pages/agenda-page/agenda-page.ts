@@ -42,6 +42,7 @@ export class AgendaPage implements OnInit, OnDestroy {
   hours: string[] = [];
 
   user?: User;
+  private visibilityHandler?: () => void;
 
   private createdSub?: Subscription;
   private updatedSub?: Subscription;
@@ -62,13 +63,14 @@ export class AgendaPage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.init();
 
-    window.addEventListener('focus', async () => {
-      console.log('🌐 Focus sur la fenêtre → vérification SignalR');
-      const alreadyConnected = await this.ensureSignalRConnected();
-      if (alreadyConnected) {
+    this.visibilityHandler = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🌐 Page revenue au premier plan → Vérification SignalR');
         this.loadAgendas();
+        this.ensureSignalRConnected();
       }
-    });
+    };
+    document.addEventListener('visibilitychange', this.visibilityHandler);
   }
 
   ngOnDestroy(): void {
@@ -76,6 +78,10 @@ export class AgendaPage implements OnInit, OnDestroy {
     this.updatedSub?.unsubscribe();
     this.deletedSub?.unsubscribe();
     this.agendaHub.leaveAgendasGlobal();
+
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
   }
 
   // ─────────────────────────────
@@ -90,23 +96,17 @@ export class AgendaPage implements OnInit, OnDestroy {
   // ─────────────────────────────
   // 🔗 Connexion SignalR
   // ─────────────────────────────
-  private async ensureSignalRConnected(): Promise<boolean> {
+  private async ensureSignalRConnected(): Promise<void> {
     const state = this.agendaHub.connectionState;
 
     if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
       console.log(`⏸️ SignalR déjà actif (${state})`);
-      return false;
+      return;
     }
 
-    console.log('🚀 Connexion SignalR...');
-    try {
-      await this.agendaHub.startConnection(localStorage.getItem('token') || '');
-      this.agendaHub.joinAgendasGlobal();
-      return true;
-    } catch (err) {
-      console.error('❌ Erreur SignalR', err);
-      return false;
-    }
+    console.log('🚀 Démarrage SignalR...');
+    await this.agendaHub.startConnection(localStorage.getItem('token') || '');
+    this.agendaHub.joinAgendasGlobal();
   }
 
   private subscibeSignalR(): void {

@@ -63,6 +63,8 @@ export class CourbecaPage implements OnInit {
   public users:User[] = [];
   userSelected?:User;
 
+  private visibilityHandler?: () => void;
+
   colorScheme: Color = {
     name: 'blueScheme',
     selectable: true,
@@ -88,19 +90,23 @@ export class CourbecaPage implements OnInit {
   ngOnInit(): void {
     this.init();
 
-    window.addEventListener('focus', async () => {
-      console.log('🌐 Focus sur la fenêtre → vérification SignalR');
-      const alreadyConnected = await this.ensureSignalRConnected();
-      if (alreadyConnected) {
+    this.visibilityHandler = () => {
+      if (document.visibilityState === 'visible') {
         this.loadLast30Days();
+        this.ensureSignalRConnected();
       }
-    });
+    };
+
+    document.addEventListener('visibilitychange', this.visibilityHandler);
   }
   ngOnDestroy() {
     this.createdSub?.unsubscribe();
     this.deletedSub?.unsubscribe();
     this.courbecaHub.LeaveCourbeca();
     
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
   }
 
   private init(){
@@ -114,23 +120,17 @@ export class CourbecaPage implements OnInit {
   }
 
   // --- Initialisation de SignalR ---
-  private async ensureSignalRConnected(): Promise<boolean> {
+  private async ensureSignalRConnected(): Promise<void> {
     const state = this.courbecaHub.connectionState;
 
     if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
       console.log(`⏸️ SignalR déjà actif (${state})`);
-      return false;
+      return;
     }
 
-    console.log('🚀 Connexion SignalR...');
-    try {
-      await this.courbecaHub.startConnection(localStorage.getItem('token') || '');
-      this.courbecaHub.JoinCourbeca();
-      return true;
-    } catch (err) {
-      console.error('❌ Erreur SignalR', err);
-      return false;
-    }
+    console.log('🚀 Démarrage SignalR...');
+    await this.courbecaHub.startConnection(localStorage.getItem('token') || '');
+    this.courbecaHub.JoinCourbeca();
   }
 
   private createdSub?: Subscription;

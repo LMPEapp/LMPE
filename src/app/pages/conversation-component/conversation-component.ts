@@ -47,6 +47,8 @@ export class ConversationComponent {
   groupeSelected:GroupeConversation | null= null;
   user: User | undefined;
 
+  private visibilityHandler?: () => void;
+
   // Subscriptions SignalR
   private addmessage?: Subscription;
 
@@ -57,10 +59,20 @@ export class ConversationComponent {
 
   ngOnInit() {
     this.init();
+
+    this.visibilityHandler = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🌐 Retour sur la page → vérification SignalR');
+        this.loadData();
+      }
+    };
+    document.addEventListener('visibilitychange', this.visibilityHandler);
   }
   ngOnDestroy(): void {
     this.cleanSignalRSubscriptions();
-
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
   }
   private cleanSignalRSubscriptions(): void {
     this.addmessage?.unsubscribe();
