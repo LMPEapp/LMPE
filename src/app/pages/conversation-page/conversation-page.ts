@@ -63,7 +63,6 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
 
   typingUsers: User[] = [];
   private typingTimers = new Map<number, any>();
-  private visibilityHandler?: () => void;
 
   // Subscriptions SignalR
   private addSub?: Subscription;
@@ -94,14 +93,13 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   ngOnInit(): void {
     this.init();
 
-    this.visibilityHandler = () => {
-      if (document.visibilityState === 'visible') {
-        console.log('🌐 Retour sur la page → vérification SignalR');
+    window.addEventListener('focus', async () => {
+      console.log('🌐 Focus sur la fenêtre → vérification SignalR');
+      const alreadyConnected = await this.ensureSignalRConnected();
+      if (alreadyConnected) {
         this.loadData();
-        this.ensureSignalRConnected();
       }
-    };
-    document.addEventListener('visibilitychange', this.visibilityHandler);
+    });
   }
 
   ngOnDestroy(): void {
@@ -112,9 +110,6 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     this.messageApi.readAll(this.conversationId).subscribe();
-    if (this.visibilityHandler) {
-      document.removeEventListener('visibilitychange', this.visibilityHandler);
-    }
   }
 
   ngAfterViewChecked(): void {
@@ -133,20 +128,22 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     this.ensureSignalRConnected();
   }
 
-  private async ensureSignalRConnected(): Promise<void> {
+  private async ensureSignalRConnected(): Promise<boolean> {
     const state = this.messageHub.connectionState;
 
     if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
       console.log(`⏸️ SignalR déjà actif (${state})`);
-      return;
+      return false;
     }
 
     console.log('🚀 Connexion SignalR...');
     try {
       await this.messageHub.startConnection(localStorage.getItem('token') || '');
       this.messageHub.joinGroup(this.conversationId);
+      return true;
     } catch (err) {
       console.error('❌ Erreur SignalR', err);
+      return false;
     }
   }
 
@@ -409,9 +406,6 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
       this.imagePreview = undefined;
       this.videoPreview = undefined;
     }
-    if (this.visibilityHandler) {
-      document.addEventListener('visibilitychange', this.visibilityHandler);
-    }
     input.value = '';
   }
 
@@ -448,12 +442,6 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     } else {
       // ⚡ Envoi message texte
       this.sendMessage();
-    }
-  }
-  onFileInputClick() {
-    // désactiver temporairement
-    if (this.visibilityHandler) {
-      document.removeEventListener('visibilitychange', this.visibilityHandler);
     }
   }
 }

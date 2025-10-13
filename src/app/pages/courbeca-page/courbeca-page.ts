@@ -63,8 +63,6 @@ export class CourbecaPage implements OnInit {
   public users:User[] = [];
   userSelected?:User;
 
-  private visibilityHandler?: () => void;
-
   colorScheme: Color = {
     name: 'blueScheme',
     selectable: true,
@@ -90,23 +88,19 @@ export class CourbecaPage implements OnInit {
   ngOnInit(): void {
     this.init();
 
-    this.visibilityHandler = () => {
-      if (document.visibilityState === 'visible') {
+    window.addEventListener('focus', async () => {
+      console.log('🌐 Focus sur la fenêtre → vérification SignalR');
+      const alreadyConnected = await this.ensureSignalRConnected();
+      if (alreadyConnected) {
         this.loadLast30Days();
-        this.ensureSignalRConnected();
       }
-    };
-
-    document.addEventListener('visibilitychange', this.visibilityHandler);
+    });
   }
   ngOnDestroy() {
     this.createdSub?.unsubscribe();
     this.deletedSub?.unsubscribe();
     this.courbecaHub.LeaveCourbeca();
     
-    if (this.visibilityHandler) {
-      document.removeEventListener('visibilitychange', this.visibilityHandler);
-    }
   }
 
   private init(){
@@ -120,17 +114,23 @@ export class CourbecaPage implements OnInit {
   }
 
   // --- Initialisation de SignalR ---
-  private async ensureSignalRConnected(): Promise<void> {
+  private async ensureSignalRConnected(): Promise<boolean> {
     const state = this.courbecaHub.connectionState;
 
     if (state === 'Connected' || state === 'Connecting' || state === 'Reconnecting') {
       console.log(`⏸️ SignalR déjà actif (${state})`);
-      return;
+      return false;
     }
 
-    console.log('🚀 Démarrage SignalR...');
-    await this.courbecaHub.startConnection(localStorage.getItem('token') || '');
-    this.courbecaHub.JoinCourbeca();
+    console.log('🚀 Connexion SignalR...');
+    try {
+      await this.courbecaHub.startConnection(localStorage.getItem('token') || '');
+      this.courbecaHub.JoinCourbeca();
+      return true;
+    } catch (err) {
+      console.error('❌ Erreur SignalR', err);
+      return false;
+    }
   }
 
   private createdSub?: Subscription;
@@ -143,6 +143,10 @@ export class CourbecaPage implements OnInit {
         // Création dynamique
     this.createdSub = this.courbecaHub.Created$.subscribe(newItem => {
       if (!newItem) return;
+
+      if(this.userSelected && newItem.userId !== this.userSelected.id) {
+        return; // Ignore si l'élément n'appartient pas à l'utilisateur sélectionné
+      }
 
       const newDate = DateOnly.fromString(newItem.datePoint);
 
@@ -170,6 +174,10 @@ export class CourbecaPage implements OnInit {
     // Suppression dynamique
     this.deletedSub = this.courbecaHub.Deleted$.subscribe(deletedItem => {
       if (!deletedItem) return;
+
+      if(this.userSelected && deletedItem.userId !== this.userSelected.id) {
+        return; // Ignore si l'élément n'appartient pas à l'utilisateur sélectionné
+      }
 
       const { id, datePoint, amount } = deletedItem;
       const group = this.courbes.find(c => c.datePoint === datePoint);

@@ -73,12 +73,19 @@ export class CourbecaListe {
     // Création dynamique
     this.courbecaHub.CreatedForListe$.subscribe(newItem => {
       if (!newItem) return;
+      if(this.idUserFilter && newItem.userId !== this.idUserFilter.id) {
+        return; // Ignore si l'élément n'appartient pas à l'utilisateur sélectionné
+      }
       this.courbes.unshift(newItem);
     });
 
     // Suppression dynamique
     this.courbecaHub.DeletedForListe$.subscribe(deletedItem => {
       if (!deletedItem) return;
+
+      if(this.idUserFilter && deletedItem.userId !== this.idUserFilter.id) {
+        return; // Ignore si l'élément n'appartient pas à l'utilisateur sélectionné
+      }
 
       const index = this.courbes.findIndex(c => c.id === deletedItem.id);
       if (index !== -1) {
