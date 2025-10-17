@@ -7,7 +7,7 @@ import { toLocalDate } from '../date-utils';
   pure: false
 })
 export class MyRelativeDatePipe implements PipeTransform {
-  transform(value: string | Date): string {
+  transform(value: string | Date | null | undefined): string {
     if (!value) return '';
 
     const date = toLocalDate(value);

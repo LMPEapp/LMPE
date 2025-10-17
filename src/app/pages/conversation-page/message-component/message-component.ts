@@ -39,6 +39,7 @@ export class MessageComponent implements OnDestroy {
 
   @Output() update = new EventEmitter<MessageOut>();
   @Output() delete = new EventEmitter<MessageOut>();
+  @Output() repondre = new EventEmitter<MessageOut>();
   conversationId: number;
 
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
@@ -234,6 +235,10 @@ export class MessageComponent implements OnDestroy {
     }, 0);
   }
 
+  openRepondre() {
+    this.repondre.emit(this.message);
+  }
+
   closeEmojiPopup() {
     this.showEmojiPopup = false;
     this.showFullPicker = false;
@@ -282,6 +287,11 @@ export class MessageComponent implements OnDestroy {
   getUrl():string{
     return environment.apiUrl+"/uploads/messages/"+this.message.content;
   }
+  getParentUrl(): string {
+    if (!this.message.parentContent) return '';
+    return environment.apiUrl + '/uploads/messages/' + this.message.parentContent;
+  }
+
   downloadFile() {
     const url = this.getUrl(); // URL du fichier
     const fileName = this.message.content || 'fichier';

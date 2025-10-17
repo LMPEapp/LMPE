@@ -170,7 +170,6 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   private loadMessages(): void {
     this.messageApi.getByGroup(this.conversationId).subscribe({
       next: data => {
-        this.messageApi.readAll(this.conversationId).subscribe();
         this.messages = data;
         this.scrolledInitially = false;
         console.log(this.messages)

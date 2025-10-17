@@ -14,7 +14,7 @@ import { environment } from '../../../environments/environment';
   ]
 })
 export class AvatarComponent implements OnChanges {
-  @Input() url?: string;
+  @Input() url?: string | null ;
   @Input() alt? = 'Avatar';
   @Input() size: string | number = 50; // 👈 peut être '40%' ou 50
 
@@ -36,7 +36,7 @@ export class AvatarComponent implements OnChanges {
     const img = new Image();
     img.src = this.url;
     img.onload = () => {
-      this.avatarUrl = this.url;
+      this.avatarUrl = this.url == null? undefined: this.url;
       this.cd.markForCheck();
     };
     img.onerror = () => {

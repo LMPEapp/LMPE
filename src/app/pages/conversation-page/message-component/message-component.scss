@@ -31,6 +31,9 @@
     color: #333;
   }
 }
+.message-box{
+  flex: 1;
+}
 .message-wrapper.mine .message-container .message-card .message-box{
   order: 2;
 }
@@ -74,21 +77,27 @@
 /* Carte du message */
 .message-card {
   position: relative;
+  display: flex;
+  flex-direction: row;
+}
+
+.messageWithParent{
+  position: relative;
   padding: 10px 14px;
   border-radius: 18px;
   background-color: #f1f1f1;
   color: #333;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 /* Couleurs */
-.message-wrapper.mine .message-card {
+.message-wrapper.mine .messageWithParent {
   background-color: #1976d2;
   color: white;
 }
-.message-wrapper.other .message-card {
+.message-wrapper.other .messageWithParent {
   background-color: #f1f1f1;
   color: #333;
 }
@@ -242,4 +251,44 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translate(-50%, -10px); }
   to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Message parent */
+.parent-message {
+  background-color: #d6d6d6;
+  color: black;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+
+  .parent-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+
+    .parent-pseudo {
+      font-weight: bold;
+    }
+    .parent-date {
+      font-size: 0.7rem;
+      color: #666;
+    }
+  }
+
+  .parent-content {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .parent-media {
+      max-width: 100%;
+      border-radius: 12px;
+      max-height: 70vh;
+    }
+
+    .parent-file-icon {
+      font-size: 28px;
+    }
+  }
 }
