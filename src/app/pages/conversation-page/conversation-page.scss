@@ -34,13 +34,20 @@ mat-toolbar {
 
 
 .input-zone {
-  display: flex;
-  align-items: flex-end;
   padding: 0.5rem;
   border-top: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.input-zone textarea {
+.input-user{
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+}
+
+.input-zone .input-user textarea {
   flex: 1;
   resize: none;
   border: 1px solid #ccc;     /* petit contour pour le textarea */

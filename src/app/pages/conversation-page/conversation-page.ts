@@ -54,6 +54,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
 
   messages: MessageOut[] = [];
   messageEdit: MessageOut | null = null;
+  messageRepondre: MessageOut | null = null;
   newMessage: string = '';
 
   isLoading = false;
@@ -230,6 +231,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
         userId: this.user?.id ?? 0,
         type: 'texte',
         content: this.newMessage.trim(),
+        parentId: this.messageRepondre!=null?this.messageRepondre.id:null
       };
 
       this.messageApi.create(this.GroupeConversation.id, input).subscribe((msg) => {
@@ -239,6 +241,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
           this.scrollToBottom(true);
         })
         this.isLoadingSendMessage = false;
+        this.messageRepondre = null;
       });
     }
     else{
@@ -252,6 +255,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
       this.messageApi.update(this.GroupeConversation.id,this.messageEdit.id, input).subscribe((msg) => {
         this.onCoseEdit();
         this.isLoadingSendMessage = false;
+        this.messageRepondre = null;
        });
     }
 
@@ -275,6 +279,10 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     this.MessageSelectd = event.id;
     this.deleteorleave = "delete";
     this.alert.open('Supprimer le message', 'Confirmer la suppression ?', false);
+  }
+  onRepondreMessage(event: MessageOut): void {
+    this.messageRepondre = event;
+
   }
 
   onCoseEdit(): void {
@@ -391,6 +399,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onFileSelected(event: Event) {
+    this.messageRepondre = null;
     const input = event.target as HTMLInputElement;
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
