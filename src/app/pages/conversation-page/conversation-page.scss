@@ -100,3 +100,9 @@ mat-sidenav-content {
   width: fit-content;
   height: fit-content;
 }
+.reply-preview{
+  display: flex;
+  justify-content: center;
+  max-height: 200px;
+  overflow-y: auto;
+}

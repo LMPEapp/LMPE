@@ -1,4 +1,4 @@
-.message-card {
+.messageWithParent {
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -6,9 +6,14 @@
 }
 /* Wrapper du message */
 .message-wrapper {
-  width: 100%;
   display: flex;
   margin: 6px 0;
+}
+.message-wrapper.full {
+  width: 100%;
+}
+.message-wrapper.normal {
+  max-width: fit-content;
 }
 
 .message-container {
@@ -16,7 +21,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+.full .message-container{
   max-width: 70%;
+}
+.normal .message-container{
+  max-width: 100%;
 }
 .button-more{
   display: flex;
@@ -152,7 +162,7 @@
 .message-content .message-media {
   max-width: 100%;
   border-radius: 12px;
-  max-height: 70vh;
+  max-height: 60vh;
 }
 
 /* Réactions */
@@ -266,6 +276,7 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 4px;
+    gap: 4px;
 
     .parent-pseudo {
       font-weight: bold;
@@ -276,6 +287,10 @@
     }
   }
 
+  .parent-header.mine {
+    flex-direction: row-reverse;
+  }
+
   .parent-content {
     display: flex;
     align-items: center;
@@ -284,7 +299,7 @@
     .parent-media {
       max-width: 100%;
       border-radius: 12px;
-      max-height: 70vh;
+      max-height: 40vh;
     }
 
     .parent-file-icon {

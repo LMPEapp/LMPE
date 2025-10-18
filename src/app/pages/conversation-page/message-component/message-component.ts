@@ -36,6 +36,7 @@ import { SafeHtml } from '@angular/platform-browser';
 export class MessageComponent implements OnDestroy {
   @Input() message!: MessageOut;
   @Input() currentUserId?: number;
+  @Input() isFullWidth: boolean = true;
 
   @Output() update = new EventEmitter<MessageOut>();
   @Output() delete = new EventEmitter<MessageOut>();

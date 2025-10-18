@@ -65,8 +65,8 @@
 
         <!-- Zone de saisie -->
         <div class="input-zone">
-          <div *ngIf="messageRepondre">
-            <app-message [message]="messageRepondre" [currentUserId]="user?.id"></app-message>
+          <div *ngIf="messageRepondre" class="reply-preview">
+            <app-message [message]="messageRepondre" [currentUserId]="user?.id" [isFullWidth]="false"></app-message>
           </div>
           <div class="input-user">
             <!-- Bouton fichier/image -->
