@@ -16,12 +16,16 @@
         </mat-form-field>
 
         <div class="creator-section">
-          <div class="creator-info" *ngIf="agenda != null">
-            <span class="creator-pseudo">{{ agenda.creatorPseudo }}</span>
-          </div>
 
           <mat-checkbox formControlName="isPublic">Public</mat-checkbox>
         </div>
+      </div>
+      <div class="row">
+        <span class="creator-label">Créé par :</span>
+          <div class="creator-info" *ngIf="agenda != null">
+            <app-avatar class="creator-avatar" [url]="agenda.creatorUrlImage" [alt]="agenda.creatorPseudo || ''" [size]="50"></app-avatar>
+            <span class="creator-pseudo">{{ agenda.creatorPseudo }}</span>
+          </div>
       </div>
 
       <!-- Date début + Heure début -->

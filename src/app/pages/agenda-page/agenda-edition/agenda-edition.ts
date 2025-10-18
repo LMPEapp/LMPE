@@ -14,6 +14,7 @@ import { toLocalDate } from '../../../Helper/date-utils';
 import { ValidationDialogComponent } from "../../../ExternComposent/validation-dialog/validation-dialog";
 import { User } from '../../../Models/user.model';
 import { AuthService } from '../../../service/Auth/auth';
+import { AvatarComponent } from "../../../ExternComposent/avatar/avatar";
 
 @Component({
   selector: 'app-agenda-edition',
@@ -28,7 +29,8 @@ import { AuthService } from '../../../service/Auth/auth';
     MatDatepickerModule,
     MatNativeDateModule,
     TextFieldModule,
-    ValidationDialogComponent
+    ValidationDialogComponent,
+    AvatarComponent
 ],
   templateUrl: './agenda-edition.html',
   styleUrl: './agenda-edition.scss'
