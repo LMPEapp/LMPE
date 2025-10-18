@@ -1,0 +1,6 @@
+<div *ngIf="isOpen" class="overlay" (click)="close()">
+  <div class="image-box">
+    <button class="close-btn" (click)="close($event)">✖</button>
+    <img [src]="imageUrl" alt="Full Screen Image" (click)="$event.stopPropagation()"/>
+  </div>
+</div>

@@ -18,6 +18,7 @@ import { MessageSignalRService } from '../../../service/SignalR/MessageSignalRSe
 import { Subscription } from 'rxjs';
 import Autolinker from 'autolinker';
 import { SafeHtml } from '@angular/platform-browser';
+import { ImageViewerComponent } from "../../../Helper/image-viewer/image-viewer.component";
 
 @Component({
   selector: 'app-message',
@@ -31,7 +32,8 @@ import { SafeHtml } from '@angular/platform-browser';
     MatButtonModule,
     MatIconModule,
     AvatarComponent,
-  ]
+    ImageViewerComponent
+]
 })
 export class MessageComponent implements OnDestroy {
   @Input() message!: MessageOut;
@@ -294,6 +296,7 @@ export class MessageComponent implements OnDestroy {
   }
 
   downloadFile() {
+    if(this.message.type !== 'fichier') return;
     const url = this.getUrl(); // URL du fichier
     const fileName = this.message.content || 'fichier';
 

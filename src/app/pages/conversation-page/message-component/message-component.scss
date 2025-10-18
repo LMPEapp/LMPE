@@ -165,6 +165,13 @@
   max-height: 60vh;
 }
 
+.message-content .message-file {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+
 /* Réactions */
 .message-reactions {
   display: flex;

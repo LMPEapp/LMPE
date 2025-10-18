@@ -100,14 +100,16 @@
               <span class="text" [innerHTML]="formatMessageContent(message.content)"></span>
             </ng-container>
             <ng-container *ngIf="message.type === 'image'">
-              <img [src]="getUrl()" alt="Image" class="message-media"/>
+              <img [src]="getUrl()" (click)="viewer.open()" alt="Image" class="message-media"/>
             </ng-container>
             <ng-container *ngIf="message.type === 'video'">
               <video class="message-media" controls [src]="getUrl()"></video>
             </ng-container>
             <ng-container *ngIf="message.type === 'fichier'">
-              <mat-icon class="large-icon">insert_drive_file</mat-icon>
-              <span class="text">{{ message.content }}</span>
+              <div class="message-file" (click)="downloadFile()">
+                <mat-icon class="large-icon">insert_drive_file</mat-icon>
+                <span class="text">{{ message.content }}</span>
+              </div>
             </ng-container>
           </div>
         </div>
@@ -123,3 +125,6 @@
     </div>
   </div>
 </div>
+
+<app-image-viewer #viewer [imageUrl]="getUrl()"></app-image-viewer>
+
