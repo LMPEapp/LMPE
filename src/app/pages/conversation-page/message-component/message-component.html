@@ -20,6 +20,9 @@
     </div>
 
     <div class="messageWithParent">
+      <!-- Pastille message lu -->
+      <div *ngIf="message.isRead" class="notification-badge"></div>
+
       <!-- Affichage du message parent si existe -->
       <div *ngIf="message.parentId" class="parent-message">
         <div class="parent-header">
@@ -54,9 +57,6 @@
             <mat-icon>more_vert</mat-icon>
           </button>
         </div>
-
-        <!-- Pastille message lu -->
-        <div *ngIf="message.isRead" class="notification-badge"></div>
 
         <mat-menu #menu="matMenu">
           <div class="menu">

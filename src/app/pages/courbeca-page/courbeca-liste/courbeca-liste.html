@@ -9,7 +9,7 @@
       <mat-card-title class="user">{{ element.userPseudo }}</mat-card-title>
       <mat-card-subtitle class="user">{{ element.userEmail }}</mat-card-subtitle>
       <div class="date-amount">
-        <div class="date">{{ formatDate(element.createdAt) }}</div>
+        <div class="date">{{ formatDate(element.datePoint) }}</div>
         <div class="amount" [ngClass]="getAmountClass(element.amount)">
           {{ element.amount | shortNumber:2 }}€
         </div>
@@ -36,7 +36,7 @@
   </div>
 
   <!-- Bouton charger plus -->
-  <div class="load-more-container" *ngIf="courbes.length % 30 == 0">
+  <div class="load-more-container" *ngIf="courbes.length % 30 == 0 && courbes.length > 0">
     <button mat-stroked-button color="primary" (click)="loadMore()">Plus de données</button>
   </div>
 

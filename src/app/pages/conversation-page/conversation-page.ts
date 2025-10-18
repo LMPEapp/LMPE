@@ -116,6 +116,8 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     if (this.visibilityHandler) {
       document.removeEventListener('visibilitychange', this.visibilityHandler);
     }
+
+    this.messageApi.readAll(this.conversationId).subscribe();
   }
 
   ngAfterViewChecked(): void {
@@ -363,7 +365,28 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   // ─────────────────────────────
   // 🧭 Divers
   // ─────────────────────────────
-  goBack(): void { this.router.navigate(['home']); }
+  goBack(): void {
+    // On nettoie manuellement avant de partir
+    this.cleanSignalRSubscriptions();
+
+    if (this.GroupeConversation) {
+      this.messageHub.leaveGroup(this.GroupeConversation.id);
+    }
+
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
+
+    // Puis on marque la conversation comme lue avant de naviguer
+    this.messageApi.readAll(this.conversationId).subscribe({
+      next: () => this.router.navigate(['home']),
+      error: (err) => {
+        console.error('Erreur lors du readAll:', err);
+        this.router.navigate(['home']);
+      }
+    });
+  }
+
 
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.shiftKey) {

@@ -6,16 +6,13 @@ mat-sidenav-content {
 .toolbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 56px;
+  overflow: hidden;
 }
 .sidenav-container {
   height: 100%;
   width: 100%;
-}
-
-mat-toolbar {
-  display: flex;
-  justify-content: space-between;
 }
 
 .conversation-container {
