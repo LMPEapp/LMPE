@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-access-api';
 import { HomeSignalRService } from '../../service/SignalR/HomeSignalRService/home-signal-rservice';
 import { Subscription } from 'rxjs';
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-conversation-component',
@@ -35,7 +36,8 @@ import { Subscription } from 'rxjs';
     MatCardModule,
     MatMenuModule,
     ConversationEdition,
-    ValidationDialogComponent
+    ValidationDialogComponent,
+    MatProgressSpinner
 ]
 })
 export class ConversationComponent {
@@ -46,6 +48,7 @@ export class ConversationComponent {
   groupeConversation: GroupeConversation[] = [];
   groupeSelected:GroupeConversation | null= null;
   user: User | undefined;
+  isLoading: boolean = false;
 
   private visibilityHandler?: () => void;
 
@@ -82,9 +85,11 @@ export class ConversationComponent {
     this.subscibeSignalR();
   }
   loadData(){
+    this.isLoading = true;
     this.groupsAccessApi.getAll().subscribe({
       next: (res) => {
         this.groupeConversation = res; // déjà trié côté API
+        this.isLoading = false;
         console.log(this.groupeConversation)
       },
       error: (err) => {
@@ -95,6 +100,7 @@ export class ConversationComponent {
           duration: 5000,
           panelClass: ['error-snackbar']
         });
+        this.isLoading = false;
       }
     });
   }

@@ -1,5 +1,5 @@
 <!-- conversation-component.html -->
-<div class="conversation-container">
+<div class="conversation-container" *ngIf="!isLoading; else loading">
   <mat-card *ngFor="let groupe of groupeConversation" class="groupe-card" (click)="onSelectGroupe(groupe)" class="card-header">
     <div class="header-left">
       <mat-card-header>
@@ -40,6 +40,14 @@
   </button>
 
 </div>
+
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+    <p>Chargement des données...</p>
+  </div>
+</ng-template>
+
 <app-conversation-edition
   (submitForm)="handleUserSubmit($event)">
 </app-conversation-edition>

@@ -56,3 +56,15 @@
 .retour{
   margin-top: 16px;
 }
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: color-mix(in srgb, var(--mat-sys-background) 80%, transparent);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -17,6 +17,7 @@ import { GroupeConversationIn, UserGroupeIn } from '../../Models/GroupeConversat
 import { UserAccessapi } from '../../service/AccessAPi/userAccessapi/user-accessapi';
 import { GroupsAccessApi } from '../../service/AccessAPi/GroupsAccessApi/groups-access-api';
 import { AvatarComponent } from "../../ExternComposent/avatar/avatar";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-users',
@@ -30,7 +31,8 @@ import { AvatarComponent } from "../../ExternComposent/avatar/avatar";
     MatSidenavModule,
     ProfilEdition,
     ValidationDialogComponent,
-    AvatarComponent
+    AvatarComponent,
+    MatProgressSpinner
 ],
   templateUrl: './users.html',
   styleUrl: './users.scss'
@@ -47,6 +49,7 @@ export class UsersComponent {
   user: User | undefined;
   private pressTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly pressDelay = 500;
+  isLoading: boolean = false;
 
   constructor(private router: Router, private userAccessapi:UserAccessapi,
     private snackBar: MatSnackBar, public auth: AuthService,private groupsAccessApi: GroupsAccessApi) {
@@ -57,8 +60,10 @@ export class UsersComponent {
     this.init();
   }
   init(){
+    this.isLoading = true;
     this.userAccessapi.get().subscribe((data)=>{
       this.users = data.filter(u => u.id !== this.user?.id);
+      this.isLoading = false;
     })
   }
 

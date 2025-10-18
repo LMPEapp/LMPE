@@ -1,4 +1,4 @@
-<mat-sidenav-container class="sidenav-container">
+<mat-sidenav-container class="sidenav-container" *ngIf="!isLoading; else loading">
   <mat-sidenav-content>
     <mat-toolbar color="primary" class="toolbar">
       <button mat-icon-button (click)="goBack()">
@@ -65,6 +65,12 @@
   </mat-sidenav-content>
 </mat-sidenav-container>
 
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+    <p>Chargement des données...</p>
+  </div>
+</ng-template>
 
 <app-profil-edition
   (submitForm)="handleUserSubmit($event)">

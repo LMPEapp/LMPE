@@ -15,6 +15,7 @@ import { AuthService } from '../../service/Auth/auth';
 import { toLocalDate } from '../../Helper/date-utils';
 import { User } from '../../Models/user.model';
 import { Subscription } from 'rxjs';
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-agenda-page',
@@ -26,8 +27,9 @@ import { Subscription } from 'rxjs';
     MatIconModule,
     WeekSelectorComponent,
     AgendaGridComponent,
-    AgendaEdition
-  ],
+    AgendaEdition,
+    MatProgressSpinner
+],
 })
 export class AgendaPage implements OnInit, OnDestroy {
 
@@ -47,6 +49,7 @@ export class AgendaPage implements OnInit, OnDestroy {
   private createdSub?: Subscription;
   private updatedSub?: Subscription;
   private deletedSub?: Subscription;
+  isLoading: boolean = false;
 
   constructor(
     private agendaAccessApi: AgendaAccessApi,
@@ -212,10 +215,12 @@ export class AgendaPage implements OnInit, OnDestroy {
   // 📡 Chargement / API
   // ─────────────────────────────
   loadAgendas(): void {
+    this.isLoading = true;
     this.agendaAccessApi.getAll(this.currentMonday, this.currentSunday).subscribe({
       next: (data) => {
         this.agendas = data;
         console.log(this.agendas);
+        this.isLoading = false;
       },
       error: (err) => {
         if (err.status === 401) this.auth.logout();
@@ -223,6 +228,7 @@ export class AgendaPage implements OnInit, OnDestroy {
           duration: 5000,
           panelClass: ['error-snackbar']
         });
+        this.isLoading = false;
       }
     });
   }

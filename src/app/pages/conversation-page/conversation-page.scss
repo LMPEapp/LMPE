@@ -67,18 +67,6 @@ mat-sidenav-content {
   display: flex;
   height: 100%;
 }
-.loading-container {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  p {
-    margin-top: 12px;
-    font-size: 1.2rem;
-  }
-}
 .selected-file{
   flex: 1;
   display: flex;

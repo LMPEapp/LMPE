@@ -1,4 +1,4 @@
-<div class="agenda-container">
+<div class="agenda-container" *ngIf="!isLoading; else loading">
   <app-week-selector
     [currentMonday]="currentMonday"
     [currentSunday]="currentSunday"
@@ -20,6 +20,13 @@
     <mat-icon>add</mat-icon>
   </button>
 </div>
+
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+    <p>Chargement des données...</p>
+  </div>
+</ng-template>
 
 <app-agenda-edition
   (submitForm)="handleUserSubmit($event)"

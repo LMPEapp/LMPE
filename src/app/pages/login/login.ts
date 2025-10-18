@@ -14,6 +14,7 @@ import { AuthService } from '../../service/Auth/auth';
 import { PushAccessapi } from '../../service/AccessAPi/pushAccessapi/push-accessapi';
 import { PushSubscriptionDto } from '../../Models/push.model';
 import { SwPush } from '@angular/service-worker';
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-login',
@@ -25,8 +26,9 @@ import { SwPush } from '@angular/service-worker';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
-  ],
+    MatIconModule,
+    MatProgressSpinner
+],
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
 })
@@ -50,8 +52,11 @@ export class LoginComponent {
     });
   }
 
+  isLoading = false;
+
   onSubmit() {
     if (this.loginForm.invalid) return;
+    this.isLoading = true; // → active le chargement
 
     this.AuthAccessApiService.login(this.loginForm.value).subscribe({
       next: (data) => {
@@ -60,41 +65,38 @@ export class LoginComponent {
         this.router.navigate([redirect]);
         this.auth.redirectUrl = null;
 
-        // -----------------------------
-        // Demander la permission pour les notifications
-        // -----------------------------
         this.swPush.requestSubscription({
-            serverPublicKey: this.VAPID_PUBLIC_KEY
+          serverPublicKey: this.VAPID_PUBLIC_KEY
         }).then(sub => {
-          console.log('Push subscription:', sub);
-            const dto: PushSubscriptionDto = {
-                endpoint: sub.endpoint,
-                keys: {
-                    p256dh: sub.getKey('p256dh')
-                        ? btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')!)))
-                        : '',
-                    auth: sub.getKey('auth')
-                        ? btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')!)))
-                        : ''
-                }
-            };
+          const dto: PushSubscriptionDto = {
+            endpoint: sub.endpoint,
+            keys: {
+              p256dh: sub.getKey('p256dh')
+                ? btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')!)))
+                : '',
+              auth: sub.getKey('auth')
+                ? btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')!)))
+                : ''
+            }
+          };
 
-            this.pushApi.register(dto).subscribe({
-                next: () => console.log('Push enregistré'),
-                error: err => console.error('Erreur push:', err)
-            });
+          this.pushApi.register(dto).subscribe({
+            next: () => {console.log('Push enregistré'); this.isLoading = false;},
+            error: err => {console.error('Erreur push:', err); this.isLoading = false;}
+          });
         }).catch(err => console.error("Could not subscribe to notifications", err));
-
 
       },
       error: (err) => {
-        if(err.status === 401) {
+        this.isLoading = false; // → désactive le chargement
+        if (err.status === 401) {
           this.auth.logout();
         }
         this.errorMessage = err.error || 'Connexion échouée';
       }
     });
   }
+
 
   goToHome() {
     this.router.navigate([""]);
