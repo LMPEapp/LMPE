@@ -4,12 +4,11 @@
     <div *ngIf="showEmojiPopup"
         class="emoji-popup"
         tabindex="0"
-        (blur)="closeEmojiPopup()"
         #popup
         [ngStyle]="{'top.px': popupTop, 'left.px': popupLeft}">
       <div class="quick-emojis">
         <span *ngFor="let emoji of quickEmojis" (click)="addReaction(emoji)">{{emoji}}</span>
-        <span class="more" (click)="openFullEmojiPicker()">➕</span>
+        <span class="more" (click)="togleFullEmojiPicker()">➕</span>
       </div>
 
       <div *ngIf="showFullPicker" class="full-emoji-picker">
@@ -52,7 +51,7 @@
       <div class="message-card">
 
         <!-- Bouton plus d'options -->
-        <div class="button-more">
+        <div class="button-more" *ngIf="isFullWidth == true">
           <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger" aria-label="Plus d'options" (click)="setPosition($event)">
             <mat-icon>more_vert</mat-icon>
           </button>

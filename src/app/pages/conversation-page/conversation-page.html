@@ -32,8 +32,8 @@
         <div class="conversation-container">
           <div class="messages-wrapper" #messagesWrapper (scroll)="onScroll()">
             <div *ngFor="let msg of messages" [id]="'msg-' + msg.id">
-              <app-message [message]="msg" [currentUserId]="user?.id" 
-              (update)="onUpdateMessage($event)" 
+              <app-message [message]="msg" [currentUserId]="user?.id"
+              (update)="onUpdateMessage($event)"
               (delete)="onDeleteMessage($event)"
               (repondre)="onRepondreMessage($event)"></app-message>
             </div>
@@ -111,7 +111,7 @@
             <button *ngIf="selectedFile" mat-icon-button color="warn" (click)="removeSelectedFile()">
               <mat-icon>close</mat-icon>
             </button>
-            <button *ngIf="this.messageEdit!=null" mat-icon-button color="primary" (click)="onCoseEdit()">
+            <button *ngIf="this.messageEdit!=null || this.messageRepondre!=null" mat-icon-button color="primary" (click)="onCoseEdit()">
               <mat-icon>close</mat-icon>
             </button>
             <ng-container *ngIf="!isLoadingSendMessage; else loading">

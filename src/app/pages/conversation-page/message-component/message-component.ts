@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { MessageOut } from '../../../Models/Message.model';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
@@ -18,7 +18,7 @@ import { MessageSignalRService } from '../../../service/SignalR/MessageSignalRSe
 import { Subscription } from 'rxjs';
 import Autolinker from 'autolinker';
 import { SafeHtml } from '@angular/platform-browser';
-import { ImageViewerComponent } from "../../../Helper/image-viewer/image-viewer.component";
+import { ImageViewerComponent } from "../../../ExternComposent/image-viewer/image-viewer.component";
 
 @Component({
   selector: 'app-message',
@@ -46,6 +46,7 @@ export class MessageComponent implements OnDestroy {
   conversationId: number;
 
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  @ViewChild('popup') popup!: ElementRef;
 
   private pressTimer: any = null;
   private lastTap = 0;
@@ -79,8 +80,9 @@ export class MessageComponent implements OnDestroy {
   quickEmojis: string[] = [];
   popupTop = 0;
   popupLeft = 0;
-  popupWidth = 300;  // largeur approximative du popup
-  popupHeight = 250; // hauteur approximative
+  popupWidth = 350;
+  popupHeight = 350;
+  popupHeightShort = 52;
   margin = 8;
 
   private autolinker = new Autolinker({
@@ -217,11 +219,25 @@ export class MessageComponent implements OnDestroy {
     const clientY = event.clientY;
 
     // limiter la position pour ne pas dépasser l'écran
-    this.popupLeft = Math.min(window.innerWidth - this.popupWidth - this.margin, Math.max(this.margin, clientX));
-    this.popupTop = Math.min(window.innerHeight - this.popupHeight - this.margin, Math.max(this.margin, clientY));
+
+    this.popupLeft = Math.max(Math.min(clientX - (this.popupWidth/2), window.innerWidth - this.popupWidth - this.margin),0 + this.margin)
+    this.popupTop = clientY - (this.popupHeightShort/2)
+  }
+
+  lastTopPos:number = 0
+  setPositionWithFullEmojiPicker(event: boolean){
+    if(event){
+      this.lastTopPos = this.popupTop
+      this.popupTop = Math.max(Math.min(this.popupTop - (this.popupHeight/2), window.innerHeight - this.popupHeight - this.margin),0 + this.margin)
+    }
+    else if (this.lastTopPos){
+      this.popupTop = this.lastTopPos
+    }
+
   }
   // 🟢 Double tap
   onDoubleTap(event: PointerEvent) {
+    if(this.isFullWidth == false) return;
     this.setPosition(event);
     this.openEmojiPopup();
   }
@@ -230,12 +246,6 @@ export class MessageComponent implements OnDestroy {
     this.updateEmojis();
     this.showEmojiPopup = true;
     this.showFullPicker = false;
-
-    // focus sur le popup pour détecter blur
-    setTimeout(() => {
-      const popup = document.querySelector('.emoji-popup') as HTMLElement;
-      popup?.focus();
-    }, 0);
   }
 
   openRepondre() {
@@ -270,13 +280,16 @@ export class MessageComponent implements OnDestroy {
   }
 
   // ouverture sélecteur complet
-  openFullEmojiPicker() {
-    this.showFullPicker = true;
+  togleFullEmojiPicker() {
+    this.showFullPicker = !this.showFullPicker;
+    this.setPositionWithFullEmojiPicker(this.showFullPicker)
   }
 
   // 🟢 Long press
   onLongPress(event: PointerEvent) {
     // ouvre ton menu contextuel
+    this.setPosition(event);
+    if(this.isFullWidth == false) return;
     if (this.menuTrigger) {
       this.menuTrigger.openMenu();
     }
@@ -319,5 +332,32 @@ export class MessageComponent implements OnDestroy {
     }
 
   }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.showEmojiPopup || !this.popup) return;
+
+    const target = event.target as HTMLElement;
+
+    // Vérifie si le clic est dans le bouton emoji
+    const clickedOnButton = target.closest('.button-more');
+    if (clickedOnButton) return;
+
+    // Vérifie si le clic est dans la zone du popup selon sa position et taille
+    const x = event.clientX;
+    const y = event.clientY;
+
+    const left = this.popupLeft;
+    const top = this.popupTop;
+    const right = this.popupLeft + this.popupWidth;
+    const bottom = this.popupTop + (this.showFullPicker ? this.popupHeight : this.popupHeightShort);
+
+    const clickedInsidePopup = x >= left && x <= right && y >= top && y <= bottom;
+
+    if (!clickedInsidePopup) {
+      this.closeEmojiPopup();
+    }
+  }
+
 
 }

@@ -1,9 +1,13 @@
 .messageWithParent {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+  .parent-message,
+  .message-card {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
 }
+
 /* Wrapper du message */
 .message-wrapper {
   display: flex;
@@ -22,8 +26,18 @@
   flex-direction: column;
   align-items: flex-start;
 }
+
 .full .message-container{
   max-width: 70%;
+}
+@media (max-width: 700px) {
+  .button-more {
+    visibility: hidden;
+    width: 0px;
+  }
+  .full .message-container {
+    max-width: 90%;
+  }
 }
 .normal .message-container{
   max-width: 100%;
@@ -212,57 +226,54 @@
   width: fit-content;
   height: fit-content;
 }
-@media (max-width: 700px) {
-  .button-more {
-    visibility: hidden;
-    width: 0px;
-  }
-  .message-container {
-    max-width: 90%; /* élargir la carte du message */
-  }
-}
-.mine .emoji-popup{
-  left: 5%;
-}
-.other .emoji-popup{
-  left: 60%;
-}
+
+
 .emoji-popup {
+  user-select: none;
   position: fixed; /* au lieu de absolute */
   transform: translate(0, 0); /* plus besoin de centrer avec translateX */
   background: rgba(40, 40, 40, 0.95);
   border-radius: 16px;
-  padding: 8px 12px;
+  padding: 16px 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   animation: fadeIn 0.15s ease-in-out;
   z-index: 1000;
-  max-width: 290px;
+  width: 326px;
+  max-height: 318px;
 }
 
 
 .quick-emojis {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-around;
 
   span {
     cursor: pointer;
-    font-size: 26px;
+    font-size: 32px;
     transition: transform 0.1s ease-in;
   }
 
   .more {
-    font-size: 22px;
+    font-size: 26px;
     color: #ccc;
   }
 }
 
 .full-emoji-picker {
-  max-height: 200px;
   overflow-y: auto;
+  font-size: 22px;
+  .emoji-grid{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    span{
+      padding: 4px 0;
+    }
+  }
 }
 
 @keyframes fadeIn {
@@ -314,3 +325,4 @@
     }
   }
 }
+

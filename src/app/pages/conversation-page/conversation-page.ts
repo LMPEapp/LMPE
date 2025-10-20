@@ -288,9 +288,16 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onCoseEdit(): void {
-    this.messageEdit = null;
-    this.newMessage = '';
-    this.adjustTextarea();
+    if(this.messageEdit!=null){
+      this.messageEdit = null;
+      this.newMessage = '';
+      this.adjustTextarea();
+    }
+    else if( this.messageRepondre != null){
+      this.messageRepondre=null;
+      this.adjustTextarea();
+    }
+
   }
 
   // ─────────────────────────────
