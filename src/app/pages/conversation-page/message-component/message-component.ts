@@ -46,7 +46,6 @@ export class MessageComponent implements OnDestroy {
   conversationId: number;
 
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
-  @ViewChild('popup') popup!: ElementRef;
 
   private pressTimer: any = null;
   private lastTap = 0;
@@ -238,6 +237,7 @@ export class MessageComponent implements OnDestroy {
   // 🟢 Double tap
   onDoubleTap(event: PointerEvent) {
     if(this.isFullWidth == false) return;
+    this.isShowByButton=true;
     this.setPosition(event);
     this.openEmojiPopup();
   }
@@ -284,6 +284,7 @@ export class MessageComponent implements OnDestroy {
   // ouverture sélecteur complet
   togleFullEmojiPicker() {
     this.showFullPicker = !this.showFullPicker;
+    this.isShowByButton=true;
     this.setPositionWithFullEmojiPicker(this.showFullPicker)
   }
 
@@ -337,7 +338,7 @@ export class MessageComponent implements OnDestroy {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (!this.showEmojiPopup || !this.popup) return;
+    if (!this.showEmojiPopup) return;
 
     const target = event.target as HTMLElement;
 
@@ -346,11 +347,6 @@ export class MessageComponent implements OnDestroy {
       return;
     }
 
-    // Vérifie si le clic est dans le bouton emoji
-    const clickedOnButton = target.closest('.button-more');
-    if (clickedOnButton) return;
-
-    // Vérifie si le clic est dans la zone du popup selon sa position et taille
     const x = event.clientX;
     const y = event.clientY;
 
