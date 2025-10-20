@@ -242,7 +242,9 @@ export class MessageComponent implements OnDestroy {
     this.openEmojiPopup();
   }
 
+  isShowByButton= false;
   openEmojiPopup() {
+    this.isShowByButton=true;
     this.updateEmojis();
     this.showEmojiPopup = true;
     this.showFullPicker = false;
@@ -338,6 +340,11 @@ export class MessageComponent implements OnDestroy {
     if (!this.showEmojiPopup || !this.popup) return;
 
     const target = event.target as HTMLElement;
+
+    if(this.isShowByButton){
+      this.isShowByButton=false;
+      return;
+    }
 
     // Vérifie si le clic est dans le bouton emoji
     const clickedOnButton = target.closest('.button-more');
