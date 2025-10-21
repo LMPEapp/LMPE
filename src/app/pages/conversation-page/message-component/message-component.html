@@ -29,9 +29,9 @@
 
       <!-- Affichage du message parent si existe -->
       <div *ngIf="message.parentId" class="parent-message">
-        <div class="parent-header" [ngClass]="{ mine: isMine, other: !isMine }">
+        <div class="parent-header" [ngClass]="{ mine: isParentMine, other: !isParentMine }">
             <app-avatar class="parent-avatar" [url]="message.parentUserUrlImage" [alt]="message.parentUserUrlImage || 'Utilisateur supprimé'" [size]="20"></app-avatar>
-            <span class="parent-pseudo">{{ isMine ? 'Moi' : message.parentUserPseudo || 'Utilisateur supprimé' }}</span>
+            <span class="parent-pseudo">{{ isParentMine ? 'Moi' : message.parentUserPseudo || 'Utilisateur supprimé' }}</span>
             <span class="parent-date">{{ message.parentCreatedAt | myRelativeDate }}</span>
         </div>
         <div class="parent-content">

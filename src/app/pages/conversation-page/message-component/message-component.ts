@@ -105,6 +105,10 @@ export class MessageComponent implements OnDestroy {
     return this.message?.userId === this.currentUserId;
   }
 
+  get isParentMine(): boolean {
+    return this.message?.parentUserId === this.currentUserId;
+  }
+
   ngOnInit(): void {
     this.subscibeSignalR();
   }
