@@ -3,13 +3,18 @@
   <mat-card *ngFor="let element of courbes" class="courbe-card mat-elevation-z2">
 
     <mat-card-header>
-      <div mat-card-avatar>
-        <app-avatar [url]="element.userUrlImage" [alt]="element.userPseudo" [size]="40"></app-avatar>
+      <div mat-card-avatar *ngIf="element.userId; else webOrder">
+        <app-avatar [url]="element.userUrlImage" [size]="40"></app-avatar>
       </div>
       <mat-card-title class="user">{{ element.userPseudo }}</mat-card-title>
       <mat-card-subtitle class="user">{{ element.userEmail }}</mat-card-subtitle>
+
+      <ng-template #webOrder>
+        <mat-card-title class="user">Commande Web</mat-card-title>
+      </ng-template>
+
       <div class="date-amount">
-        <div class="date">{{ formatDate(element.datePoint) }}</div>
+        <div class="date">{{ element.datePointDateOnly.toLocaleString() }}</div>
         <div class="amount" [ngClass]="getAmountClass(element.amount)">
           {{ element.amount | shortNumber:2 }}€
         </div>
@@ -18,9 +23,7 @@
 
     <mat-card-content>
       <div class="description-row">
-        <div class="description">
-          {{ element.description }}
-        </div>
+        <div class="description" [innerHTML]="element.description"></div>
         <ng-container *ngIf="rightDelete(element)">
           <button mat-icon-button class="delete-btn" (click)="onDeleteMessage(element)">
           <mat-icon>delete</mat-icon>

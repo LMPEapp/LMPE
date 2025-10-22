@@ -1,0 +1,69 @@
+<div class="overlay" *ngIf="visible" (click)="close()"></div>
+
+<div class="box-drawer" *ngIf="visible">
+  <div class="drawer">
+    <div class="header">
+      <h2>Votre Panier</h2>
+      <button mat-icon-button color="warn" (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="produits.length === 0" class="vide">
+      <mat-icon>shopping_bag</mat-icon>
+      <p>Aucun produit dans le panier.</p>
+    </div>
+
+    <div class="box-body" *ngIf="produits.length > 0">
+      <div class="box-produit">
+        <div class="produit" *ngFor="let produit of produits">
+          <div class="nom">{{ produit.nom }}</div>
+          <div class="ligne-prix">
+            <div class="quantite">{{ produit.quantite }}×{{ produit.prix | currency:'EUR' }}</div>
+            <div class="total-produit">{{ produit.quantite * produit.prix | currency:'EUR' }}</div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="total">
+        <span>Total :</span>
+        <strong>{{ total | currency:'EUR' }}</strong>
+      </div>
+
+      <form [formGroup]="form" class="infos">
+        <mat-form-field appearance="fill">
+          <mat-label>Nom complet</mat-label>
+          <input matInput formControlName="nomComplet">
+          <mat-error *ngIf="form.get('nomComplet')?.hasError('required')">
+            Nom obligatoire
+          </mat-error>
+          <mat-error *ngIf="form.get('nomComplet')?.hasError('maxlength')">
+            Trop grand
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Adresse</mat-label>
+          <input matInput formControlName="adresse">
+          <mat-error *ngIf="form.get('adresse')?.hasError('required')">
+            Adresse obligatoire
+          </mat-error>
+          <mat-error *ngIf="form.get('adresse')?.hasError('maxlength')">
+            Trop long
+          </mat-error>
+        </mat-form-field>
+      </form>
+
+
+      <div class="actions">
+        <div class="actions">
+          <button mat-flat-button color="primary" [disabled]="loading" (click)="commander()">
+            Commander
+          </button>
+          <mat-progress-spinner *ngIf="loading" diameter="24" mode="indeterminate"></mat-progress-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

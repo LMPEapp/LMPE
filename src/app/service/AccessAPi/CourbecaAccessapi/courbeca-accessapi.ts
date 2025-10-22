@@ -47,6 +47,15 @@ export class CourbeCAAccessApi {
     return this.api.post<CourbeCA>(this.controller, '', payload, token);
   }
 
+  Achat(input: CourbeCAIn): Observable<CourbeCA> {
+    const token = localStorage.getItem('token') || '';
+    const payload = {
+      ...input,
+      datePoint: input.datePointDateOnly.toString() // <-- YYYY-MM-DD
+    };
+    return this.api.post<CourbeCA>(`${this.controller}/Achat`, '', payload, token);
+  }
+
 
   delete(id: number): Observable<null> {
     const token = localStorage.getItem('token') || '';

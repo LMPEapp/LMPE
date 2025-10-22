@@ -16,6 +16,7 @@ import { ValidationDialogComponent } from '../../../ExternComposent/validation-d
 import { AuthService } from '../../../service/Auth/auth';
 import { User } from '../../../Models/user.model';
 import { AvatarComponent } from "../../../ExternComposent/avatar/avatar";
+import { DateOnly } from '../../../Helper/DateOnly';
 
 @Component({
   selector: 'app-courbeca-liste',
@@ -101,7 +102,10 @@ export class CourbecaListe {
 
     this.caApi.GetAll(null,this.idUserFilter?.id).subscribe({
       next: (data: CourbeCA[]) => {
-        this.courbes = data;
+        this.courbes = data.map(c => ({
+          ...c,
+          datePointDateOnly: DateOnly.fromString(c.datePoint)
+        }));
         this.isLoading = false;
       },
       error: (err) => {
@@ -127,10 +131,6 @@ export class CourbecaListe {
 
   getAmountClass(amount: number): string {
     return amount >= 0 ? 'amount-positive' : 'amount-negative';
-  }
-
-  formatDate(date: Date | string): string {
-    return toLocalDate(date).toLocaleString();
   }
 
   loadPage(): void {

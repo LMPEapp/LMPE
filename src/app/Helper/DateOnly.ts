@@ -36,6 +36,11 @@ export class DateOnly {
     return `${this.year}-${mm}-${dd}`;
   }
 
+  toLocaleString(locale: string = navigator.language): string {
+    return new Intl.DateTimeFormat(locale).format(this.toDate());
+  }
+
+
   /**
    * Convertit en objet Date (local, à minuit)
    */

@@ -1,1 +1,60 @@
-<p>nos-produits-page works!</p>
+<div class="produits-container">
+  <h1 class="titre-page">Nos Produits</h1>
+
+  <div *ngFor="let produit of produits; let i = index" class="produit-bloc" [ngClass]="'layout-' + (i + 1)">
+    <div class="produit-card" [ngClass]="{'inverse': i % 2 !== 0}">
+      <div class="image">
+        <img [src]="produit.image" [alt]="produit.nom" />
+      </div>
+      <div class="details">
+        <h2>{{ produit.nom }}</h2>
+        <p>{{ produit.description }}</p>
+        <div class="prix">{{ produit.prix | currency:'EUR' }}</div>
+
+        <div class="feur">
+          <div class="quantite-controls">
+            <button mat-mini-fab color="accent" (click)="retirer(produit)">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="quantite">{{ produit.quantite }}</span>
+            <button mat-mini-fab color="primary" (click)="ajouter(produit)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bouton flottant du panier -->
+  <button mat-fab color="primary" class="fab-panier"
+          [matBadge]="totalPanier"
+          matBadgeColor="warn"
+          [matBadgeHidden]="totalPanier === 0"
+          (click)="ouvrirPanier()">
+    <mat-icon>shopping_cart</mat-icon>
+  </button>
+
+
+  <!-- Section Provenance -->
+  <div class="provenance-container">
+    <h2 class="titre-section">Provenance de nos produits</h2>
+
+    <div *ngFor="let source of provenances; let i = index" class="provenance-bloc" [ngClass]="{'inverse': i % 2 !== 0}">
+      <div class="provenance-card">
+        <div class="image">
+          <img [src]="source.image" />
+        </div>
+        <div class="texte">
+          <p>{{ source.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<app-panier-achat
+  (commandeTerminee)="onCommandeTerminee()">
+</app-panier-achat>

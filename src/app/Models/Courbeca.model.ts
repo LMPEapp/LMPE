@@ -4,7 +4,7 @@ import { DateOnly } from "../Helper/DateOnly";
 
 export interface CourbeCA {
   id: number;
-  userId: number;
+  userId: number | null;
   datePoint: string;
   datePointDateOnly: DateOnly;
   amount: number;
@@ -12,10 +12,10 @@ export interface CourbeCA {
   createdAt: Date;
 
   // Infos utilisateur complètes
-  userEmail: string;
-  userPseudo: string;
-  userUrlImage?: string;
-  userIsAdmin: boolean;
+  userEmail: string | null;
+  userPseudo: string | null;
+  userUrlImage?: string | null;
+  userIsAdmin: boolean | null;
 }
 
 export interface CourbeCAGroupByDatePoint {
@@ -28,7 +28,7 @@ export interface CourbeCAGroupByDatePoint {
 
 // Pour la création d'un point CA
 export interface CourbeCAIn {
-  userId: number;
+  userId: number | null;
   datePoint: string;
   datePointDateOnly: DateOnly;
   amount: number;
