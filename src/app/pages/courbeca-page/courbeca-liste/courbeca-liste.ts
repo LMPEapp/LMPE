@@ -77,6 +77,7 @@ export class CourbecaListe {
       if(this.idUserFilter && newItem.userId !== this.idUserFilter.id) {
         return; // Ignore si l'élément n'appartient pas à l'utilisateur sélectionné
       }
+      newItem.datePointDateOnly = DateOnly.fromString(newItem.datePoint);
       this.courbes.unshift(newItem);
     });
 
