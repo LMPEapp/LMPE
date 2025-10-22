@@ -105,7 +105,7 @@
               <video class="message-media" controls [src]="getUrl()"></video>
             </ng-container>
             <ng-container *ngIf="message.type === 'fichier'">
-              <div class="message-file" (click)="downloadFile()">
+              <div class="message-file">
                 <mat-icon class="large-icon">insert_drive_file</mat-icon>
                 <span class="text">{{ message.content }}</span>
               </div>
