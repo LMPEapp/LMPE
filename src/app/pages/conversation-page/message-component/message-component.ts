@@ -312,7 +312,6 @@ export class MessageComponent implements OnDestroy {
   }
 
   downloadFile() {
-    if(this.message.type !== 'fichier') return;
     const url = this.getUrl(); // URL du fichier
     const fileName = this.message.content || 'fichier';
 
