@@ -35,7 +35,7 @@ export class NosProduitsPage {
     {
       id: 3,
       nom: 'Barre au chocolat au caca et au sperme (lot de 3)',
-      description: 'Protéinée, délicieuse, croquante et fondante, c’est la barre au chocolat qu’il vous faut absolument ! Notre sperme et notre caca sont de la meilleure qualité possible et offre une expérience en bouche inoubliable. Testez la dès maintenant !Les seuls animaux que j’aime bien : 🙈🙉🙊🐶🦧🦍🐢',
+      description: 'Protéinée, délicieuse, croquante et fondante, c’est la barre au chocolat qu’il vous faut absolument ! Notre sperme et notre caca sont de la meilleure qualité possible et offre une expérience en bouche inoubliable. Testez la dès maintenant !',
       image: 'assets/Produit/3.jpg',
       prix: 9.99,
       quantite: 0
