@@ -23,7 +23,8 @@
 
     <mat-card-content>
       <div class="description-row">
-        <div class="description" [innerHTML]="element.description"></div>
+        <div *ngIf="element.userId; else webOrder" class="description des-ca" [textContent]="element.description"></div>
+        <div #webDescription class="description" [innerHTML]="element.description"></div>
         <ng-container *ngIf="rightDelete(element)">
           <button mat-icon-button class="delete-btn" (click)="onDeleteMessage(element)">
           <mat-icon>delete</mat-icon>
