@@ -163,6 +163,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   onSelectTab(tab: 'stats' | 'messages' | 'agenda' | 'bulletin'): void {
     this.activeTab = tab;
     sessionStorage.setItem('activeTab', tab);
+    this.router.navigate([], { fragment: tab });
   }
 
   /** 🚪 Déconnexion complète */

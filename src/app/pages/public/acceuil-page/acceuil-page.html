@@ -149,7 +149,10 @@
           </div>
 
           <div *ngSwitchDefault>
-            <h1>Bienvenue sur LMPE</h1>
+            <div class="loading-container">
+              <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+              <p>Chargement des données...</p>
+            </div>
           </div>
         </ng-container>
       </div>
