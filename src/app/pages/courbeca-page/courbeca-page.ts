@@ -52,6 +52,7 @@ export class CourbecaPage implements OnInit {
 
   courbes: CourbeCAGroupByDatePoint[] = [];
   totalAmountLast30Days: number = 0;
+  selectedTabIndex = 0;
   isLoading: boolean = false;
   errorMessage: string = '';
   graphData: any[] = [];
@@ -61,7 +62,7 @@ export class CourbecaPage implements OnInit {
 
   user: User | undefined;
   public users:User[] = [];
-  userSelected?:User;
+  userSelected: User | "ALL" | "WEB" = "ALL";
 
   private visibilityHandler?: () => void;
 
@@ -143,9 +144,9 @@ export class CourbecaPage implements OnInit {
         // Création dynamique
     this.createdSub = this.courbecaHub.Created$.subscribe(newItem => {
       if (!newItem) return;
-
-      if(this.userSelected && newItem.userId !== this.userSelected.id) {
-        return; // Ignore si l'élément n'appartient pas à l'utilisateur sélectionné
+      var allData=this.userSelected==="ALL"?true:false;
+      if (!allData && newItem.userId !== this.isUser(this.userSelected)?.id) {
+        return;
       }
 
       const newDate = DateOnly.fromString(newItem.datePoint);
@@ -175,8 +176,9 @@ export class CourbecaPage implements OnInit {
     this.deletedSub = this.courbecaHub.Deleted$.subscribe(deletedItem => {
       if (!deletedItem) return;
 
-      if(this.userSelected && deletedItem.userId !== this.userSelected.id) {
-        return; // Ignore si l'élément n'appartient pas à l'utilisateur sélectionné
+      var allData=this.userSelected==="ALL"?true:false;
+      if (!allData && deletedItem.userId !== this.isUser(this.userSelected)?.id) {
+        return;
       }
 
       const { id, datePoint, amount } = deletedItem;
@@ -213,7 +215,8 @@ export class CourbecaPage implements OnInit {
     this.endDateOnly = DateOnly.fromDate(endDate);
     this.startDateOnly = DateOnly.fromDate(startDate);
 
-    this.caApi.GetAllGroupeByDate(this.startDateOnly, this.endDateOnly, idUser).subscribe({
+    var allData=this.userSelected==="ALL"?true:false;
+    this.caApi.GetAllGroupeByDate(this.startDateOnly, this.endDateOnly,allData, idUser).subscribe({
       next: (data: CourbeCAGroupByDatePoint[]) => {
         this.courbes = data.map(c => ({
           ...c,
@@ -270,10 +273,17 @@ export class CourbecaPage implements OnInit {
     ];
   }
 
-  onUserChange(user?: User) {
-    this.userSelected = user;
-    console.log('Utilisateur sélectionné :', user);
-    this.loadLast30Days(user?.id);
+  onUserChange() {
+    console.log('Utilisateur sélectionné :', this.userSelected);
+    this.loadLast30Days(this.isUser(this.userSelected)?.id);
+  }
+
+  onTabChange(newIndex: number) {
+    this.selectedTabIndex = newIndex;
+  }
+
+  isUser(value: User | "ALL" | "WEB"): User | undefined {
+    return value && typeof value === 'object' ? value : undefined;
   }
   // --- Ouverture du formulaire d'ajout ---
   onAdd(): void {

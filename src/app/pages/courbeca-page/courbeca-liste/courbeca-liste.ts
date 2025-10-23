@@ -43,7 +43,7 @@ export class CourbecaListe {
   errorMessage: string = '';
   user: User | undefined;
 
-  @Input() idUserFilter?: User;
+  @Input() userFilter: User | "ALL" | "WEB" = "ALL";
 
   constructor(
     private caApi: CourbeCAAccessApi,
@@ -74,8 +74,9 @@ export class CourbecaListe {
     // Création dynamique
     this.courbecaHub.CreatedForListe$.subscribe(newItem => {
       if (!newItem) return;
-      if(this.idUserFilter && newItem.userId !== this.idUserFilter.id) {
-        return; // Ignore si l'élément n'appartient pas à l'utilisateur sélectionné
+      var allData=this.userFilter==="ALL"?true:false;
+      if (!allData && newItem.userId !== this.isUser(this.userFilter)?.id) {
+        return;
       }
       newItem.datePointDateOnly = DateOnly.fromString(newItem.datePoint);
       this.courbes.unshift(newItem);
@@ -85,8 +86,9 @@ export class CourbecaListe {
     this.courbecaHub.DeletedForListe$.subscribe(deletedItem => {
       if (!deletedItem) return;
 
-      if(this.idUserFilter && deletedItem.userId !== this.idUserFilter.id) {
-        return; // Ignore si l'élément n'appartient pas à l'utilisateur sélectionné
+      var allData=this.userFilter==="ALL"?true:false;
+      if (!allData && deletedItem.userId !== this.isUser(this.userFilter)?.id) {
+        return;
       }
 
       const index = this.courbes.findIndex(c => c.id === deletedItem.id);
@@ -100,8 +102,8 @@ export class CourbecaListe {
   // --- Chargement initial ---
   init(): void {
     this.isLoading = true;
-
-    this.caApi.GetAll(null,this.idUserFilter?.id).subscribe({
+    var allData=this.userFilter==="ALL"?true:false;
+    this.caApi.GetAll(null,allData, this.isUser(this.userFilter)?.id).subscribe({
       next: (data: CourbeCA[]) => {
         this.courbes = data.map(c => ({
           ...c,
@@ -135,7 +137,8 @@ export class CourbecaListe {
   }
 
   loadPage(): void {
-    this.caApi.GetAll(this.courbes[this.courbes.length-1].id,this.idUserFilter?.id).subscribe({
+    var allData=this.userFilter==="ALL"?true:false;
+    this.caApi.GetAll(this.courbes[this.courbes.length-1].id, allData, this.isUser(this.userFilter)?.id).subscribe({
       next: data => {
         this.courbes.push(...data);
       },
@@ -146,6 +149,9 @@ export class CourbecaListe {
   }
   loadMore(): void {
     this.loadPage();
+  }
+  isUser(value: User | "ALL" | "WEB"): User | undefined {
+    return value && typeof value === 'object' ? value : undefined;
   }
   onAlertClosed(event: boolean) {
     if(event && this.LigneSelected){

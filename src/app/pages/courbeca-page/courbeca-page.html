@@ -3,21 +3,38 @@
   <div class="user-filter-container">
     <mat-form-field appearance="outline" class="user-select-field">
       <mat-label>Utilisateur</mat-label>
-      <mat-select [(value)]="userSelected" (selectionChange)="onUserChange($event.value)">
+      <mat-select [(value)]="userSelected" (selectionChange)="onUserChange()">
         <!-- Ce qui s'affiche quand on sélectionne -->
         <mat-select-trigger class="user-option">
-          <ng-container *ngIf="userSelected;">
-            <app-avatar [url]="userSelected.urlImage" [alt]="userSelected.pseudo" [size]="30"></app-avatar>
-            {{ userSelected.pseudo }}
+          <ng-container [ngSwitch]="userSelected">
+            <ng-container *ngSwitchCase="'ALL'">
+              <span>Tous</span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'WEB'">
+              <span>Commande Web</span>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              <ng-container *ngIf="isUser(userSelected) as user">
+                <app-avatar [url]="user.urlImage" [alt]="user.pseudo" [size]="30"></app-avatar>
+                {{ user.pseudo }}
+              </ng-container>
+            </ng-container>
           </ng-container>
         </mat-select-trigger>
 
         <!-- Option Tous -->
-        <mat-option [value]="undefined">
+        <mat-option [value]="'ALL'">
           <div class="user-option">
-            <app-avatar [url]="undefined" [size]="40"></app-avatar>
             <div class="user-info">
-              <span class="pseudo">Tous les utilisateurs</span>
+              <span class="pseudo">Tous</span>
+            </div>
+          </div>
+        </mat-option>
+
+        <mat-option [value]="'WEB'">
+          <div class="user-option">
+            <div class="user-info">
+              <span class="pseudo">Commande Web</span>
             </div>
           </div>
         </mat-option>
@@ -43,7 +60,7 @@
     <h1 class="total-amount">{{ totalAmountLast30Days | shortNumber:2 }} €</h1>
   </mat-card>
 
-  <mat-tab-group mat-stretch-tabs [dynamicHeight]="true" [selectedIndex]="0">
+  <mat-tab-group mat-stretch-tabs [dynamicHeight]="true" [selectedIndex]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
 
     <!-- Onglet Graph -->
     <mat-tab label="Graphique">
@@ -67,7 +84,7 @@
 
     <!-- Onglet Liste -->
     <mat-tab label="Liste">
-      <app-courbeca-liste [idUserFilter]="userSelected"></app-courbeca-liste>
+      <app-courbeca-liste [userFilter]="userSelected"></app-courbeca-liste>
     </mat-tab>
 
   </mat-tab-group>
