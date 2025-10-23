@@ -45,7 +45,7 @@ export class CourbecaEdit {
     this.form = this.fb.group({
       amount: ['', [Validators.required,Validators.pattern(/^-?\d{1,10}(\.\d{1,2})?$/)]],
       datePoint: [null, [Validators.required]],
-      description: ['', [Validators.required, Validators.maxLength(255)]],
+      description: ['', [Validators.required]],
     });
     this.user = auth.loginData?.user;
   }

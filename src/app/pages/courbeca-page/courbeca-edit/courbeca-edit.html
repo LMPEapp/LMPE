@@ -33,9 +33,6 @@
         <mat-error *ngIf="form.get('description')?.hasError('required')">
           description requis
         </mat-error>
-        <mat-error *ngIf="form.get('description')?.hasError('maxlength')">
-          Maximum 255 caractères
-        </mat-error>
       </div>
 
       <div class="form-actions">
