@@ -38,7 +38,44 @@
     </ng-container>
   </ng-container>
 
-  <div class="current-time-line" *ngIf="currentTimeTop" [style.top]="currentTimeTop"></div>
+  <!-- Ligne jusqu’à currentDayColumnStart -->
+  <div
+    class="time-line"
+    *ngIf="currentTimeTop"
+    [style.top]="currentTimeTop"
+    [style.grid-column]="'2 / ' + currentDayColumnStart"
+  ></div>
+
+  <!-- Ligne entre currentDayColumnStart et currentDayColumnEnd -->
+  <div
+    class="time-line current-time-line"
+    *ngIf="currentTimeTop"
+    [style.top]="currentTimeTop"
+    [style.grid-column]="currentDayColumnStart + ' / ' + currentDayColumnEnd"
+  ></div>
+
+  <!-- Ligne sur une seule colonne -->
+  <div
+    class="time-line"
+    *ngIf="currentTimeTop"
+    [style.top]="currentTimeTop"
+    [style.grid-column]="currentDayColumnEnd"
+  ></div>
+
+
+  <div
+    class="current-time-indicator"
+    *ngIf="currentTimeTop"
+    [style.top]="currentTimeTop"
+    [style.grid-column]="currentDayColumnStart"
+  ></div>
+  <div
+    class="current-time-indicator"
+    *ngIf="currentTimeTop"
+    [style.top]="currentTimeTop"
+    [style.grid-column]="currentDayColumnEnd"
+  ></div>
+
 
 
 </div>

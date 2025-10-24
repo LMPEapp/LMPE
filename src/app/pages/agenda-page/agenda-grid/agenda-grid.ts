@@ -48,6 +48,9 @@ export class AgendaGridComponent {
   }
 
   currentTimeTop: string | null = null;
+  currentDayColumnStart: string = '';
+  currentDayColumnEnd: string = '';
+
   private timer?: any;
 
   private updateCurrentTimeLine(): void {
@@ -55,18 +58,21 @@ export class AgendaGridComponent {
     var hours = now.getHours();
     var minutes = now.getMinutes();
 
-    // totalMinutes : minutes écoulées depuis minuit
     const totalMinutes = hours * 60 + minutes;
 
-    // nombre total de cellules = 48 pour 30 min
     const grid = this.agendaGrid.nativeElement;
-    const gridHeight = grid.scrollHeight; // hauteur réelle (prend gap et responsive)
+    const gridHeight = grid.scrollHeight;
     const headerHeight = grid.querySelector('.grid-header')?.clientHeight || 30;
     const usableHeight = gridHeight - headerHeight;
 
-    // position en pourcentage dans la zone horaire
     const top = headerHeight + (totalMinutes / (24 * 60)) * usableHeight;
     this.currentTimeTop = `${top}px`;
+
+    // ✅ Colonne du jour actuel
+    const today = new Date();
+    const dayIndex = today.getDay() === 0 ? 7 : today.getDay(); // Lundi=1 ... Dimanche=7
+    this.currentDayColumnStart = `${dayIndex + 1}`;
+    this.currentDayColumnEnd = `${dayIndex + 2}`;
   }
 
 

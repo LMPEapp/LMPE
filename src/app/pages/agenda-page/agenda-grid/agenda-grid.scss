@@ -73,13 +73,26 @@
   }
 }
 
-.current-time-line {
+.time-line {
   position: absolute;
-  left: 0;
-  right: 0;
   height: 2px;
-  background-color: red;
   z-index: 50;
   transition: top 0.5s linear;
+  width: 100%;
+  background-color: var(--mat-sys-on-primary);
 }
+.current-time-line {
+  background-color: var(--mat-sys-primary);
+}
+
+.current-time-indicator {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: var(--mat-sys-primary);
+  border-radius: 50%;
+  transform: translateX(-50%) translateY(-4px); /* centre la boule sur la ligne */
+  z-index: 60;
+}
+
 
