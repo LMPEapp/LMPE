@@ -22,7 +22,11 @@ export class AgendaGridComponent {
 
   @Output() editEvent = new EventEmitter<AgendaOut>();
 
-  hourIndexes;
+  hourIndexes: number[];
+  currentTimeRow: string | null = null;
+  private timer?: any;
+
+
 
   constructor(){
     const indexes: number[] = [];
@@ -33,7 +37,21 @@ export class AgendaGridComponent {
   }
 
   ngOnInit(): void {
+    this.updateCurrentTimeLine();
+    this.timer = setInterval(() => this.updateCurrentTimeLine(), 60000);
+  }
+  ngOnDestroy(): void {
+    clearInterval(this.timer);
+  }
 
+  private updateCurrentTimeLine(): void {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    // Chaque ligne = 30 min → 48 lignes
+    const baseRow = hours * 2 + (minutes >= 30 ? 2 : 1);
+    this.currentTimeRow = `${baseRow + 1}`;
   }
 
   isMine(event: AgendaOut): boolean {

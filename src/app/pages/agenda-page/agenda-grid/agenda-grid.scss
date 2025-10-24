@@ -1,4 +1,5 @@
 .agenda-grid {
+  position: relative;
   margin-top: 10px;
   display: grid;
   grid-template-columns: auto repeat(7, 1fr);
@@ -70,5 +71,16 @@
       flex-direction: row; // mode large: jour et numéro sur la même ligne
     }
   }
+}
+
+.current-time-line {
+  position: absolute; /* ✅ et non relative */
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: red;
+  z-index: 20;
+  transition: transform 0.2s linear;
+  pointer-events: none; /* la ligne ne bloque pas les clics */
 }
 

@@ -37,4 +37,13 @@
       </div>
     </ng-container>
   </ng-container>
+
+  <div
+    class="current-time-line"
+    *ngIf="currentTimeRow"
+    [style.grid-row]="currentTimeRow"
+    [style.grid-column]="'2 / span 7'"
+  ></div>
+
+
 </div>
