@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { AgendaOut } from '../../../Models/Agenda.model';
 import { User } from '../../../Models/user.model';
 import { toLocalDate } from '../../../Helper/date-utils';
@@ -15,6 +15,9 @@ import { MatButtonModule } from '@angular/material/button';
   ]
 })
 export class AgendaGridComponent {
+  @ViewChild('agendaGrid') agendaGrid!: ElementRef<HTMLDivElement>;
+
+
   @Input() weekDays: Date[] = [];
   @Input() hours: string[] = [];
   @Input() agendas: AgendaOut[] = [];
@@ -23,8 +26,6 @@ export class AgendaGridComponent {
   @Output() editEvent = new EventEmitter<AgendaOut>();
 
   hourIndexes: number[];
-  currentTimeRow: string | null = null;
-  private timer?: any;
 
 
 
@@ -37,22 +38,37 @@ export class AgendaGridComponent {
   }
 
   ngOnInit(): void {
-    this.updateCurrentTimeLine();
     this.timer = setInterval(() => this.updateCurrentTimeLine(), 60000);
+  }
+  ngAfterViewInit(): void {
+    this.updateCurrentTimeLine();
   }
   ngOnDestroy(): void {
     clearInterval(this.timer);
   }
 
+  currentTimeTop: string | null = null;
+  private timer?: any;
+
   private updateCurrentTimeLine(): void {
     const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
+    var hours = now.getHours();
+    var minutes = now.getMinutes();
 
-    // Chaque ligne = 30 min → 48 lignes
-    const baseRow = hours * 2 + (minutes >= 30 ? 2 : 1);
-    this.currentTimeRow = `${baseRow + 1}`;
+    // totalMinutes : minutes écoulées depuis minuit
+    const totalMinutes = hours * 60 + minutes;
+
+    // nombre total de cellules = 48 pour 30 min
+    const grid = this.agendaGrid.nativeElement;
+    const gridHeight = grid.scrollHeight; // hauteur réelle (prend gap et responsive)
+    const headerHeight = grid.querySelector('.grid-header')?.clientHeight || 30;
+    const usableHeight = gridHeight - headerHeight;
+
+    // position en pourcentage dans la zone horaire
+    const top = headerHeight + (totalMinutes / (24 * 60)) * usableHeight;
+    this.currentTimeTop = `${top}px`;
   }
+
 
   isMine(event: AgendaOut): boolean {
     return event.createdBy === this.user?.id;

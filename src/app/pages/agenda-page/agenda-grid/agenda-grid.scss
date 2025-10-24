@@ -74,13 +74,12 @@
 }
 
 .current-time-line {
-  position: absolute; /* ✅ et non relative */
+  position: absolute;
   left: 0;
   right: 0;
   height: 2px;
   background-color: red;
-  z-index: 20;
-  transition: transform 0.2s linear;
-  pointer-events: none; /* la ligne ne bloque pas les clics */
+  z-index: 50;
+  transition: top 0.5s linear;
 }
 
