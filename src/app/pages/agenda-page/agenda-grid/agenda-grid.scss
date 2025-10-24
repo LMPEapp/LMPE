@@ -74,6 +74,7 @@
 }
 
 .time-line {
+  pointer-events: none;
   position: absolute;
   height: 2px;
   z-index: 50;
@@ -86,6 +87,7 @@
 }
 
 .current-time-indicator {
+  pointer-events: none;
   position: absolute;
   width: 10px;
   height: 10px;
