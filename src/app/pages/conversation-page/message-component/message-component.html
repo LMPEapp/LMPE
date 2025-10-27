@@ -30,7 +30,7 @@
       <!-- Affichage du message parent si existe -->
       <div *ngIf="message.parentId" class="parent-message">
         <div class="parent-header" [ngClass]="{ mine: isParentMine, other: !isParentMine }">
-            <app-avatar class="parent-avatar" [url]="message.parentUserUrlImage" [alt]="message.parentUserUrlImage || 'Utilisateur supprimé'" [size]="20"></app-avatar>
+            <app-avatar class="parent-avatar" [url]="message.parentUserUrlImage" [alt]="message.parentUserUrlImage || 'Utilisateur supprimé'" [size]="30"></app-avatar>
             <span class="parent-pseudo">{{ isParentMine ? 'Moi' : message.parentUserPseudo || 'Utilisateur supprimé' }}</span>
             <span class="parent-date">{{ message.parentCreatedAt | myRelativeDate }}</span>
         </div>
@@ -89,7 +89,7 @@
         <!-- Contenu du message -->
         <div class="message-box">
           <div class="message-header">
-            <app-avatar class="avatar" [url]="message.userUrlImage" [alt]="message.userPseudo" [size]="20"></app-avatar>
+            <app-avatar class="avatar" [url]="message.userUrlImage" [alt]="message.userPseudo" [size]="30"></app-avatar>
             <span class="pseudo">{{ isMine ? 'Moi' : message.userPseudo }}</span>
             <span class="date">{{ message.createdAt | myRelativeDate }}</span>
           </div>
@@ -118,7 +118,7 @@
     <!-- Réactions -->
     <div class="message-reactions" *ngIf="message.reactions.length > 0">
       <div *ngFor="let reaction of message.reactions" class="item" (click)="onReactionClick(reaction)">
-        <app-avatar class="avatar" [url]="reaction.userUrlImage" [alt]="reaction.userPseudo" [size]="20"></app-avatar>
+        <app-avatar class="avatar" [url]="reaction.userUrlImage" [alt]="reaction.userPseudo" [size]="30"></app-avatar>
         {{ reaction.emoji }}
       </div>
     </div>
