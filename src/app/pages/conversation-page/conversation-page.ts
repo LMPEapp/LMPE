@@ -101,6 +101,8 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
         this.messageApi.readAll(this.conversationId).subscribe();
         this.loadData();
         this.ensureSignalRConnected();
+      } else if (document.visibilityState === 'hidden') {
+        this.messageApi.readAll(this.conversationId).subscribe();
       }
     };
     document.addEventListener('visibilitychange', this.visibilityHandler);
