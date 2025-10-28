@@ -237,6 +237,10 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     }, 0);
   }
 
+  isMobile(): boolean {
+    const ua = navigator.userAgent.toLowerCase();
+    return /android|iphone|ipad|ipod|windows phone/i.test(ua);
+  }
 
   // ─────────────────────────────
   // ✉️ Gestion des messages
@@ -260,7 +264,9 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
         })
         this.isLoadingSendMessage = false;
         this.messageRepondre = null;
-        this.focusTextArea();
+        if (!this.isMobile()) {
+          this.focusTextArea();
+        }
       });
     }
     else{
@@ -275,7 +281,9 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
         this.onCoseEdit();
         this.isLoadingSendMessage = false;
         this.messageRepondre = null;
-        this.focusTextArea();
+        if (!this.isMobile()) {
+          this.focusTextArea();
+        }
        });
     }
 
