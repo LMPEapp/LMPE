@@ -98,6 +98,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     this.visibilityHandler = () => {
       if (document.visibilityState === 'visible') {
         console.log('🌐 Retour sur la page → vérification SignalR');
+        this.messageApi.readAll(this.conversationId).subscribe();
         this.loadData();
         this.ensureSignalRConnected();
       }
