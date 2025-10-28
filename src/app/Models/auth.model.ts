@@ -7,8 +7,14 @@ export interface LoginRequest {
 
 export interface LoginRequestOut {
   token: string;
+  refreshToken: string;
   user?: User;
 }
+
+export interface RefreshTokenIN {
+  RefreshToken: string;
+}
+
 export interface ChangePasswordRequest{
   UserId:number;
   OldPassword:string;

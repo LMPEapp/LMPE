@@ -6,7 +6,6 @@ import { AuthAccessApiService } from '../AccessAPi/authAccessapi/auth-accessapi'
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private _isLoggedIn = signal(false);
   private _loginData: LoginRequestOut | null = null;
   public redirectUrl: string | null = null;
 
@@ -14,27 +13,23 @@ export class AuthService {
 
   constructor(private authApi: AuthAccessApiService) {}
 
-  get isLoggedIn() {
-    return this._isLoggedIn();
-  }
-
   get loginData(): LoginRequestOut | null {
     return this._loginData;
   }
 
   login(data: LoginRequestOut) {
     this._loginData = data;
-    this._isLoggedIn.set(true);
     localStorage.setItem('token', data.token);
+    localStorage.setItem('refreshToken', data.refreshToken);
     if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
   }
 
   logout() {
-    this._isLoggedIn.set(false);
     this._loginData = null;
     this.redirectUrl = null;
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('refreshToken');
     this.router.navigate(['/login']);
   }
 
@@ -44,18 +39,14 @@ export class AuthService {
       tap(res => {
         if (res.token) {
           this._loginData = res;
-          this._isLoggedIn.set(true);
           localStorage.setItem('token', res.token);
           if (res.user) localStorage.setItem('user', JSON.stringify(res.user));
         } else {
           this.logout();
         }
-      }),
-      catchError(() => {
-        this.logout();
-        return throwError(() => new Error('Token invalide'));
       })
     );
   }
+
 }
 
