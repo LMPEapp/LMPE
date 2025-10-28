@@ -1,0 +1,162 @@
+.partenaires-container {
+    padding: 2rem;
+    color: var(--mat-sys-on-background);
+    background-color: var(--mat-sys-surface);
+    min-height: 100vh;
+
+    .titre-page {
+        text-align: center;
+        color: var(--mat-sys-primary);
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 3rem;
+    }
+
+    .partenaire-bloc {
+        margin-bottom: 3rem;
+
+        .partenaire-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 16px;
+            background-color: var(--mat-sys-surface-container-high);
+            box-shadow: 0 4px 12px var(--mat-sys-shadow);
+            padding: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s;
+
+            &:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+                background-color: var(--mat-sys-surface-container-highest);
+            }
+
+            &.inverse {
+                flex-direction: row-reverse;
+            }
+
+
+            .left-section {
+                flex: 1;
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .carrousel {
+                    position: relative;
+
+                    .carrousel-image {
+                        width: 100%;
+                        max-width: 400px;
+                        height: 250px;
+                        overflow: hidden;
+                        border-radius: 12px;
+                        border: 2px solid var(--mat-sys-outline-variant);
+
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            transition: transform 0.6s ease;
+                        }
+                    }
+
+                    button.prev,
+                    button.next {
+                        position: absolute;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        background: rgba(0, 0, 0, 0.4);
+                        color: white;
+                        border: none;
+                        font-size: 1.5rem;
+                        cursor: pointer;
+                        border-radius: 50%;
+                        width: 36px;
+                        height: 36px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: background 0.3s;
+                        z-index: 2;
+
+                        &:hover {
+                            background: rgba(0, 0, 0, 0.7);
+                        }
+                    }
+
+                    .prev {
+                        left: 10px;
+                    }
+
+                    .next {
+                        right: 10px;
+                    }
+
+                    .dots {
+                        position: absolute;
+                        bottom: 8px;
+                        left: 0;
+                        right: 0;
+                        text-align: center;
+
+                        span {
+                            display: inline-block;
+                            width: 10px;
+                            height: 10px;
+                            margin: 0 4px;
+                            background-color: rgba(255, 255, 255, 0.6);
+                            border-radius: 50%;
+                            cursor: pointer;
+                            transition: background-color 0.3s ease;
+
+                            &.active {
+                                background-color: var(--mat-sys-primary);
+                            }
+                        }
+                    }
+                }
+            }
+
+            .details {
+                flex: 1;
+                padding: 1rem 2rem;
+                text-align: center;
+
+                h2 {
+                    color: var(--mat-sys-primary);
+                    margin-bottom: 1rem;
+                }
+
+                p {
+                    color: var(--mat-sys-on-surface-variant);
+                    line-height: 1.6;
+                }
+            }
+        }
+    }
+
+    .description {
+        white-space: pre-line;
+    }
+
+    @media (max-width: 768px) {
+        .partenaire-card {
+            flex-direction: column !important;
+
+            .carrousel {
+                max-width: 100%;
+
+                .carrousel-image {
+                    max-width: 100%;
+                    height: auto;
+                }
+            }
+
+            .details {
+                padding: 1rem 0;
+            }
+        }
+    }
+}

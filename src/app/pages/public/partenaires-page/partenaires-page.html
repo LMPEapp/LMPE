@@ -1,1 +1,32 @@
-<p>partenaires-page works!</p>
+<div class="partenaires-container">
+  <h1 class="titre-page">Nos Partenaires</h1>
+
+  <div *ngFor="let partenaire of partenaires; let i = index" class="partenaire-bloc">
+    <div class="partenaire-card" [ngClass]="{'inverse': i % 2 !== 0}">
+      <div class="left-section">
+        <div class="carrousel">
+            <div class="carrousel-image">
+                <img [src]="partenaire.images[partenaire.index]" [alt]="partenaire.nom" />
+            </div>
+
+            <button class="prev" (click)="precedent(partenaire)">❮</button>
+            <button class="next" (click)="suivant(partenaire)">❯</button>
+
+            <div class="dots">
+                <span 
+                    *ngFor="let img of partenaire.images; let j = index"
+                    [class.active]="j === partenaire.index"
+                    (click)="partenaire.index = j">
+                </span>
+            </div>
+        </div>
+        
+      </div>
+
+      <div class="details">
+        <h2>{{ partenaire.nom }}</h2>
+        <p class="description">{{ partenaire.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>
