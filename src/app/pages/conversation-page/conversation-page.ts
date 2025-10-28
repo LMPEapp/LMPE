@@ -46,6 +46,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild(AddUserConversation) AddUserConversation!: AddUserConversation;
   @ViewChild('messagesWrapper') messagesWrapper!: ElementRef;
   @ViewChild(ValidationDialogComponent) alert!: ValidationDialogComponent;
+  @ViewChild('textArea') textArea!: ElementRef<HTMLTextAreaElement>;
 
   GroupeConversation?: GroupeConversation;
   conversationId: number;
@@ -225,6 +226,18 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     this.typingSub?.unsubscribe();
   }
 
+  private focusTextArea() {
+    setTimeout(() => {
+      if (this.textArea?.nativeElement) {
+        const el = this.textArea.nativeElement;
+        el.focus();
+        // Placer le curseur à la fin
+        el.selectionStart = el.selectionEnd = el.value.length;
+      }
+    }, 0);
+  }
+
+
   // ─────────────────────────────
   // ✉️ Gestion des messages
   // ─────────────────────────────
@@ -247,6 +260,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
         })
         this.isLoadingSendMessage = false;
         this.messageRepondre = null;
+        this.focusTextArea();
       });
     }
     else{
@@ -261,6 +275,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
         this.onCoseEdit();
         this.isLoadingSendMessage = false;
         this.messageRepondre = null;
+        this.focusTextArea();
        });
     }
 
@@ -278,6 +293,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
     this.messageEdit = event;
     this.newMessage = event.content;
     this.adjustTextarea();
+    this.focusTextArea();
   }
 
   onDeleteMessage(event: MessageOut): void {
