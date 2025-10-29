@@ -523,4 +523,65 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
       document.removeEventListener('visibilitychange', this.visibilityHandler);
     }
   }
+
+  onPaste(event: ClipboardEvent): void {
+    if (!event.clipboardData) return;
+
+    const items = event.clipboardData.items;
+    for (const item of items) {
+      if (item.kind === 'file') {
+        const file = item.getAsFile();
+        if (file) {
+          this.handlePastedFile(file);
+          event.preventDefault(); // Empêche le collage du texte brut
+        }
+      }
+    }
+  }
+  private handlePastedFile(file: File): void {
+    this.selectedFile = file;
+    this.messageRepondre = null;
+
+    if (this.isImage(file)) {
+      const reader = new FileReader();
+      reader.onload = e => this.imagePreview = reader.result as string;
+      reader.readAsDataURL(file);
+      this.videoPreview = undefined;
+    } else if (this.isVideo(file)) {
+      this.videoPreview = URL.createObjectURL(file);
+      this.imagePreview = undefined;
+    } else {
+      this.imagePreview = undefined;
+      this.videoPreview = undefined;
+    }
+
+    // Optionnel : focus sur la zone de texte
+    setTimeout(() => this.textArea?.nativeElement.focus(), 0);
+  }
+
+  isDragOver = false;
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.dataTransfer!.dropEffect = 'copy';
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+
+    const file = event.dataTransfer?.files?.[0];
+    if (file) this.handlePastedFile(file);
+  }
+
+
+
+
+
 }

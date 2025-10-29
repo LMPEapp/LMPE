@@ -1,139 +1,136 @@
-<div class="body">
+<div class="body"
+  (drop)="onDrop($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)">
+
+  <!-- ✅ Zone visible quand on drag un fichier -->
+  <div class="drop-overlay" *ngIf="isDragOver">
+    🖱️ Déposez votre image ou fichier ici
+  </div>
+
   <mat-sidenav-container class="sidenav-container" *ngIf="!isLoading; else loading">
     <mat-sidenav-content>
-        <!-- Toolbar -->
-        <mat-toolbar color="primary" class="toolbar">
-          <div class="toolbar">
-            <button mat-icon-button (click)="goBack()">
-              <mat-icon>arrow_back</mat-icon>
-            </button>
-            <span class="toolbar-title">{{ GroupeConversation?.name }}</span>
-          </div>
-          <div class="user-actions">
-            <button mat-icon-button [matMenuTriggerFor]="menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <div class="menu">
-                <button mat-menu-item (click)="onGestion()">
-                  <mat-icon>group_add</mat-icon>
-                  <span>Ajout User</span>
-                </button>
-                <button mat-menu-item (click)="onleaveGroupe()">
-                  <mat-icon>exit_to_app</mat-icon>
-                  <span>Quiter la Conversation</span>
-                </button>
-              </div>
-            </mat-menu>
-          </div>
-        </mat-toolbar>
 
-        <!-- Zone principale -->
-        <div class="conversation-container">
-          <div class="messages-wrapper" #messagesWrapper (scroll)="onScroll()">
-            <div *ngFor="let msg of messages" [id]="'msg-' + msg.id">
-              <app-message [message]="msg" [currentUserId]="user?.id"
+      <!-- Toolbar -->
+      <mat-toolbar color="primary" class="toolbar">
+        <div class="toolbar">
+          <button mat-icon-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <span class="toolbar-title">{{ GroupeConversation?.name }}</span>
+        </div>
+
+        <div class="user-actions">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="onGestion()">
+              <mat-icon>group_add</mat-icon>
+              <span>Ajout User</span>
+            </button>
+            <button mat-menu-item (click)="onleaveGroupe()">
+              <mat-icon>exit_to_app</mat-icon>
+              <span>Quitter la Conversation</span>
+            </button>
+          </mat-menu>
+        </div>
+      </mat-toolbar>
+
+      <!-- Zone principale -->
+      <div class="conversation-container">
+        <div class="messages-wrapper" #messagesWrapper (scroll)="onScroll()">
+          <div *ngFor="let msg of messages" [id]="'msg-' + msg.id">
+            <app-message [message]="msg"
+              [currentUserId]="user?.id"
               (update)="onUpdateMessage($event)"
               (delete)="onDeleteMessage($event)"
-              (repondre)="onRepondreMessage($event)"></app-message>
-            </div>
-            <div id="msg-end"></div>
+              (repondre)="onRepondreMessage($event)">
+            </app-message>
           </div>
+          <div id="msg-end"></div>
         </div>
+      </div>
 
-
-        <!-- 👇 Zone "utilisateurs en train d'écrire" -->
-        <div class="typing-users" *ngIf="typingUsers.length > 0">
-          <div class="avatars">
-            <app-avatar
-              *ngFor="let user of typingUsers"
-              class="avatar"
-              [url]="user.urlImage"
-              [alt]="user.urlImage || 'Utilisateur supprimé'"
-              [size]="30">
-            </app-avatar>
-            <span class="typing-dots">
-              <span></span><span></span><span></span>
-            </span>
-          </div>
+      <!-- Utilisateurs en train d’écrire -->
+      <div class="typing-users" *ngIf="typingUsers.length > 0">
+        <div class="avatars">
+          <app-avatar
+            *ngFor="let user of typingUsers"
+            class="avatar"
+            [url]="user.urlImage"
+            [alt]="user.urlImage || 'Utilisateur supprimé'"
+            [size]="30">
+          </app-avatar>
+          <span class="typing-dots"><span></span><span></span><span></span></span>
         </div>
+      </div>
 
+      <!-- Zone de saisie -->
+      <div class="input-zone">
+        <div *ngIf="messageRepondre" class="reply-preview">
+          <app-message [message]="messageRepondre" [currentUserId]="user?.id" [isFullWidth]="false"></app-message>
+        </div>
+        <div class="input-user">
+          <button mat-icon-button color="primary" (click)="onFileInputClick(); fileInput.click()">
+            <mat-icon>attach_file</mat-icon>
+          </button>
+          <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
 
-        <!-- Zone de saisie -->
-        <div class="input-zone">
-          <div *ngIf="messageRepondre" class="reply-preview">
-            <app-message [message]="messageRepondre" [currentUserId]="user?.id" [isFullWidth]="false"></app-message>
-          </div>
-          <div class="input-user">
-            <!-- Bouton fichier/image -->
-            <button mat-icon-button color="primary" (click)="onFileInputClick(); fileInput.click()">
-              <mat-icon>attach_file</mat-icon>
-            </button>
-            <input #fileInput type="file" style="display:none" (change)="onFileSelected($event)" />
-
-            <ng-container *ngIf="selectedFile; else messageInput">
-              <div class="selected-file">
-                <ng-container *ngIf="isImage(selectedFile); else checkVideo">
-                  <img [src]="imagePreview" alt="Aperçu" class="file-preview" />
+          <ng-container *ngIf="selectedFile; else messageInput">
+            <div class="selected-file">
+              <ng-container *ngIf="isImage(selectedFile); else checkVideo">
+                <img [src]="imagePreview" alt="Aperçu" class="file-preview" />
+              </ng-container>
+              <ng-template #checkVideo>
+                <ng-container *ngIf="isVideo(selectedFile); else otherFile">
+                  <video class="file-preview" [src]="videoPreview" controls></video>
                 </ng-container>
+              </ng-template>
+              <ng-template #otherFile>
+                <div class="file-info">
+                  <mat-icon class="large-icon">insert_drive_file</mat-icon>
+                  <span>{{ selectedFile.name }}</span>
+                </div>
+              </ng-template>
+            </div>
+          </ng-container>
 
-                <ng-template #checkVideo>
-                  <ng-container *ngIf="isVideo(selectedFile); else otherFile">
-                    <video class="file-preview" [src]="videoPreview" controls></video>
-                  </ng-container>
-                </ng-template>
+          <ng-template #messageInput>
+            <textarea
+              [disabled]="isLoadingSendMessage"
+              [(ngModel)]="newMessage"
+              placeholder="Écrire un message..."
+              (input)="onTyping()"
+              (keydown)="onKeyDown($event)"
+              (paste)="onPaste($event)"
+              #textArea></textarea>
+          </ng-template>
 
-                <ng-template #otherFile>
-                  <div class="file-info">
-                    <mat-icon class="large-icon">insert_drive_file</mat-icon>
-                    <span>{{ selectedFile.name }}</span>
-                  </div>
-                </ng-template>
-              </div>
-            </ng-container>
-
-
-            <!-- Textarea pour le message -->
-            <ng-template #messageInput>
-              <textarea
-                [disabled]="isLoadingSendMessage"
-                [(ngModel)]="newMessage"
-                placeholder="Écrire un message..."
-                (input)="onTyping()"
-                (keydown)="onKeyDown($event)"
-                #textArea>
-              </textarea>
-            </ng-template>
-
-            <button *ngIf="selectedFile" mat-icon-button color="warn" (click)="removeSelectedFile()">
-              <mat-icon>close</mat-icon>
+          <button *ngIf="selectedFile" mat-icon-button color="warn" (click)="removeSelectedFile()">
+            <mat-icon>close</mat-icon>
+          </button>
+          <button *ngIf="messageEdit || messageRepondre" mat-icon-button color="primary" (click)="onCoseEdit()">
+            <mat-icon>close</mat-icon>
+          </button>
+          <ng-container *ngIf="!isLoadingSendMessage; else loadingBtn">
+            <button mat-icon-button color="primary" (click)="sendMessageOrUpload()">
+              <mat-icon>send</mat-icon>
             </button>
-            <button *ngIf="this.messageEdit!=null || this.messageRepondre!=null" mat-icon-button color="primary" (click)="onCoseEdit()">
-              <mat-icon>close</mat-icon>
+          </ng-container>
+          <ng-template #loadingBtn>
+            <button mat-icon-button disabled>
+              <mat-progress-spinner diameter="24" mode="indeterminate" color="primary"></mat-progress-spinner>
             </button>
-            <ng-container *ngIf="!isLoadingSendMessage; else loading">
-              <button mat-icon-button color="primary" (click)="sendMessageOrUpload()">
-                <mat-icon>send</mat-icon>
-              </button>
-            </ng-container>
-
-            <ng-template #loading>
-              <button mat-icon-button disabled>
-                <mat-progress-spinner
-                  diameter="24"
-                  mode="indeterminate"
-                  color="primary">
-                </mat-progress-spinner>
-              </button>
-            </ng-template>
-          </div>
+          </ng-template>
         </div>
-        <!-- Floating Action Button -->
+      </div>
+
+      <!-- Bouton flottant -->
       <button *ngIf="!isBottom" mat-fab color="primary" class="fab-button" (click)="scrollToBottom()">
         <mat-icon>keyboard_arrow_down</mat-icon>
       </button>
     </mat-sidenav-content>
-
   </mat-sidenav-container>
 
   <ng-template #loading>
