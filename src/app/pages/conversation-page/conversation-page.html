@@ -44,24 +44,20 @@
 
         <!-- 👇 Zone "utilisateurs en train d'écrire" -->
         <div class="typing-users" *ngIf="typingUsers.length > 0">
-          <ng-container *ngIf="typingUsers.length === 1">
-            <span><strong>{{ typingUsers[0].pseudo }}</strong> est en train d'écrire...</span>
-          </ng-container>
-
-          <ng-container *ngIf="typingUsers.length === 2">
-            <span>
-              <strong>{{ typingUsers[0].pseudo }}</strong> et <strong>{{ typingUsers[1].pseudo }}</strong> sont en train d'écrire...
+          <div class="avatars">
+            <app-avatar
+              *ngFor="let user of typingUsers"
+              class="avatar"
+              [url]="user.urlImage"
+              [alt]="user.urlImage || 'Utilisateur supprimé'"
+              [size]="30">
+            </app-avatar>
+            <span class="typing-dots">
+              <span></span><span></span><span></span>
             </span>
-          </ng-container>
-
-          <ng-container *ngIf="typingUsers.length > 2">
-            <span>
-              <strong>{{ typingUsers[0].pseudo }}</strong>, <strong>{{ typingUsers[1].pseudo }}</strong>
-              et {{ typingUsers.length - 2 }} autre{{ typingUsers.length - 2 > 1 ? 's' : '' }}
-              sont en train d'écrire...
-            </span>
-          </ng-container>
+          </div>
         </div>
+
 
         <!-- Zone de saisie -->
         <div class="input-zone">

@@ -21,6 +21,7 @@ import { ValidationDialogComponent } from "../../ExternComposent/validation-dial
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Subscription } from 'rxjs';
+import { AvatarComponent } from "../../ExternComposent/avatar/avatar";
 
 @Component({
   selector: 'app-conversation-page',
@@ -36,8 +37,9 @@ import { Subscription } from 'rxjs';
     FormsModule,
     MessageComponent,
     ValidationDialogComponent,
-    MatProgressSpinnerModule
-  ],
+    MatProgressSpinnerModule,
+    AvatarComponent
+],
   templateUrl: './conversation-page.html',
   styleUrl: './conversation-page.scss'
 })
