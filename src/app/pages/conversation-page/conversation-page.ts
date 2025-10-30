@@ -313,7 +313,7 @@ export class ConversationPage implements OnInit, OnDestroy, AfterViewChecked {
   }
   onRepondreMessage(event: MessageOut): void {
     this.messageRepondre = event;
-
+    this.focusTextArea();
   }
 
   onCoseEdit(): void {
