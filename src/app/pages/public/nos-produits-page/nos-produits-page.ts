@@ -51,7 +51,7 @@ export class NosProduitsPage {
     {
       id: 5,
       nom: 'Brique de sperme demi-écrémé',
-      description: 'Concu pour les intolérants au sperme, cette brique de délicieux sperme contient toujours autant de bonnes choses pour le corps et l\'esprit. Le sperme est affiné plus longtemps et ensuite dilué, ce qui permet une meilleure digestion.',
+      description: 'Conçu pour les intolérants au sperme, cette brique de délicieux sperme contient toujours autant de bonnes choses pour le corps et l\'esprit. Le sperme est affiné plus longtemps et ensuite dilué, ce qui permet une meilleure digestion.',
       image: 'assets/Produit/5.jpg',
       prix: 3.50,
       quantite: 0
