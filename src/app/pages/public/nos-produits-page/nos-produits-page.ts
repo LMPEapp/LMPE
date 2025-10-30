@@ -39,7 +39,23 @@ export class NosProduitsPage {
       image: 'assets/Produit/3.jpg',
       prix: 9.99,
       quantite: 0
-    }
+    },
+    {
+      id: 4,
+      nom: 'Brique de sperme entier',
+      description: 'Savourez la saveur originale du sperme, sans retouche ni addition. Source intense de protéines, de fer et de zinc, ce sperme liquide vous fournira toutes l\'énergie nécessaire pour une journée réussie.',
+      image: 'assets/Produit/4.jpg',
+      prix: 3.15,
+      quantite: 0
+    },
+    {
+      id: 5,
+      nom: 'Brique de sperme demi-écrémé',
+      description: 'Concu pour les intolérants au sperme, cette brique de délicieux sperme contient toujours autant de bonnes choses pour le corps et l\'esprit. Le sperme est affiné plus longtemps et ensuite dilué, ce qui permet une meilleure digestion.',
+      image: 'assets/Produit/5.jpg',
+      prix: 3.50,
+      quantite: 0
+    } 
   ];
 
   provenances = [
