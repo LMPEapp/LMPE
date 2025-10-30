@@ -53,11 +53,6 @@
           <app-agenda-page></app-agenda-page>
         </div>
 
-        <div *ngSwitchCase="'bulletin'">
-          <h1>Bulletin</h1>
-          <!-- Bulletins ou rapports -->
-        </div>
-
         <div *ngSwitchDefault>
           <h1>Bienvenue sur LMPE</h1>
         </div>
@@ -84,12 +79,6 @@
       <button mat-icon-button (click)="onSelectTab('agenda')">
         <div [ngClass]="{'accent': activeTab === 'agenda'}">
           <mat-icon>event</mat-icon>
-        </div>
-      </button>
-
-      <button mat-icon-button (click)="onSelectTab('bulletin')">
-        <div [ngClass]="{'accent': activeTab === 'bulletin'}">
-          <mat-icon>assignment</mat-icon>
         </div>
       </button>
     </mat-toolbar>
